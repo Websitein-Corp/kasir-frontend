@@ -1,25 +1,13 @@
-# This is a basic workflow that is manually triggered
-
-name: Manual workflow
-
-# Controls when the action will run. Workflow runs when manually triggered using the UI
-# or API.
+name: delete branch on close pr
 on:
-  pull_request_target:
-    types:
-      - closed
+  pull_request:
+    types: [closed]
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "greet"
-  delete_branch:
-    if: github.event.pull_request.merged == true
-    # The type of runner that the job will run on
+  delete-branch:
     runs-on: ubuntu-latest
-
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-    # Deletes branch after merged
-    - name: Delete merged branch
-      # uses: SvanBoxel/delete-merged-branch@2b5b058e3db41a3328fd9a6a58fd4c2545a14353
-      uses: SvanBoxel/delete-merged-branch@1.4.3
+      - name: delete branch
+        uses: SvanBoxel/delete-merged-branch@main
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
