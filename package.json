@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "core-js": "^3.8.3",
+    "lucide-vue-next": "^0.438.0",
     "register-service-worker": "^1.7.2",
     "vue": "^3.2.13",
     "vue-router": "^4.0.3"
@@ -25,7 +26,7 @@
     "eslint": "^7.32.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-prettier": "^4.0.0",
-    "eslint-plugin-vue": "^8.0.3",
+    "eslint-plugin-vue": "^8.7.1",
     "lint-staged": "^11.1.2",
     "postcss": "^8.4.42",
     "prettier": "^2.4.1",
