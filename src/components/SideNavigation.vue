@@ -2,34 +2,36 @@
   <div class="absolute top-0 left-5 w-full p-2 mt-2">
     <Menu class="w-10 h-10 cursor-pointer" @click="isOpened = !isOpened" />
   </div>
-  <nav
-    class="h-screen bg-primary-50 flex flex-col overflow-hidden transition-all"
+  <div
+    class="overflow-hidden transition-all"
     :class="{
-      'w-[100px]': isOpened,
+      'w-[300px]': isOpened,
       'w-0': !isOpened,
     }"
   >
-    <div class="w-20 h-20 p-2 mx-auto mt-20 relative top-0 left-0">
-      <img
-        src="../assets/images/websiteinLogo.svg"
-        alt="websiteinLogo.svg"
-        class="object-cover"
-      />
-    </div>
-    <div class="flex flex-col">
-      <NavigationMenu
-        v-for="(menu, index) in menus"
-        :key="index"
-        :label="menu.label"
-        :icon="menu.icon"
-        :submenus="menu.submenus"
-        :current="menu.current"
-      />
-    </div>
-    <div class="h-full flex flex-col justify-end text-red-500 mb-4">
-      <NavigationMenu :icon="LogOut" />
-    </div>
-  </nav>
+    <nav class="w-[100px] h-screen bg-primary-50 flex flex-col">
+      <div class="w-20 h-20 p-2 mx-auto mt-20 relative top-0 left-0">
+        <img
+          src="../assets/images/websiteinLogo.svg"
+          alt="websiteinLogo.svg"
+          class="object-cover"
+        />
+      </div>
+      <div class="flex flex-col">
+        <NavigationMenu
+          v-for="(menu, index) in menus"
+          :key="index"
+          :label="menu.label"
+          :icon="menu.icon"
+          :submenus="menu.submenus"
+          :current="menu.current"
+        />
+      </div>
+      <div class="h-full flex flex-col justify-end text-red-500 mb-4">
+        <NavigationMenu :icon="LogOut" />
+      </div>
+    </nav>
+  </div>
 </template>
 
 <script setup>

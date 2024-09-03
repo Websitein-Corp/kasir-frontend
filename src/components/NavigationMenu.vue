@@ -18,7 +18,7 @@
     </router-link>
     <div
       v-if="submenus.length > 0"
-      class="absolute top-1/3 left-20 rounded-lg bg-primary-100 w-44 opacity-0 -z-50 group-hover/container:z-50 group-hover/container:opacity-100 group-hover/container:translate-x-1.5 overflow-hidden transition-all -delay-500"
+      class="absolute top-1/3 left-20 rounded-lg bg-primary-100 w-44 opacity-0 -z-50 group-hover/container:z-50 group-hover/container:opacity-100 group-hover/container:translate-x-2 overflow-hidden transition-all -delay-500"
     >
       <template v-for="(submenu, index) in submenus" :key="index">
         <div
