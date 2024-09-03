@@ -1,10 +1,131 @@
 <template>
-  <nav class="w-full bg-primary-900">
-    <router-link to="/">Home</router-link> |
-    <router-link to="/about">About</router-link>
-  </nav>
+  <div class="absolute top-0 left-5 w-full p-2 mt-2">
+    <Menu class="w-10 h-10 cursor-pointer" @click="isOpened = !isOpened" />
+  </div>
+  <div
+    class="overflow-hidden transition-all"
+    :class="{
+      'w-[300px]': isOpened,
+      'w-0': !isOpened,
+    }"
+  >
+    <nav class="w-[100px] h-screen bg-primary-50 flex flex-col">
+      <div class="w-20 h-20 p-2 mx-auto mt-20 relative top-0 left-0">
+        <img
+          src="../assets/images/websiteinLogo.svg"
+          alt="websiteinLogo.svg"
+          class="object-cover"
+        />
+      </div>
+      <div class="flex flex-col">
+        <NavigationMenu
+          v-for="(menu, index) in menus"
+          :key="index"
+          :label="menu.label"
+          :icon="menu.icon"
+          :submenus="menu.submenus"
+          :current="menu.current"
+        />
+      </div>
+      <div class="h-full flex flex-col justify-end text-red-500 mb-4">
+        <NavigationMenu :icon="LogOut" />
+      </div>
+    </nav>
+  </div>
 </template>
 
-<script setup></script>
+<script setup>
+import {
+  ChartPie,
+  ShoppingCart,
+  PackageSearch,
+  ArrowRightLeft,
+  Truck,
+  Shuffle,
+  Users,
+  LogOut,
+  Ham,
+  Package,
+  HandPlatter,
+  Clock,
+  Box,
+  ShoppingBasket,
+  List,
+  Menu,
+} from "lucide-vue-next";
+import NavigationMenu from "@/components/NavigationMenu.vue";
+import { ref } from "vue";
 
-<style scoped></style>
+const menus = [
+  {
+    label: "Dashboard",
+    icon: ChartPie,
+  },
+  {
+    label: "Order",
+    icon: ShoppingCart,
+    submenus: [
+      {
+        label: "Food",
+        icon: Ham,
+        endpoint: "/",
+      },
+      {
+        label: "Goods",
+        icon: Package,
+        endpoint: "/",
+      },
+      {
+        label: "Service",
+        icon: HandPlatter,
+        endpoint: "/",
+      },
+      {
+        label: "Timed Service",
+        icon: Clock,
+        endpoint: "/",
+      },
+    ],
+    current: true,
+  },
+  {
+    label: "Product",
+    icon: PackageSearch,
+    submenus: [
+      {
+        label: "Product Category",
+        icon: Box,
+        endpoint: "/",
+      },
+      {
+        label: "Product Ingredient",
+        icon: ShoppingBasket,
+        endpoint: "/",
+      },
+      {
+        label: "Product List",
+        icon: List,
+        endpoint: "/",
+      },
+    ],
+  },
+  {
+    label: "Transaction",
+    icon: ArrowRightLeft,
+  },
+  {
+    label: "Supplier",
+    icon: Truck,
+  },
+  {
+    label: "Recon",
+    icon: Shuffle,
+  },
+  {
+    label: "Subuser",
+    icon: Users,
+  },
+];
+
+const isOpened = ref(true);
+</script>
