@@ -33,7 +33,7 @@
           :current="menu.current"
         />
       </div>
-      <div class="h-full flex flex-col justify-end text-red-500 mb-2">
+      <div class="h-full flex flex-col justify-end text-red-500 mb-4">
         <NavigationMenu :icon="LogOut" />
       </div>
     </nav>
