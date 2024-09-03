@@ -1,6 +1,12 @@
 <template>
-  <div class="absolute top-0 left-5 w-full p-2 mt-2">
-    <Menu class="w-10 h-10 cursor-pointer" @click="isOpened = !isOpened" />
+  <div class="absolute top-0 left-5 w-full p-2 mt-3">
+    <Menu
+      class="w-10 h-10 cursor-pointer transition-all"
+      :class="{
+        'rotate-180': isOpened,
+      }"
+      @click="isOpened = !isOpened"
+    />
   </div>
   <div
     class="overflow-hidden transition-all"
