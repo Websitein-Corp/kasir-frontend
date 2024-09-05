@@ -6,3 +6,34 @@
     font-family: Helvetica;
     src: url("~@/assets/fonts/helvetica_neue_5/HelveticaNeueMedium.otf");
 }
+
+@font-face {
+    font-family: HelveticaLight;
+    src: url("~@/assets/fonts/helvetica_neue_5/HelveticaNeueLight.otf");
+}
+
+.fade-enter-active,
+.fade-leave-active {
+    transition: opacity 0.3s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+    opacity: 0;
+}
+
+.slide-fade-enter-active,
+.slide-fade-leave-active {
+    transition: all 0.3s ease-out;
+}
+
+.slide-fade-enter-from,
+.slide-fade-leave-to {
+    transform: translate(-50%, -40%);
+    opacity: 0;
+}
+
+.slide-fade-enter-to,
+.slide-fade-leave-from {
+    transform: translate(-50%, -50%)
+}

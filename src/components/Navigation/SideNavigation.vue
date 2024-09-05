@@ -18,7 +18,7 @@
     <nav class="w-[100px] h-screen bg-primary-50 flex flex-col">
       <div class="w-20 h-20 p-2 mx-auto mt-20 relative top-0 left-0">
         <img
-          src="../assets/images/websiteinLogo.svg"
+          src="../../assets/images/websiteinLogo.svg"
           alt="websiteinLogo.svg"
           class="object-cover"
         />
@@ -59,7 +59,7 @@ import {
   List,
   Menu,
 } from "lucide-vue-next";
-import NavigationMenu from "@/components/NavigationMenu.vue";
+import NavigationMenu from "@/components/Navigation/NavigationMenu.vue";
 import { ref } from "vue";
 
 const menus = [
