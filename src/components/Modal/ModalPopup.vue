@@ -5,10 +5,10 @@
       class="z-40 fixed top-0 left-0 w-screen h-screen bg-gray-400/50"
     />
   </transition>
-  <transition name="slide-fade">
+  <transition name="slide-fade-up">
     <div
       v-if="modal.isOpened"
-      class="z-50 fixed top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 bg-white w-11/12 md:w-1/2 xl:w-1/3 h-fit rounded-lg p-10 flex flex-col"
+      class="z-50 fixed top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 bg-white w-11/12 md:w-1/2 xl:w-1/3 h-fit rounded-lg p-10 flex flex-col shadow-xl"
     >
       <div id="header" class="flex items-center space-x-3 py-4 border-b-2">
         <div>

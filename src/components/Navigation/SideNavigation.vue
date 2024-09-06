@@ -1,5 +1,5 @@
 <template>
-  <div class="absolute top-0 left-5 w-full p-2 mt-3">
+  <div class="absolute z-30 top-0 left-5 p-2 mt-3">
     <Menu
       class="w-10 h-10 cursor-pointer transition-all"
       :class="{
@@ -9,10 +9,17 @@
     />
   </div>
   <div
-    class="overflow-hidden transition-all"
+    class="shrink-0 transition-all"
     :class="{
-      'w-[300px]': isOpened,
+      'w-[100px]': isOpened,
       'w-0': !isOpened,
+    }"
+  ></div>
+  <div
+    class="absolute transition-all"
+    :class="{
+      'w-[100px] opacity-100': isOpened,
+      'w-0 opacity-0': !isOpened,
     }"
   >
     <nav class="w-[100px] h-screen bg-primary-50 flex flex-col">

@@ -1,12 +1,16 @@
 <template>
-  <div class="font-helvetica">
+  <div class="font-helvetica flex">
     <SideNavigation />
     <ModalPopup />
-    <router-view />
+    <ToastAlert />
+    <div class="w-full h-screen shrink">
+      <router-view />
+    </div>
   </div>
 </template>
 
 <script setup>
 import SideNavigation from "@/components/Navigation/SideNavigation.vue";
 import ModalPopup from "@/components/Modal/ModalPopup.vue";
+import ToastAlert from "@/components/Toast/ToastAlert.vue";
 </script>
