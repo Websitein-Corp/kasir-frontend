@@ -7,6 +7,7 @@
       'w-[400px]': size === 'lg',
       'w-[500px]': size === 'xl',
     }"
+    @click="$emit('click')"
   >
     <component v-if="icon && iconSide === 'left'" :is="icon"></component>
     <span>{{ label }}</span>
@@ -30,4 +31,6 @@ defineProps({
     default: "md",
   },
 });
+
+defineEmits(["click"]);
 </script>
