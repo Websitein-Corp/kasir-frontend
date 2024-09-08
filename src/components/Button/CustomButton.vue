@@ -10,7 +10,7 @@
       'justify-start': align === 'start',
       'justify-end': align === 'end',
       'bg-transparent hover:bg-gray-100 border border-transparent text-black shadow-none':
-        background !== 'transparent',
+        background === 'transparent',
       '!text-red-500': textColor === 'red',
     }"
     @click="$emit('click')"
