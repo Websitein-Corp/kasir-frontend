@@ -1,6 +1,6 @@
 <template>
   <button
-    class="bg-primary-700 hover:bg-primary-800 p-2 rounded-lg text-white shadow-xl flex justify-center items-center gap-2 transition-all"
+    class="bg-primary-700 hover:bg-primary-800 p-2 rounded-lg shadow-xl flex justify-center items-center gap-2 transition-all"
     :class="{
       'w-[200px]': size === 'sm',
       'w-[300px]': size === 'md',
