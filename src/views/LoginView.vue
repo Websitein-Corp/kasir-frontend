@@ -86,6 +86,7 @@
 
           <button
             class="bg-primary-700 rounded-md text-xl text-white w-3/4 px-8 py-2 mx-auto"
+            @click="formAction"
           >
             {{ isForgotPassword ? "Send" : "Login" }}
           </button>
@@ -97,6 +98,8 @@
 
 <script setup>
 import { defineAsyncComponent, ref } from "vue";
+import axios from "axios";
+
 const CustomInput = defineAsyncComponent(() =>
   import("@/components/CustomInput/CustomInput.vue")
 );
@@ -108,6 +111,42 @@ const isForgotPassword = ref(false);
 
 const toggleForgotPassword = () => {
   isForgotPassword.value = !isForgotPassword.value;
+};
+
+const formAction = () => {
+  console.log(process.env);
+
+  if (isForgotPassword.value) {
+    sendResetPasswordEmail();
+  } else {
+    login();
+  }
+};
+
+const login = async () => {
+  try {
+    const baseURL = process.env.VUE_APP_API_BASE_URL;
+    const endpoint = `${baseURL}/api/auth/login`;
+
+    const response = await axios.post(endpoint, {
+      email: email.value,
+      password: password.value,
+    });
+
+    console.log("Login successful:", response.data);
+
+    const token = response.data.token;
+
+    if (token) {
+      localStorage.setItem("auth_token", token);
+      console.log("Token saved to localStorage:", token);
+    } else {
+      console.error("No token received in the response");
+    }
+    alert("Login successful");
+  } catch (error) {
+    console.error("Login failed:", error.response?.data || error.message);
+  }
 };
 </script>
 
