@@ -48,10 +48,10 @@
         <img
           src="../../public/img/login.png"
           alt="login image"
-          class="hidden md:block"
+          class="hidden md:block aspect-square w-1/2"
         />
 
-        <div class="flex flex-col items-center justify-center py-4 px-8 w-full">
+        <div class="flex flex-col items-center justify-center p-4 w-1/2">
           <div class="flex flex-row items-center justify-center">
             <img src="../../public/img/logo.svg" alt="logo" class="w-16" />
             <h1 class="pl-2 text-xl">
@@ -59,7 +59,7 @@
             </h1>
           </div>
 
-          <div class="flex flex-col mt-4">
+          <div class="flex flex-col mt-4 w-full">
             <CustomInput
               v-model="email"
               name="email"
@@ -135,7 +135,7 @@ const login = async () => {
 
     console.log("Login successful:", response.data);
 
-    const token = response.data.token;
+    const token = response.data.data.token;
 
     if (token) {
       localStorage.setItem("auth_token", token);
