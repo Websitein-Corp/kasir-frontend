@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from "vue-router";
+import TableView from "@/views/TableView.vue";
 
 const routes = [
   {
@@ -22,10 +23,14 @@ const routes = [
     component: () => import("@/views/order/BillView.vue"),
   },
   {
+    path: "/table",
+    name: "table",
+    component: () => import("@/views/order/TableView.vue"),
+  },
+  {
     path: "/login",
     name: "login",
-    component: () =>
-      import(/* webpackChunkName: "login" */ "../views/LoginView.vue"),
+    component: () => import("../views/LoginView.vue"),
   },
 ];
 
