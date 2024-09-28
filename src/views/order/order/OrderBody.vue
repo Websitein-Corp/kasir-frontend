@@ -1,6 +1,6 @@
 <template>
   <div class="p-4 px-8">
-    <CategoryTab />
+    <CategoryTab :items="categories" />
   </div>
   <div class="w-full grid grid-cols-2 xl:grid-cols-3 gap-2 lg:gap-4">
     <!--    <RecycleScroller-->
@@ -8,25 +8,26 @@
     <!--      :items="products"-->
     <!--      :item-size="500"-->
     <!--      :item-secondary-size="370"-->
-    <!--      key-field="title"-->
+    <!--      key-field="sku"-->
     <!--      grid-items="3"-->
     <!--      v-slot="{ item }"-->
     <!--    >-->
     <!--      <div class="col-span-1 m-4">-->
     <!--        <ProductCard-->
-    <!--          :title="item.title"-->
-    <!--          :price="item.price"-->
-    <!--          :image="item.image"-->
-    <!--          :selected="cart.has(item.title)"-->
+    <!--          :title="item.name"-->
+    <!--          :price="item.selling_price"-->
+    <!--          :image="item.image_url"-->
+    <!--          :selected="cart.has(item.name)"-->
     <!--        />-->
     <!--      </div>-->
     <!--    </RecycleScroller>-->
-    <div v-for="product in products" :key="product.title" class="col-span-1">
+    <div v-for="product in products" :key="product.sku" class="col-span-1">
       <ProductCard
-        :title="product.title"
-        :price="product.price"
-        :image="product.image"
-        :selected="cart.has(product.title)"
+        :sku="product.sku"
+        :name="product.name"
+        :selling-price="product.selling_price"
+        :image-url="product.image_url"
+        :selected="cart.has(product.name)"
       />
     </div>
   </div>
@@ -60,87 +61,165 @@ import CategoryTab from "@/components/Tab/CategoryTab.vue";
 import { onMounted, ref } from "vue";
 import axios from "axios";
 
-const categories = ref([]);
+const categories = ref([
+  {
+    name: "Burger",
+    code: "brg",
+  },
+  {
+    name: "Hotdog",
+    code: "htdg",
+  },
+]);
 
-const products = [
+const products = ref([
   {
-    title: "Burger",
-    price: 10000,
-    image: "https://placehold.co/400x600",
+    sku: "sarimi2ag",
+    name: "Sarimi Isi 2 Rasa Ayam Goreng",
+    selling_retail_price: 3000,
+    selling_price: 2500,
+    discount_price: 500,
+    stock: 170,
+    image_url: "https://placehold.co/400x600",
+    type: "SERVICE",
+    category: {
+      name: "Bumbu Masak",
+      code: "bmbmsk",
+    },
+    barcode: "0012345678",
+    is_active: false,
   },
   {
-    title: "Bur",
-    price: 5000,
-    image: "https://placehold.co/400x600",
+    sku: "burger",
+    name: "Burger Biasa",
+    selling_retail_price: 15000,
+    selling_price: 15000,
+    discount_price: 0,
+    stock: null,
+    image_url: "https://placehold.co/400x600",
+    type: "FOODS",
+    category: {
+      name: "Makanan",
+      code: "mkn",
+    },
+    barcode: null,
+    is_active: false,
   },
   {
-    title: "Ger",
-    price: 5000,
-    image: "https://placehold.co/400x600",
+    sku: "burgerblng",
+    name: "Burger Blenger",
+    selling_retail_price: 25000,
+    selling_price: 22000,
+    discount_price: 3000,
+    stock: null,
+    image_url: "https://placehold.co/400x600",
+    type: "FOODS",
+    category: {
+      name: "Makanan",
+      code: "mkn",
+    },
+    barcode: null,
+    is_active: false,
   },
   {
-    title: "Burgergerbur",
-    price: 40000,
-    image: "https://placehold.co/400x600",
+    sku: "blrd1",
+    name: "Meja Billiard 1",
+    selling_retail_price: 25000,
+    selling_price: 25000,
+    discount_price: 0,
+    stock: null,
+    image_url: "https://placehold.co/400x600",
+    type: "SERVICE TIME",
+    category: {
+      name: "Hiburan",
+      code: "hbrn",
+    },
+    barcode: null,
+    is_active: false,
   },
   {
-    title: "Burbur",
-    price: 12000,
-    image: "https://placehold.co/400x600",
+    sku: "blrd2",
+    name: "Meja Billiard 2",
+    selling_retail_price: 25000,
+    selling_price: 25000,
+    discount_price: 0,
+    stock: null,
+    image_url: "https://placehold.co/400x600",
+    type: "SERVICE TIME",
+    category: {
+      name: "Hiburan",
+      code: "hbrn",
+    },
+    barcode: null,
+    is_active: false,
   },
   {
-    title: "Gerger",
-    price: 15000,
-    image: "https://placehold.co/400x600",
+    sku: "blrd3",
+    name: "Meja Billiard 3",
+    selling_retail_price: 25000,
+    selling_price: 25000,
+    discount_price: 0,
+    stock: null,
+    image_url: "https://placehold.co/400x600",
+    type: "SERVICE TIME",
+    category: {
+      name: "Hiburan",
+      code: "hbrn",
+    },
+    barcode: null,
+    is_active: false,
   },
   {
-    title: "Burger2",
-    price: 10000,
-    image: "https://placehold.co/400x600",
+    sku: "blrd4",
+    name: "Meja Billiard 4",
+    selling_retail_price: 25000,
+    selling_price: 25000,
+    discount_price: 0,
+    stock: null,
+    image_url: "https://placehold.co/400x600",
+    type: "SERVICE TIME",
+    category: {
+      name: "Hiburan",
+      code: "hbrn",
+    },
+    barcode: null,
+    is_active: false,
   },
-  {
-    title: "Bur2",
-    price: 5000,
-    image: "https://placehold.co/400x600",
-  },
-  {
-    title: "Ger2",
-    price: 5000,
-    image: "https://placehold.co/400x600",
-  },
-  {
-    title: "Burgergerbur2",
-    price: 40000,
-    image: "https://placehold.co/400x600",
-  },
-  {
-    title: "Burbur2",
-    price: 12000,
-    image: "https://placehold.co/400x600",
-  },
-  {
-    title: "Gerger2",
-    price: 15000,
-    image: "https://placehold.co/400x600",
-  },
-];
+]);
 
 const cart = useCart();
 const page = usePage();
 
-onMounted(() => {
-  // axios
-  //   .get(
-  //     `${process.env.VUE_APP_API_BASE_URL}/api/products/categories/?shop_id=jR`,
-  //     {
-  //       headers: {
-  //         Authorization:
-  //           "Bearer 3|s0dwew6GRzItmuO7UeS19OwUq3lqrdLd4tFpKpHP2d161795",
-  //       },
-  //     }
-  //   )
-  //   .then((res) => {
-  //     categories.value = res.data.data;
-  //   });
+onMounted(async () => {
+  // await fetchCategories();
+  // await fetchProducts();
 });
+
+const fetchCategories = async () => {
+  const response = await axios.get(
+    `${process.env.VUE_APP_API_BASE_URL}/api/products/categories/?shop_id=jR`,
+    {
+      headers: {
+        Authorization:
+          "Bearer 4|4siEWSE2M303WFjOSBcKVNn3BxNfsdzkRWSVu0Zz7608ce4d",
+      },
+    }
+  );
+
+  categories.value = response.data.data;
+};
+
+const fetchProducts = async () => {
+  const response = await axios.get(
+    `${process.env.VUE_APP_API_BASE_URL}/api/products/?shop_id=jR`,
+    {
+      headers: {
+        Authorization:
+          "Bearer 4|4siEWSE2M303WFjOSBcKVNn3BxNfsdzkRWSVu0Zz7608ce4d",
+      },
+    }
+  );
+
+  products.value = response.data.data;
+};
 </script>

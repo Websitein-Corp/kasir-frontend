@@ -16,7 +16,7 @@
       class="h-full flex flex-col items-center justify-center space-y-4"
     >
       <div class="w-1/3">
-        <img src="../../../assets/images/emptyCart.png" alt="emptyCart.png" />
+        <img src="@/assets/images/emptyCart.png" alt="emptyCart.png" />
       </div>
       <div class="text-slate-500 text-center">
         Keranjang kosong, tambahkan barang untuk lanjut

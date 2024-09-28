@@ -11,11 +11,12 @@
         Keranjang kosong, tambahkan barang untuk lanjut
       </div>
     </div>
-    <div v-for="item in cart.items" :key="item.name" class="w-full">
+    <div v-for="item in cart.items" :key="item.sku" class="w-full">
       <SummaryCard
-        :title="item.name"
-        :price="item.price"
-        :image="item.image"
+        :sku="item.sku"
+        :name="item.name"
+        :selling-price="item.selling_price"
+        :image-url="item.image_url"
         :amount="item.amount"
       />
     </div>

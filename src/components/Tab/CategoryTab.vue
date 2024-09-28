@@ -21,16 +21,7 @@ import { ref } from "vue";
 const props = defineProps({
   items: {
     type: Array,
-    default: () => [
-      {
-        name: "Burger",
-        code: "brg",
-      },
-      {
-        name: "Hotdog",
-        code: "htdg",
-      },
-    ],
+    default: () => [],
   },
 });
 

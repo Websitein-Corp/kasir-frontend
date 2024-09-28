@@ -8,26 +8,26 @@
       @click="
         () => {
           watchAmount = true;
-          cart.getItem(title)
-            ? cart.increment(title)
-            : cart.add(title, price, image);
+          cart.getItem(sku)
+            ? cart.increment(sku)
+            : cart.add(sku, name, sellingPrice, imageUrl);
         }
       "
     />
     <div class="h-40 md:h-64">
       <img
-        v-lazy="{ src: image, loading: './img/imageLoading.svg' }"
+        v-lazy="{ src: imageUrl, loading: './img/imageLoading.svg' }"
         class="w-full h-full object-cover rounded-lg"
       />
     </div>
     <div class="space-y-2">
       <div class="font-bold text-lg md:text-2xl">
-        {{ title }}
+        {{ name }}
       </div>
       <div class="text-slate-500 text-xs md:text-base">
-        {{ $helpers.money(price) }}
+        {{ $helpers.money(sellingPrice) }}
       </div>
-      <div class="pt-2 block md:hidden">
+      <div class="pt-2 block lg:hidden">
         <NumberInput
           v-model="amount"
           @update:model-value="watchAmount = true"
@@ -35,10 +35,10 @@
       </div>
     </div>
     <div
-      v-if="cart.getItem(title)"
+      v-if="cart.getItem(sku)"
       class="absolute bottom-3 right-4 font-bold text-xl hidden lg:block"
     >
-      {{ cart.getItem(title).amount }}x
+      {{ cart.getItem(sku).amount }}x
     </div>
   </div>
 </template>
@@ -49,15 +49,19 @@ import { ref, watch } from "vue";
 import useCart from "@/stores/useCart";
 
 const props = defineProps({
-  title: {
+  sku: {
     type: String,
     default: "",
   },
-  price: {
+  name: {
+    type: String,
+    default: "",
+  },
+  sellingPrice: {
     type: Number,
     default: 0,
   },
-  image: {
+  imageUrl: {
     type: String,
     default: "",
   },
@@ -79,12 +83,12 @@ const watchAmount = ref(false);
 watch(amount, (newVal, oldVal) => {
   if (watchAmount.value) {
     if (oldVal === 0 && newVal === 1) {
-      cart.add(props.title, props.price, props.image);
+      cart.add(props.sku, props.name, props.sellingPrice, props.imageUrl);
     }
     if (oldVal === 1 && newVal === 0) {
-      cart.clear(props.title);
+      cart.clear(props.sku);
     } else {
-      const item = cart.getItem(props.title);
+      const item = cart.getItem(props.sku);
 
       if (item) {
         item.amount = amount.value;
@@ -99,11 +103,11 @@ watch(amount, (newVal, oldVal) => {
 watch(
   () => cart.items,
   () => {
-    const item = cart.getItem(props.title);
+    const item = cart.getItem(props.sku);
 
     if (item) {
       if (item.amount === 0) {
-        cart.clear(props.title);
+        cart.clear(props.sku);
       } else {
         amount.value = item.amount;
       }

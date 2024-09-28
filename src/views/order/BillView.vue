@@ -124,14 +124,16 @@ const props = defineProps({
     type: Array,
     default: () => [
       {
+        sku: "br",
         name: "Bur",
         amount: 2,
-        price: 10000,
+        selling_price: 10000,
       },
       {
+        sku: "gr",
         name: "Ger",
         amount: 1,
-        price: 15000,
+        selling_price: 15000,
       },
     ],
   },

@@ -9,7 +9,10 @@ export default defineStore("cart", {
   getters: {
     sum: (state) =>
       state.items.length > 0
-        ? state.items.reduce((sum, val) => sum + val.price * val.amount, 0)
+        ? state.items.reduce(
+            (sum, val) => sum + val.selling_price * val.amount,
+            0
+          )
         : 0,
 
     amount: (state) =>
@@ -30,39 +33,40 @@ export default defineStore("cart", {
       this.items = [];
     },
 
-    clear(name) {
-      this.items.splice(this.items.map((item) => item.name).indexOf(name), 1);
+    clear(sku) {
+      this.items.splice(this.items.map((item) => item.sku).indexOf(sku), 1);
     },
 
-    add(name, price, image) {
+    add(sku, name, price, image) {
       if (!this.items.find((item) => item.name === name)) {
         this.items.push({
-          name: name,
-          price: price,
-          image: image,
+          sku,
+          name,
+          selling_price: price,
+          image_url: image,
           amount: 1,
         });
       }
     },
 
-    has(name) {
-      return this.items.map((item) => item.name).includes(name);
+    has(sku) {
+      return this.items.map((item) => item.sku).includes(sku);
     },
 
-    getItem(name) {
-      return this.items.find((item) => item.name === name);
+    getItem(sku) {
+      return this.items.find((item) => item.sku === sku);
     },
 
-    setItem(name, attr, value) {
-      this.items.find((item) => item.name === name)[attr] = value;
+    setItem(sku, attr, value) {
+      this.items.find((item) => item.sku === sku)[attr] = value;
     },
 
-    increment(name) {
-      this.items.find((item) => item.name === name).amount++;
+    increment(sku) {
+      this.items.find((item) => item.sku === sku).amount++;
     },
 
-    decrement(name) {
-      this.items.find((item) => item.name === name).amount--;
+    decrement(sku) {
+      this.items.find((item) => item.sku === sku).amount--;
     },
   },
 });

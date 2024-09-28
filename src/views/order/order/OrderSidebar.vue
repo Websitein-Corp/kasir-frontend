@@ -16,7 +16,7 @@
       class="h-full flex flex-col items-center justify-center space-y-4"
     >
       <div class="w-1/3">
-        <img src="../../../assets/images/emptyCart.png" alt="emptyCart.png" />
+        <img src="@/assets/images/emptyCart.png" alt="emptyCart.png" />
       </div>
       <div class="text-slate-500 text-center">
         Tekan barang untuk memasukkan ke dalam keranjang
@@ -25,9 +25,10 @@
     <div v-else class="space-y-2">
       <SummaryCard
         v-for="item in cart.items"
-        :key="item.name"
-        :title="item.name"
-        :price="item.price"
+        :key="item.sku"
+        :sku="item.sku"
+        :name="item.name"
+        :selling-price="item.selling_price"
         :amount="item.amount"
       />
     </div>
