@@ -1,6 +1,7 @@
 <template>
   <div class="relative group/container mx-2 h-20">
-    <router-link
+    <component
+      :is="submenus.length > 0 ? 'span' : 'router-link'"
       :to="endpoint"
       class="w-full group/menu px-2 space-y-1 cursor-pointer"
     >
@@ -15,10 +16,10 @@
         </div>
       </div>
       <div class="w-full text-center text-xs text-gray-800">{{ label }}</div>
-    </router-link>
+    </component>
     <div
       v-if="submenus.length > 0"
-      class="absolute top-1/3 left-20 rounded-lg bg-primary-100 w-44 opacity-0 -z-50 group-hover/container:z-50 group-hover/container:opacity-100 group-hover/container:translate-x-2 overflow-hidden transition-all -delay-500"
+      class="absolute top-1/3 left-20 rounded-lg bg-primary-100 w-44 opacity-0 z-50 pointer-events-none group-hover/container:pointer-events-auto group-hover/container:opacity-100 group-hover/container:translate-x-1 overflow-hidden transition-all"
     >
       <template v-for="(submenu, index) in submenus" :key="index">
         <div

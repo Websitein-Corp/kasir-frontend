@@ -5,7 +5,8 @@
       :type="type"
       :name="name"
       :placeholder="placeholder"
-      class="peer w-full border-b placeholder:text-transparent p-2 focus:outline-none focus:ring-2 focus:ring-primary-600"
+      :value="modelValue"
+      class="peer w-full border-b rounded-lg placeholder:text-transparent p-4 focus:outline-none focus:ring-2 focus:ring-primary-600 transition-all"
       @input="$emit('update:modelValue', $event.target.value)"
     />
     <label
