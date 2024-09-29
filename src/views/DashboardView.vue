@@ -163,7 +163,7 @@
         </template>
       </StatsCard>
     </div>
-    <div class="flex space-x-2 mt-8">
+    <div class="flex space-2 flex-col md:flex-row mt-8">
       <div class="w-full">
         <LineChart
           ref="lineRef"
