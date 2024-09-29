@@ -8,6 +8,7 @@ import helpers from "./helpers";
 import VueVirtualScroller from "vue-virtual-scroller";
 import "vue-virtual-scroller/dist/vue-virtual-scroller.css";
 import VueLazyLoad from "vue3-lazyload";
+import "@vuepic/vue-datepicker/dist/main.css";
 
 const pinia = createPinia();
 
