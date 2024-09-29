@@ -28,7 +28,7 @@
         :type="product.type"
         :selling-price="product.selling_price"
         :image-url="product.image_url"
-        :selected="cart.has(product.name)"
+        :selected="cart.has(product.sku)"
       />
     </div>
   </div>

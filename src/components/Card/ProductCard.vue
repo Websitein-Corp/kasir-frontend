@@ -1,7 +1,7 @@
 <template>
   <div
     class="h-full rounded-lg p-4 lg:p-8 space-y-4 lg:space-y-8 shadow-xl cursor-pointer relative"
-    :class="{ 'border-2 border-primary-800': selected }"
+    :class="{ '!border-2 !border-primary-800': selected }"
   >
     <div
       class="absolute top-0 left-0 w-full h-full z-10 hidden lg:block"
