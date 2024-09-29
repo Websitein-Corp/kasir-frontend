@@ -11,7 +11,7 @@
       <Minus class="h-4 md:h-fit" />
     </button>
     <input
-      class="text-xs lg:text-xl py-1 w-12 md:w-16 text-center border-x-2 border-primary-700 hover:bg-slate-100 transition-all outline-none"
+      class="text-xs lg:text-xl py-2 w-12 md:w-16 text-center border-x-2 border-primary-700 hover:bg-slate-100 transition-all outline-none"
       :class="{
         'text-slate-400': disabled,
       }"

@@ -1,6 +1,6 @@
 <template>
   <div
-    class="h-80 md:h-fit rounded-lg p-4 lg:p-8 space-y-4 lg:space-y-8 shadow-xl cursor-pointer relative"
+    class="h-full rounded-lg p-4 lg:p-8 space-y-4 lg:space-y-8 shadow-xl cursor-pointer relative"
     :class="{ 'border-2 border-primary-800': selected }"
   >
     <div
@@ -9,8 +9,8 @@
         () => {
           watchAmount = true;
           cart.getItem(sku)
-            ? cart.increment(sku)
-            : cart.add(sku, name, sellingPrice, imageUrl);
+            ? type !== 'SERVICE TIME' && cart.increment(sku)
+            : cart.add(sku, name, type, sellingPrice, imageUrl);
         }
       "
     />
@@ -20,7 +20,7 @@
         class="w-full h-full object-cover rounded-lg"
       />
     </div>
-    <div class="space-y-2">
+    <div class="space-y-2 flex flex-col justify-between">
       <div class="font-bold text-lg md:text-2xl">
         {{ name }}
       </div>
@@ -38,7 +38,10 @@
       v-if="cart.getItem(sku)"
       class="absolute bottom-3 right-4 font-bold text-xl hidden lg:block"
     >
-      {{ cart.getItem(sku).amount }}x
+      <span v-if="cart.getItem(sku).type === 'SERVICE TIME'">
+        <CalendarClock />
+      </span>
+      <span v-else>{{ cart.getItem(sku).amount }}x</span>
     </div>
   </div>
 </template>
@@ -47,6 +50,7 @@
 import NumberInput from "@/components/Input/NumberInput.vue";
 import { ref, watch } from "vue";
 import useCart from "@/stores/useCart";
+import { CalendarClock } from "lucide-vue-next";
 
 const props = defineProps({
   sku: {
@@ -54,6 +58,10 @@ const props = defineProps({
     default: "",
   },
   name: {
+    type: String,
+    default: "",
+  },
+  type: {
     type: String,
     default: "",
   },
@@ -83,7 +91,13 @@ const watchAmount = ref(false);
 watch(amount, (newVal, oldVal) => {
   if (watchAmount.value) {
     if (oldVal === 0 && newVal === 1) {
-      cart.add(props.sku, props.name, props.sellingPrice, props.imageUrl);
+      cart.add(
+        props.sku,
+        props.name,
+        props.type,
+        props.sellingPrice,
+        props.imageUrl
+      );
     }
     if (oldVal === 1 && newVal === 0) {
       cart.clear(props.sku);

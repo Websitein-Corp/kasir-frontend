@@ -5,7 +5,7 @@
       class="h-full flex flex-col items-center justify-center space-y-4 mt-24"
     >
       <div class="w-1/5">
-        <img src="../../../assets/images/emptyCart.png" alt="emptyCart.png" />
+        <img src="@/assets/images/emptyCart.png" alt="emptyCart.png" />
       </div>
       <div class="text-slate-500 text-center">
         Keranjang kosong, tambahkan barang untuk lanjut
@@ -15,9 +15,12 @@
       <SummaryCard
         :sku="item.sku"
         :name="item.name"
+        :type="item.type"
         :selling-price="item.selling_price"
         :image-url="item.image_url"
         :amount="item.amount"
+        :service-start="item.service_start"
+        :service-end="item.service_end"
       />
     </div>
     <div

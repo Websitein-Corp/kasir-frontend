@@ -1,4 +1,5 @@
 import { defineStore } from "pinia";
+import helpers from "@/helpers";
 
 export default defineStore("cart", {
   state: () => ({
@@ -7,17 +8,25 @@ export default defineStore("cart", {
     totalPaid: 0,
   }),
   getters: {
-    sum: (state) =>
-      state.items.length > 0
+    sum: (state) => {
+      return state.items.length > 0
         ? state.items.reduce(
-            (sum, val) => sum + val.selling_price * val.amount,
+            (sum, val) =>
+              sum +
+              val.selling_price *
+                (val.amount ||
+                  helpers.getHourDifference(
+                    val.service_start,
+                    val.service_end
+                  )),
             0
           )
-        : 0,
+        : 0;
+    },
 
     amount: (state) =>
       state.items.length > 0
-        ? state.items.reduce((sum, val) => sum + val.amount, 0)
+        ? state.items.reduce((sum, val) => sum + (val.amount || 1), 0)
         : 0,
 
     tax() {
@@ -37,14 +46,21 @@ export default defineStore("cart", {
       this.items.splice(this.items.map((item) => item.sku).indexOf(sku), 1);
     },
 
-    add(sku, name, price, image) {
-      if (!this.items.find((item) => item.name === name)) {
+    add(sku, name, type, price, image) {
+      if (!this.getItem(sku)) {
         this.items.push({
           sku,
           name,
+          type,
           selling_price: price,
           image_url: image,
-          amount: 1,
+          amount: type === "SERVICE TIME" ? null : 1,
+          service_start:
+            type === "SERVICE TIME" ? helpers.formatDate(new Date()) : null,
+          service_end:
+            type === "SERVICE TIME"
+              ? helpers.formatDate(new Date(new Date().getTime() + 3600000))
+              : null,
         });
       }
     },
@@ -58,15 +74,24 @@ export default defineStore("cart", {
     },
 
     setItem(sku, attr, value) {
-      this.items.find((item) => item.sku === sku)[attr] = value;
+      this.getItem(sku)[attr] = value;
     },
 
     increment(sku) {
-      this.items.find((item) => item.sku === sku).amount++;
+      this.getItem(sku).amount++;
     },
 
     decrement(sku) {
-      this.items.find((item) => item.sku === sku).amount--;
+      this.getItem(sku).amount--;
+    },
+
+    setServiceTime(sku, serviceRange) {
+      const [startString, endString] = serviceRange;
+      const serviceStart = helpers.formatDate(startString);
+      const serviceEnd = helpers.formatDate(endString);
+
+      this.getItem(sku).service_start = serviceStart;
+      this.getItem(sku).service_end = serviceEnd;
     },
   },
 });
