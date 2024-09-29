@@ -78,14 +78,14 @@
           </div>
 
           <p
-            class="text-primary-700 text-center py-2 cursor-pointer"
+            class="text-primary-700 text-center py-2 cursor-pointer underline"
             @click="toggleForgotPassword"
           >
             {{ isForgotPassword ? "Login" : "Forgot password?" }}
           </p>
 
           <button
-            class="bg-primary-700 rounded-md text-xl text-white w-3/4 px-8 py-2 mx-auto"
+            class="bg-primary-700 hover:bg-primary-600 rounded-md text-xl text-white w-full px-8 py-2 mx-auto"
             @click="formAction"
           >
             {{ isForgotPassword ? "Send" : "Login" }}
