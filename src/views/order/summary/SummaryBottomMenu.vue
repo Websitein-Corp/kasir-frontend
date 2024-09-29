@@ -65,7 +65,7 @@ watch(
       modal.icon = Receipt;
       modal.body = CashBody;
 
-      //await fetchPaymentMethods();
+      await fetchPaymentMethods();
     }
   }
 );
@@ -75,8 +75,7 @@ const fetchPaymentMethods = async () => {
     `${process.env.VUE_APP_API_BASE_URL}/api/checkout/methods`,
     {
       headers: {
-        Authorization:
-          "Bearer 4|4siEWSE2M303WFjOSBcKVNn3BxNfsdzkRWSVu0Zz7608ce4d",
+        Authorization: `Bearer ${localStorage.getItem("auth_token")}`,
       },
     }
   );

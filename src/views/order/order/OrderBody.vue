@@ -192,17 +192,16 @@ const cart = useCart();
 const page = usePage();
 
 onMounted(async () => {
-  // await fetchCategories();
-  // await fetchProducts();
+  await fetchCategories();
+  await fetchProducts();
 });
 
 const fetchCategories = async () => {
   const response = await axios.get(
-    `${process.env.VUE_APP_API_BASE_URL}/api/products/categories/?shop_id=jR`,
+    `${process.env.VUE_APP_API_BASE_URL}/api/products/categories/?shop_id=76L1`,
     {
       headers: {
-        Authorization:
-          "Bearer 4|4siEWSE2M303WFjOSBcKVNn3BxNfsdzkRWSVu0Zz7608ce4d",
+        Authorization: `Bearer ${localStorage.getItem("auth_token")}`,
       },
     }
   );
@@ -212,11 +211,10 @@ const fetchCategories = async () => {
 
 const fetchProducts = async () => {
   const response = await axios.get(
-    `${process.env.VUE_APP_API_BASE_URL}/api/products/?shop_id=jR`,
+    `${process.env.VUE_APP_API_BASE_URL}/api/products/?shop_id=76L1`,
     {
       headers: {
-        Authorization:
-          "Bearer 4|4siEWSE2M303WFjOSBcKVNn3BxNfsdzkRWSVu0Zz7608ce4d",
+        Authorization: `Bearer ${localStorage.getItem("auth_token")}`,
       },
     }
   );
