@@ -164,21 +164,175 @@
       </StatsCard>
     </div>
     <div class="flex space-x-2 mt-8">
-      <div class="bg-primary-500 h-56 w-56 rounded-md">TOTAL PENDAPATAN</div>
-      <div class="bg-primary-500 h-56 w-56 rounded-md">Order by Category</div>
+      <div class="w-full">
+        <LineChart
+          ref="lineRef"
+          :chart-data="lineChartData"
+          :options="lineChartOptions"
+        />
+      </div>
+      <div class="w-full">
+        <DoughnutChart
+          ref="doughnutRef"
+          :chart-data="doughnutChart"
+          :options="doughbutChartOptions"
+        />
+      </div>
     </div>
-    <div class="mt-8">Order History</div>
+    <DashboardCard
+      pageTitle="Order History"
+      pageSubTitle="Orders that have been done recently"
+      class="mt-8"
+    >
+      <DashboardTable
+        :pageLength="10"
+        :need-pagination="false"
+        v-model:activePage="currentPage"
+      >
+        <template v-slot:thead>
+          <tr>
+            <th>Order Number</th>
+            <th>Type</th>
+            <th>Revenue</th>
+          </tr>
+        </template>
+        <template v-slot:tbody>
+          <tr v-for="(item, index) in items" :key="index">
+            <td>{{ item.orderNumber }}</td>
+            <td>{{ item.type }}</td>
+            <td>{{ item.revenue }}</td>
+          </tr>
+        </template>
+      </DashboardTable>
+    </DashboardCard>
   </div>
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref, computed, watch } from "vue";
+import { DoughnutChart, LineChart } from "vue-chart-3";
 import StatsCard from "@/components/Dashboard/StatsCard.vue";
+import DashboardCard from "@/components/Card/DashboardCard.vue";
+import DashboardTable from "@/components/Table/DashboardTable.vue";
+
+import {
+  Chart,
+  DoughnutController,
+  ArcElement,
+  LineController,
+  LineElement,
+  PointElement,
+  Tooltip,
+  Legend,
+  CategoryScale,
+  LinearScale,
+  Title,
+} from "chart.js";
+
+Chart.register(
+  DoughnutController,
+  ArcElement,
+  LineController,
+  LineElement,
+  PointElement,
+  Tooltip,
+  Legend,
+  CategoryScale,
+  LinearScale,
+  Title
+);
 
 const frequencies = ref(["Harian", "Mingguan", "Bulanan", "Tahunan"]);
 const selectedFrequency = ref("Harian");
 
+const data = ref([30, 40, 60, 70, 5]);
+const doughnutRef = ref();
+const lineRef = ref();
+
+const items = Array(10).fill({
+  orderNumber: "12345789",
+  type: "Food",
+  revenue: "Rp. 30.000",
+});
+
+const doughbutChartOptions = ref({
+  responsive: true,
+  plugins: {
+    legend: {
+      position: "top",
+    },
+    title: {
+      display: true,
+      text: "Chart.js Doughnut Chart",
+      font: {
+        size: 16,
+      },
+    },
+  },
+});
+
+const doughnutChart = computed(() => ({
+  labels: ["Paris", "Nîmes", "Toulon", "Perpignan", "Autre"],
+  datasets: [
+    {
+      data: data.value,
+      backgroundColor: ["#77CEFF", "#0079AF", "#123E6B", "#97B0C4", "#A5C8ED"],
+    },
+  ],
+}));
+
+const lineChartData = ref({
+  labels: ["January", "February", "March", "April", "May", "June", "July"],
+  datasets: [
+    {
+      label: "Orders Over Time",
+      backgroundColor: "rgba(75, 192, 192, 0.2)",
+      borderColor: "rgba(75, 192, 192, 1)",
+      data: [65, 59, 80, 81, 56, 55, 40],
+      fill: true,
+    },
+    {
+      label: "Revenue Over Time",
+      backgroundColor: "rgba(153, 102, 255, 0.2)",
+      borderColor: "rgba(153, 102, 255, 1)",
+      data: [80, 70, 90, 100, 60, 50, 75],
+      fill: true,
+    },
+  ],
+});
+const lineChartOptions = ref({
+  responsive: true,
+  plugins: {
+    legend: { position: "top" },
+    title: {
+      display: true,
+      text: "Orders and Revenue Over Time",
+      font: {
+        size: 16,
+      },
+    },
+  },
+  scales: {
+    x: {
+      title: { display: true, text: "Months" },
+    },
+    y: {
+      title: { display: true, text: "Values" },
+      beginAtZero: true,
+    },
+  },
+});
+
 const selectFrequency = (frequency) => {
   selectedFrequency.value = frequency;
 };
+
+watch(data, () => {
+  if (doughnutRef.value) {
+    doughnutRef.value.update();
+  }
+  if (lineRef.value) {
+    lineRef.value.update();
+  }
+});
 </script>
