@@ -23,6 +23,12 @@ const routes = [
     name: "table",
     component: TableView,
   },
+  {
+    path: "/login",
+    name: "login",
+    component: () =>
+      import(/* webpackChunkName: "login" */ "../views/LoginView.vue"),
+  },
 ];
 
 const router = createRouter({
