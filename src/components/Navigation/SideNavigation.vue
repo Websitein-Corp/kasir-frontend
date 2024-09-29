@@ -1,5 +1,5 @@
 <template>
-  <div class="absolute z-30 top-0 left-5 p-2 mt-3">
+  <div class="fixed z-30 top-0 left-5 p-2 mt-3">
     <Menu
       class="w-10 h-10 cursor-pointer transition-all"
       :class="{
@@ -16,7 +16,7 @@
     }"
   ></div>
   <div
-    class="absolute transition-all"
+    class="fixed transition-all"
     :class="{
       'w-[100px] opacity-100': isOpened,
       'w-0 opacity-0': !isOpened,
