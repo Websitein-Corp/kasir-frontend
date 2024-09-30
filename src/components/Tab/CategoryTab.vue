@@ -1,10 +1,6 @@
 <template>
   <div
-    class="bg-slate-100 lg:w-fit flex flex-grow p-2 rounded gap-4 text-xs lg:text-base overflow-auto whitespace-nowrap transition-all"
-    :class="{
-      'w-full': !page.navIsOpened,
-      'w-64': page.navIsOpened,
-    }"
+    class="bg-slate-100 w-full lg:w-fit flex flex-grow p-2 rounded gap-4 text-xs lg:text-base overflow-auto whitespace-nowrap transition-all"
   >
     <div
       v-for="item in items"

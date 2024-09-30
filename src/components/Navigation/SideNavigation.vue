@@ -12,8 +12,8 @@
   <div
     class="shrink-0 transition-all"
     :class="{
-      'w-[100px]': page.navIsOpened,
-      'w-0': !page.navIsOpened,
+      'lg:w-[100px]': page.navIsOpened,
+      'lg:w-0': !page.navIsOpened,
     }"
   ></div>
   <div
