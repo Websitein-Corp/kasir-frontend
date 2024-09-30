@@ -1,5 +1,5 @@
 <template>
-  <div class="p-4 px-8">
+  <div class="p-4 lg:px-8">
     <CategoryTab
       :items="categories"
       @tab-change="(category) => (currentCategory = category)"
