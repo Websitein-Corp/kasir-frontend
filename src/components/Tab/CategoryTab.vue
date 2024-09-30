@@ -31,6 +31,6 @@ const currentTab = ref(props.items[0].code);
 
 const onTabChange = (tab) => {
   currentTab.value = tab;
-  emit("tabChange");
+  emit("tabChange", tab);
 };
 </script>

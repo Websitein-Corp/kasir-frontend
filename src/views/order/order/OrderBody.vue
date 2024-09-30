@@ -1,6 +1,9 @@
 <template>
   <div class="p-4 px-8">
-    <CategoryTab :items="categories" />
+    <CategoryTab
+      :items="categories"
+      @tab-change="(category) => (currentCategory = category)"
+    />
   </div>
   <div class="w-full grid grid-cols-2 xl:grid-cols-3 gap-2 lg:gap-4">
     <!--    <RecycleScroller-->
@@ -21,7 +24,11 @@
     <!--        />-->
     <!--      </div>-->
     <!--    </RecycleScroller>-->
-    <div v-for="product in products" :key="product.sku" class="col-span-1">
+    <div
+      v-for="product in filteredProducts()"
+      :key="product.sku"
+      class="col-span-1"
+    >
       <ProductCard
         :sku="product.sku"
         :name="product.name"
@@ -64,12 +71,20 @@ import axios from "axios";
 
 const categories = ref([
   {
-    name: "Burger",
-    code: "brg",
+    name: "All",
+    code: "",
   },
   {
-    name: "Hotdog",
-    code: "htdg",
+    name: "Bumbu Masak",
+    code: "bmbmsk",
+  },
+  {
+    name: "Makanan",
+    code: "mkn",
+  },
+  {
+    name: "Hiburan",
+    code: "hbrn",
   },
 ]);
 
@@ -188,6 +203,8 @@ const products = ref([
   },
 ]);
 
+const currentCategory = ref("");
+
 const cart = useCart();
 const page = usePage();
 
@@ -220,5 +237,15 @@ const fetchProducts = async () => {
   );
 
   products.value = response.data.data;
+};
+
+const filteredProducts = () => {
+  if (currentCategory.value) {
+    return products.value.filter((product) => {
+      return product.category.code === currentCategory.value;
+    });
+  }
+
+  return products.value;
 };
 </script>
