@@ -220,6 +220,7 @@ const fetchCategories = async () => {
       headers: {
         Authorization: `Bearer ${localStorage.getItem("auth_token")}`,
       },
+      withCredentials: true,
     }
   );
 
@@ -233,6 +234,7 @@ const fetchProducts = async () => {
       headers: {
         Authorization: `Bearer ${localStorage.getItem("auth_token")}`,
       },
+      withCredentials: true,
     }
   );
 
