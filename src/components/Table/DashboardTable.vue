@@ -1,7 +1,7 @@
 <template>
   <div class="dtable-header space-y-5">
     <slot name="action-1"></slot>
-    <div class="flex justify-between">
+    <div class="flex justify-between my-6">
       <slot name="action-2"></slot>
       <slot name="action-3"></slot>
     </div>
@@ -16,52 +16,34 @@
       </tbody>
     </table>
   </div>
-  <div class="dtable-footer flex justify-end">
+  <div v-if="table.page.links" class="dtable-footer flex justify-end mt-6">
     <div class="page-nav space-x-2">
-      <button :disabled="activePage === 1" @click="changePage(activePage - 1)">
-        Previous
-      </button>
-      <button
-        v-for="page in pageLength"
-        :key="page"
-        class="px-3 py-1 rounded"
-        :class="{
-          'bg-primary-700 text-white': activePage === page, // Active page
-          'text-primary-700': activePage !== page, // Inactive pages
-        }"
-        @click="changePage(page)"
-      >
-        {{ page }}
-      </button>
-      <button
-        :disabled="activePage === pageLength"
-        @click="changePage(activePage + 1)"
-      >
-        Next
-      </button>
+      <template v-for="(link, key) in table.page.links" v-bind:key="key">
+        <button
+          v-if="!link.url"
+          class="px-3 py-1 rounded bg-primary-700 text-white"
+          disabled
+        >
+          {{ table.page.link.label }}
+        </button>
+        <button
+          v-else
+          class="px-3 py-1 rounded text-primary-700"
+          :disabled="table.page.current === 1"
+        >
+          <RouterLink :to="link.url">
+            {{ link.label }}
+          </RouterLink>
+        </button>
+      </template>
     </div>
   </div>
 </template>
 
 <script setup>
-import { computed } from "vue";
+import useTable from "@/stores/useTable";
 
-const props = defineProps({
-  pageLength: {
-    type: Number,
-    default: 1,
-  },
-  activePage: {
-    type: Number,
-    default: 1,
-  },
-});
-
-const emit = defineEmits(["update:activePage"]);
-
-const changePage = (page) => {
-  emit("update:activePage", page);
-};
+const table = useTable();
 </script>
 
 <style>
