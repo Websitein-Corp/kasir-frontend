@@ -1,5 +1,4 @@
 import { createRouter, createWebHistory } from "vue-router";
-import TableView from "@/views/TableView.vue";
 
 const routes = [
   {
