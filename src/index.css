@@ -54,3 +54,13 @@
 .slide-fade-left-leave-from {
     transform: translate(0%, 0%)
 }
+
+
+.no-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+
+.no-scrollbar {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+}
