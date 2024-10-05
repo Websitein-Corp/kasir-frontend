@@ -60,14 +60,14 @@
           </div>
 
           <div class="flex flex-col mt-4 w-full">
-            <CustomInput
+            <TextInput
               v-model="email"
               name="email"
               type="email"
               label="EMAIL"
               placeholder="Enter your email"
             />
-            <CustomInput
+            <TextInput
               v-if="!isForgotPassword"
               v-model="password"
               name="password"
@@ -100,8 +100,8 @@
 import { defineAsyncComponent, ref } from "vue";
 import axios from "axios";
 
-const CustomInput = defineAsyncComponent(() =>
-  import("@/components/CustomInput/CustomInput.vue")
+const TextInput = defineAsyncComponent(() =>
+  import("@/components/Input/TextInput.vue")
 );
 
 const email = ref("");
