@@ -215,7 +215,7 @@ onMounted(async () => {
 
 const fetchCategories = async () => {
   const response = await axios.get(
-    `${process.env.VUE_APP_API_BASE_URL}/api/products/categories/?shop_id=76L1`,
+    `${process.env.VUE_APP_API_BASE_URL}/api/products/categories?shop_id=76L1`,
     {
       headers: {
         Authorization: `Bearer ${localStorage.getItem("auth_token")}`,
@@ -229,7 +229,7 @@ const fetchCategories = async () => {
 
 const fetchProducts = async () => {
   const response = await axios.get(
-    `${process.env.VUE_APP_API_BASE_URL}/api/products/?shop_id=76L1`,
+    `${process.env.VUE_APP_API_BASE_URL}/api/products?shop_id=76L1`,
     {
       headers: {
         Authorization: `Bearer ${localStorage.getItem("auth_token")}`,
