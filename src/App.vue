@@ -3,7 +3,7 @@
     <SideNavigation />
     <ModalPopup />
     <ToastAlert />
-    <div class="w-full h-screen shrink m-8 overflow-hidden">
+    <div class="w-full h-screen shrink overflow-hidden">
       <router-view />
     </div>
   </div>
