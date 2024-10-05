@@ -30,7 +30,7 @@
 </template>
 
 <script setup>
-import { onMounted, ref, watch } from "vue";
+import { onMounted, watch } from "vue";
 
 import DashboardTable from "@/components/Table/DashboardTable.vue";
 import PageContainer from "@/views/PageContainer.vue";

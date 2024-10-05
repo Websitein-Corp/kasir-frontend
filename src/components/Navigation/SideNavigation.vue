@@ -69,7 +69,6 @@ import {
   Menu,
 } from "lucide-vue-next";
 import NavigationMenu from "@/components/Navigation/NavigationMenu.vue";
-import { ref } from "vue";
 import usePage from "@/stores/usePage";
 
 const menus = [
