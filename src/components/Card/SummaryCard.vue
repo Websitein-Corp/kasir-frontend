@@ -19,6 +19,8 @@
           v-if="type === 'SERVICE TIME'"
           v-model="serviceRange"
           :disabled="page.order.step === 2"
+          range
+          time-picker
         />
         <NumberInput
           v-else
