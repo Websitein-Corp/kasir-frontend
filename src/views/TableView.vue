@@ -2,7 +2,7 @@
   <DashboardCard pageTitle="Product List" pageSubTitle="Set items to sell...">
     <DashboardTable :pageLength="10" v-model:activePage="currentPage">
       <template v-slot:action-2>
-        <DashboardSearchInput @change="doSearch"></DashboardSearchInput>
+        <SearchInput @change="doSearch"></SearchInput>
       </template>
       <template v-slot:action-3>
         <div class="flex gap-5">
@@ -40,7 +40,7 @@ import { ref, watch } from "vue";
 import DashboardCard from "@/components/Card/DashboardCard.vue";
 import DashboardTable from "@/components/Table/DashboardTable.vue";
 import DashboardButton from "@/components/Button/DashboardButton.vue";
-import DashboardSearchInput from "@/components/Table/DashboardSearchInput.vue";
+import SearchInput from "@/components/Input/SearchInput.vue";
 
 const items = Array(10).fill({
   name: "Burger Double Super",

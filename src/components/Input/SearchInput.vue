@@ -4,9 +4,10 @@
   >
     <Search />
     <input
-      class="ml-5 border-none outline-none focus:outline-none focus:text-primary-800"
+      class="ml-5 border-none outline-none focus:outline-none focus:text-primary-800 text-lg"
       type="text"
-      placeholder="Search item...."
+      placeholder="Search item..."
+      v-model="model"
       v-bind="$attrs"
     />
   </div>
@@ -14,4 +15,6 @@
 
 <script setup>
 import { Search } from "lucide-vue-next";
+
+const model = defineModel();
 </script>

@@ -129,7 +129,7 @@ const menus = [
   {
     label: "Transaksi",
     icon: ArrowRightLeft,
-    endpoint: "/",
+    endpoint: "/transaction",
   },
   {
     label: "Supplier",
