@@ -1,6 +1,8 @@
 <template>
   <div class="flex">
-    <div class="w-full lg:w-full h-screen pb-20 px-2 xl:px-8 overflow-y-auto">
+    <div
+      class="w-full lg:w-full h-screen pb-20 px-2 xl:px-8 overflow-x-hidden overflow-y-scroll no-scrollbar"
+    >
       <div
         id="header"
         class="w-full transition-all flex items-center ml-4"
