@@ -30,7 +30,7 @@
       {{ getBillMessage() }}
     </div>
     <div class="flex justify-center font-helvetica-light text-base lg:text-xl">
-      {{ bill.datetime }}
+      {{ bill.tr_datetime }}
     </div>
   </div>
   <div
@@ -82,7 +82,7 @@
     <div class="flex justify-between">
       <div>Total</div>
       <div class="flex justify-between w-5/12 lg:w-1/4">
-        <div>{{ bill.quantity || "-" }} barang</div>
+        <div>{{ bill.total_item }} barang</div>
         <div class="font-helvetica font-bold">{{ bill.total_price }}</div>
       </div>
     </div>
@@ -91,13 +91,13 @@
       <div>Metode Pembayaran</div>
       <div>{{ bill.payment_method }}</div>
     </div>
-    <div v-if="type === 'SUCCESS'" class="flex justify-between">
+    <div v-if="bill.type === 'SUCCESS'" class="flex justify-between">
       <div>Total Yang Dibayar</div>
       <div class="font-helvetica font-bold">
         {{ bill.amount_paid }}
       </div>
     </div>
-    <div v-if="type === 'SUCCESS'" class="flex justify-between">
+    <div v-if="bill.type === 'SUCCESS'" class="flex justify-between">
       <div>Kembalian</div>
       <div>{{ bill.change }}</div>
     </div>
@@ -121,7 +121,7 @@ const props = defineProps({
 
 const bill = ref({
   type: "SUCCESS",
-  datetime: "21 Agustus 2024, 18:07:12",
+  tr_datetime: "21 Agustus 2024, 18:07:12",
   cashier: "",
   details: () => [
     {
@@ -135,7 +135,7 @@ const bill = ref({
       price: 15000,
     },
   ],
-  quantity: 0,
+  total_item: 0,
   subtotal: "Rp0,00",
   discount: "Rp0,00",
   tax_fee: "Rp0,00",
@@ -169,7 +169,6 @@ const showBill = async () => {
 
   bill.value = data.data;
   bill.value["type"] = "SUCCESS";
-  bill.value["datetime"] = "21 Agustus 2024, 18:07:12";
 };
 
 const getBillMessage = () => {

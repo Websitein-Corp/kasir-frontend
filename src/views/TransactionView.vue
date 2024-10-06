@@ -66,13 +66,20 @@ watch(table.filters, () => {
   debounce = setTimeout(() => fetchTransactions(), 500);
 });
 
+watch(
+  () => table.page.current,
+  () => {
+    fetchTransactions();
+  }
+);
+
 const fetchTransactions = async () => {
   const formattedDate = table.filters.date.map((rawDate) =>
     new Date(rawDate).toISOString().slice(0, 10)
   );
 
   const { data } = await axios.get(
-    `${process.env.VUE_APP_API_BASE_URL}/api/transactions?shop_id=76L1&date_start=${formattedDate[0]}&date_end=${formattedDate[1]}&keyword=`,
+    `${process.env.VUE_APP_API_BASE_URL}/api/transactions?shop_id=76L1&date_start=${formattedDate[0]}&date_end=${formattedDate[1]}&keyword=${table.filters.keyword}&page=${table.page.current}`,
     {
       headers: {
         Authorization: `Bearer ${localStorage.getItem("auth_token")}`,
@@ -80,6 +87,8 @@ const fetchTransactions = async () => {
       withCredentials: true,
     }
   );
+
+  console.log(data);
 
   table.items = data.data.map((item) => {
     return {
@@ -89,6 +98,12 @@ const fetchTransactions = async () => {
       totalPrice: item["total_price"],
     };
   });
+
+  table.page.current = data.meta.current_page;
+  table.page.last = data.meta.last_page;
+  table.page.per = data.meta.per_page;
+  table.page.total = data.meta.total;
+  //table.page.links = data.links;
 };
 
 const exportTransactions = async () => {

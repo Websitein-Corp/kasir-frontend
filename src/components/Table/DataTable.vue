@@ -16,32 +16,44 @@
       </tbody>
     </table>
   </div>
-  <div v-if="table.page.links" class="dtable-footer flex justify-end mt-6">
-    <div class="page-nav space-x-2">
-      <template v-for="(link, key) in table.page.links" v-bind:key="key">
-        <button
-          v-if="!link.url"
-          class="px-3 py-1 rounded bg-primary-700 text-white"
-          disabled
-        >
-          {{ table.page.link.label }}
-        </button>
-        <button
-          v-else
-          class="px-3 py-1 rounded text-primary-700"
-          :disabled="table.page.current === 1"
-        >
-          <RouterLink :to="link.url">
-            {{ link.label }}
-          </RouterLink>
-        </button>
-      </template>
+  <div v-if="table.page.links" class="dtable-footer flex justify-between mt-8">
+    <div>Page {{ table.page.current }} / {{ table.page.last }}</div>
+    <div class="page-nav space-x-2 flex">
+      <CustomButton
+        label="First"
+        size="fit"
+        background="transparent"
+        :disabled="table.page.current === 1"
+        @click="table.firstPage"
+      />
+      <CustomButton
+        label="Prev"
+        size="fit"
+        background="transparent"
+        :disabled="table.page.current === 1"
+        @click="table.prevPage"
+      />
+      <CustomButton
+        label="Next"
+        size="fit"
+        background="transparent"
+        :disabled="table.page.current === table.page.last"
+        @click="table.nextPage"
+      />
+      <CustomButton
+        label="Last"
+        size="fit"
+        background="transparent"
+        :disabled="table.page.current === table.page.last"
+        @click="table.lastPage"
+      />
     </div>
   </div>
 </template>
 
 <script setup>
 import useTable from "@/stores/useTable";
+import CustomButton from "@/components/Button/CustomButton.vue";
 
 const table = useTable();
 </script>

@@ -14,12 +14,16 @@
       '!justify-start': align === 'start',
       '!justify-end': align === 'end',
       '!justify-between': align === 'between',
-      'bg-transparent hover:bg-slate-100 border border-transparent text-black !shadow-none':
+      'bg-transparent hover:bg-slate-100 border border-transparent !text-black !shadow-none':
         background === 'transparent',
       'bg-transparent hover:bg-slate-100 border-2 border-primary-700 !text-primary-700 !shadow-none':
         background === 'outline',
       '!text-red-500': textColor === 'red',
-      '!bg-primary-700/50 cursor-not-allowed': disabled,
+      '!bg-primary-700/50 cursor-not-allowed':
+        disabled && background === 'primary',
+      '!text-slate-800/50 !border-slate-400/50 cursor-not-allowed':
+        disabled && background === 'outline',
+      'opacity-30 cursor-not-allowed': disabled && background === 'transparent',
     }"
     :disabled="disabled"
     @click="$emit('click')"
@@ -62,7 +66,7 @@
 defineProps({
   buttonType: {
     type: String,
-    default: "",
+    default: "", // "text" / "icon"
   },
   label: {
     type: String,
@@ -70,19 +74,19 @@ defineProps({
   },
   labelWeight: {
     type: String,
-    default: "light",
+    default: "light", // "light" / "bold"
   },
   textColor: {
     type: String,
-    default: "white",
+    default: "white", // "white" / "red"
   },
   align: {
     type: String,
-    default: "center",
+    default: "center", // "start" / "end" / "center" / "between"
   },
   orientation: {
     type: String,
-    default: "horizontal",
+    default: "horizontal", // "horizontal" / "vertical"
   },
   icon: null,
   iconSize: {
@@ -91,19 +95,19 @@ defineProps({
   },
   iconSide: {
     type: String,
-    default: "left",
+    default: "left", // "left" / "right"
   },
   size: {
     type: String,
-    default: "md",
+    default: "md", // "sm" / "md" / "lg" / "xl" / "fit" / "full"
   },
   height: {
     type: String,
-    default: "md",
+    default: "md", // "md" / "lg"
   },
   background: {
     type: String,
-    default: "primary",
+    default: "primary", // "primary" / "outline" / "transparent"
   },
   disabled: {
     type: Boolean,
