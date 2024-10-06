@@ -175,7 +175,7 @@
         <DoughnutChart
           ref="doughnutRef"
           :chart-data="doughnutChart"
-          :options="doughbutChartOptions"
+          :options="doughnutChartOptions"
         />
       </div>
     </div>
@@ -255,7 +255,7 @@ const items = Array(10).fill({
   revenue: "Rp. 30.000",
 });
 
-const doughbutChartOptions = ref({
+const doughnutChartOptions = ref({
   responsive: true,
   plugins: {
     legend: {
