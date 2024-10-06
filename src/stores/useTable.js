@@ -15,7 +15,32 @@ export default defineStore("table", {
       last: 1,
       per: 10,
       total: 0,
-      links: [],
+      links: {
+        prev: "",
+        next: "",
+      },
     },
   }),
+
+  actions: {
+    nextPage() {
+      if (this.page.current < this.page.last) {
+        this.page.current++;
+      }
+    },
+
+    prevPage() {
+      if (this.page.current > 1) {
+        this.page.current--;
+      }
+    },
+
+    firstPage() {
+      this.page.current = 1;
+    },
+
+    lastPage() {
+      this.page.current = this.page.last;
+    },
+  },
 });
