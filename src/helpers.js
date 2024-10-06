@@ -5,7 +5,7 @@ export default {
       currency: "IDR",
     });
 
-    return formatter.format(value);
+    return formatter.format(value).replace(/\s/g, "");
   },
 
   getHourDifference: (date1, date2) => {
