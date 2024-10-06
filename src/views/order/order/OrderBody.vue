@@ -6,29 +6,7 @@
     />
   </div>
   <div class="w-full grid grid-cols-2 xl:grid-cols-3 gap-2 lg:gap-4">
-    <!--    <RecycleScroller-->
-    <!--      class="w-full h-full"-->
-    <!--      :items="products"-->
-    <!--      :item-size="500"-->
-    <!--      :item-secondary-size="370"-->
-    <!--      key-field="sku"-->
-    <!--      grid-items="3"-->
-    <!--      v-slot="{ item }"-->
-    <!--    >-->
-    <!--      <div class="col-span-1 m-4">-->
-    <!--        <ProductCard-->
-    <!--          :title="item.name"-->
-    <!--          :price="item.selling_price"-->
-    <!--          :image="item.image_url"-->
-    <!--          :selected="cart.has(item.name)"-->
-    <!--        />-->
-    <!--      </div>-->
-    <!--    </RecycleScroller>-->
-    <div
-      v-for="product in filteredProducts()"
-      :key="product.sku"
-      class="col-span-1"
-    >
+    <div v-for="product in products" :key="product.sku" class="col-span-1">
       <ProductCard
         :sku="product.sku"
         :name="product.name"
@@ -40,11 +18,11 @@
     </div>
   </div>
   <div
-    class="lg:hidden fixed z-50 bottom-4 left-1/2 -translate-x-1/2 w-4/5 transition-all"
+    class="lg:hidden fixed z-50 bottom-4 left-1/2 -translate-x-1/2 w-11/12 transition-all"
   >
     <transition name="fade">
       <CustomButton
-        v-if="!page.navIsOpened"
+        v-if="!page.navIsOpened && cart.items.length > 0"
         size="full"
         height="lg"
         iconSide="right"
@@ -66,7 +44,7 @@ import { CornerDownRight } from "lucide-vue-next";
 import CustomButton from "@/components/Button/CustomButton.vue";
 import usePage from "@/stores/usePage";
 import CategoryTab from "@/components/Tab/CategoryTab.vue";
-import { onMounted, ref } from "vue";
+import { onMounted, ref, watch } from "vue";
 import axios from "axios";
 
 const categories = ref([
@@ -213,6 +191,10 @@ onMounted(async () => {
   await fetchProducts();
 });
 
+watch(currentCategory, async () => {
+  await fetchProducts();
+});
+
 const fetchCategories = async () => {
   const response = await axios.get(
     `${process.env.VUE_APP_API_BASE_URL}/api/products/categories?shop_id=76L1`,
@@ -225,11 +207,15 @@ const fetchCategories = async () => {
   );
 
   categories.value = response.data.data;
+  categories.value.unshift({
+    name: "All",
+    code: "",
+  });
 };
 
 const fetchProducts = async () => {
   const response = await axios.get(
-    `${process.env.VUE_APP_API_BASE_URL}/api/products?shop_id=76L1`,
+    `${process.env.VUE_APP_API_BASE_URL}/api/products?category=${currentCategory.value}&shop_id=76L1`,
     {
       headers: {
         Authorization: `Bearer ${localStorage.getItem("auth_token")}`,
@@ -239,15 +225,5 @@ const fetchProducts = async () => {
   );
 
   products.value = response.data.data;
-};
-
-const filteredProducts = () => {
-  if (currentCategory.value) {
-    return products.value.filter((product) => {
-      return product.category.code === currentCategory.value;
-    });
-  }
-
-  return products.value;
 };
 </script>
