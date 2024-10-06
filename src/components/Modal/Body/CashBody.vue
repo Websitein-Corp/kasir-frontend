@@ -22,12 +22,14 @@ import useModal from "@/stores/useModal";
 import useToast from "@/stores/useToast";
 import axios from "axios";
 import router from "@/router";
+import usePage from "@/stores/usePage";
 
 const totalPaid = ref(0);
 
 const cart = useCart();
 const modal = useModal();
 const toast = useToast();
+const page = usePage();
 
 const onSubmit = () => {
   if (totalPaid.value >= cart.total) {
@@ -90,6 +92,9 @@ const checkOut = async () => {
 };
 
 const showBill = async (refId) => {
+  cart.clearAll();
+  page.order.step = 0;
+
   await router.push({
     path: `/bill/${refId}`,
   });
