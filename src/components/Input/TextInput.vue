@@ -36,6 +36,6 @@ const props = defineProps({
     type: String,
     default: "username",
   },
-  modelValue: String,
+  modelValue: null,
 });
 </script>

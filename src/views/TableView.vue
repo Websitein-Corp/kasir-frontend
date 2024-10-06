@@ -1,6 +1,6 @@
 <template>
   <DashboardCard pageTitle="Product List" pageSubTitle="Set items to sell...">
-    <DashboardTable :pageLength="10" v-model:activePage="currentPage">
+    <DataTable :pageLength="10" v-model:activePage="currentPage">
       <template v-slot:action-2>
         <SearchInput @change="doSearch"></SearchInput>
       </template>
@@ -30,7 +30,7 @@
           <td>{{ item.price }}</td>
         </tr>
       </template>
-    </DashboardTable>
+    </DataTable>
   </DashboardCard>
 </template>
 
@@ -38,7 +38,7 @@
 import { ref, watch } from "vue";
 
 import DashboardCard from "@/components/Card/DashboardCard.vue";
-import DashboardTable from "@/components/Table/DashboardTable.vue";
+import DataTable from "@/components/Table/DataTable.vue";
 import DashboardButton from "@/components/Button/DashboardButton.vue";
 import SearchInput from "@/components/Input/SearchInput.vue";
 

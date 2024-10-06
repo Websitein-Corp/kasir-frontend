@@ -20,7 +20,7 @@
     class="fixed transition-all z-40"
     :class="{
       'w-[100px] opacity-100': page.navIsOpened,
-      'w-0 opacity-0': !page.navIsOpened,
+      'w-0 opacity-0 overflow-hidden': !page.navIsOpened,
     }"
   >
     <nav class="w-[100px] h-screen bg-primary-50 flex flex-col pt-4">
@@ -31,7 +31,10 @@
           class="object-cover"
         />
       </div>
-      <div class="flex flex-col">
+      <div
+        class="flex flex-col"
+        :class="{ 'pointer-events-none': !page.navIsOpened }"
+      >
         <NavigationMenu
           v-for="(menu, index) in menus"
           :key="index"
