@@ -10,7 +10,7 @@
       @click="cart.clearAll()"
     />
   </div>
-  <div class="p-4 space-y-4 overflow-y-scroll h-full">
+  <div class="p-4 space-y-4 overflow-y-scroll no-scrollbar h-full">
     <div
       v-if="cart.items.length === 0"
       class="h-full flex flex-col items-center justify-center space-y-4"

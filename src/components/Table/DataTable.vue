@@ -1,13 +1,13 @@
 <template>
   <div class="dtable-header space-y-5">
     <slot name="action-1"></slot>
-    <div class="flex justify-between my-6">
+    <div class="flex justify-between my-6 mb-12">
       <slot name="action-2"></slot>
       <slot name="action-3"></slot>
     </div>
   </div>
   <div class="dtable-content">
-    <table class="w-full p-2">
+    <table class="w-full p-2 overflow-x-auto">
       <thead class="text-center text-gray-400 border-b-2 border-gray-100">
         <slot name="thead"></slot>
       </thead>

@@ -2,7 +2,7 @@
   <div>
     <TextInput
       name="discount"
-      type="text"
+      type="number"
       label="Diskon (opsional)"
       placeholder="Tambah diskon..."
       v-model="discount"

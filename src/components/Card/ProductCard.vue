@@ -58,7 +58,6 @@ import NumberInput from "@/components/Input/NumberInput.vue";
 import { ref, watch } from "vue";
 import useCart from "@/stores/useCart";
 import { CalendarClock, Trash2 } from "lucide-vue-next";
-import usePage from "@/stores/usePage";
 
 const props = defineProps({
   sku: {
@@ -73,10 +72,7 @@ const props = defineProps({
     type: String,
     default: "",
   },
-  sellingPrice: {
-    type: Number,
-    default: 0,
-  },
+  sellingPrice: null,
   imageUrl: {
     type: String,
     default: "",
@@ -92,7 +88,6 @@ const props = defineProps({
 });
 
 const cart = useCart();
-const page = usePage();
 
 const amount = ref(0);
 const watchAmount = ref(false);

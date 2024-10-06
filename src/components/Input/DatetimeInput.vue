@@ -1,6 +1,9 @@
 <template>
   <VueDatePicker
-    class="border-2 border-primary-700 rounded"
+    class="border-1 border-gray-300 rounded"
+    :class="{
+      'border-2 !border-primary-700': border === 'primary',
+    }"
     v-model="date"
     :range="range"
     :disabled="disabled"
@@ -23,6 +26,10 @@ defineProps({
   timePicker: {
     type: Boolean,
     default: false,
+  },
+  border: {
+    type: String,
+    default: "default",
   },
 });
 

@@ -17,9 +17,10 @@ const routes = [
     component: () => import("@/views/order/OrderView.vue"),
   },
   {
-    path: "/bill",
+    path: "/bill/:invoiceNumber",
     name: "bill",
     component: () => import("@/views/order/BillView.vue"),
+    props: true,
   },
   {
     path: "/table",

@@ -77,6 +77,7 @@ const fetchPaymentMethods = async () => {
       headers: {
         Authorization: `Bearer ${localStorage.getItem("auth_token")}`,
       },
+      withCredentials: true,
     }
   );
 
