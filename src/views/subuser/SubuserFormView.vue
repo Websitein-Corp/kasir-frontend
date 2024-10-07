@@ -102,13 +102,7 @@
 
 <script setup>
 import { Users, Plus } from "lucide-vue-next";
-import {
-  defineProps,
-  ref,
-  onMounted,
-  defineAsyncComponent,
-  reactive,
-} from "vue";
+import { ref, onMounted, defineAsyncComponent, reactive } from "vue";
 import PageContainer from "@/views/PageContainer.vue";
 import axios from "axios";
 import FormCard from "@/components/Card/FormCard.vue";
@@ -153,8 +147,10 @@ onMounted(() => {
 
 const submitSubuser = async () => {
   if (validateForm()) {
+    let response;
+
     if (props.isEdit) {
-      const { data } = await axios.put(
+      response = await axios.put(
         `${process.env.VUE_APP_API_BASE_URL}/api/subusers`,
         {
           id: form.id,
@@ -171,7 +167,7 @@ const submitSubuser = async () => {
         }
       );
     } else {
-      const { data } = await axios.post(
+      response = await axios.post(
         `${process.env.VUE_APP_API_BASE_URL}/api/subusers`,
         {
           shop_id: "76L1",
@@ -189,7 +185,7 @@ const submitSubuser = async () => {
       );
     }
 
-    if (data["error_type"]) {
+    if (response.data["error_type"]) {
       toast.message = "Gagal";
       toast.description = data.message;
       toast.type = "FAILED";
