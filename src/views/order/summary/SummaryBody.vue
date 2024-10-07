@@ -31,7 +31,7 @@
         size="full"
         iconSide="left"
         label="Add items"
-        background="outline"
+        class="bg-transparent hover:bg-slate-100 !text-primary-800 border-2 border-primary-700 hover:border-primary-800"
         :icon="Plus"
         @click="page.order.step--"
       />
@@ -42,7 +42,7 @@
           :label="
             cart.discount > 0 ? $helpers.money(cart.discount) : 'Add discount'
           "
-          background="outline"
+          class="bg-primary-700 hover:bg-primary-800"
           :icon="TicketPercent"
           @click="modal.open()"
         />
@@ -93,7 +93,7 @@
           :label="paymentMethod.name"
           label-weight="bold"
           :icon-size="45"
-          background="outline"
+          class="bg-transparent hover:bg-slate-100 text-primary-800 border-2 border-primary-700 hover:border-primary-800"
           orientation="vertical"
           :icon="paymentMethod.code === 'cash' ? Receipt : QrCode"
           :disabled="cart.items.length < 1"
@@ -114,6 +114,7 @@
         iconSide="right"
         label="Payment"
         align="between"
+        class="bg-primary-700 hover:bg-primary-800"
         :icon="CornerDownRight"
         :disabled="cart.items.length < 1"
         @click="page.order.step++"

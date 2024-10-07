@@ -1,5 +1,5 @@
 <template>
-  <div class="p-4 lg:px-8">
+  <div class="p-4 lg:px-8 mb-4">
     <CategoryTab
       :items="categories"
       @tab-change="(category) => (currentCategory = category)"
@@ -28,6 +28,7 @@
         iconSide="right"
         label="Summary"
         align="between"
+        class="bg-primary-700 hover:bg-primary-800"
         :icon="CornerDownRight"
         @click="page.order.step++"
       >

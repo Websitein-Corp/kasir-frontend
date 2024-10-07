@@ -10,7 +10,7 @@
     <input
       class="ml-5 border-none outline-none focus:outline-none focus:text-primary-800 text-lg"
       type="text"
-      placeholder="Search item..."
+      placeholder="Cari barang..."
       v-model="model"
       v-bind="$attrs"
     />

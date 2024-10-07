@@ -3,10 +3,9 @@
     <CustomButton
       size="fit"
       iconSide="right"
-      text-color="red"
       label="Hapus Semua"
       :icon="Trash2"
-      background="transparent"
+      class="bg-transparent !text-red-500 hover:bg-slate-100 shadow-none"
       @click="cart.clearAll()"
     />
   </div>
