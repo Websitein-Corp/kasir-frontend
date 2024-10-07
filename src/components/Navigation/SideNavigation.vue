@@ -26,7 +26,7 @@
     <nav class="w-[100px] h-screen bg-primary-50 flex flex-col pt-4">
       <div class="w-20 h-20 p-2 mx-auto mt-20 relative top-0 left-0">
         <img
-          src="../../assets/images/websiteinLogo.svg"
+          src="@/assets/images/websiteinLogo.svg"
           alt="websiteinLogo.svg"
           class="object-cover"
         />
@@ -146,7 +146,7 @@ const menus = [
   {
     label: "Karyawan",
     icon: Users,
-    endpoint: "/",
+    endpoint: "/subuser",
   },
 ];
 
