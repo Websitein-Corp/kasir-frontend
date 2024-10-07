@@ -1,8 +1,7 @@
 <template>
   <button
-    class="bg-primary-700 hover:bg-primary-800 p-2 px-4 rounded-lg text-white shadow-xl flex justify-center items-center gap-2 cursor-pointer transition-all"
+    class="h-12 p-2 px-4 rounded-lg text-white shadow-xl flex justify-center items-center gap-2 cursor-pointer transition-all disabled:opacity-40 disabled:cursor-not-allowed"
     :class="{
-      'h-[50px]': height === 'lg',
       'w-[150px] lg:w-[200px]': size === 'sm',
       'w-[200px] lg:w-[300px]': size === 'md',
       'w-[250px] lg:w-[400px]': size === 'lg',
@@ -14,19 +13,10 @@
       '!justify-start': align === 'start',
       '!justify-end': align === 'end',
       '!justify-between': align === 'between',
-      'bg-transparent hover:bg-slate-100 border border-transparent !text-black !shadow-none':
-        background === 'transparent',
-      'bg-transparent hover:bg-slate-100 border-2 border-primary-700 !text-primary-700 !shadow-none':
-        background === 'outline',
-      '!text-red-500': textColor === 'red',
-      '!bg-primary-700/50 cursor-not-allowed':
-        disabled && background === 'primary',
-      '!text-slate-800/50 !border-slate-400/50 cursor-not-allowed':
-        disabled && background === 'outline',
-      'opacity-30 cursor-not-allowed': disabled && background === 'transparent',
     }"
     :disabled="disabled"
     @click="$emit('click')"
+    v-bind="$attrs"
   >
     <slot />
     <template v-if="buttonType === 'icon'">
@@ -47,9 +37,12 @@
           class="mr-0.5"
           :class="{ '!m-0': orientation === 'vertical' }"
         ></component>
-        <span class="mt-0.5" :class="{ '!m-0': orientation === 'vertical' }">{{
-          label
-        }}</span>
+        <span
+          v-if="label"
+          class="mt-0.5"
+          :class="{ '!m-0': orientation === 'vertical' }"
+          >{{ label }}</span
+        >
         <component
           v-if="iconSide === 'right'"
           :is="icon"
@@ -76,10 +69,6 @@ defineProps({
     type: String,
     default: "light", // "light" / "bold"
   },
-  textColor: {
-    type: String,
-    default: "white", // "white" / "red"
-  },
   align: {
     type: String,
     default: "center", // "start" / "end" / "center" / "between"
@@ -100,14 +89,6 @@ defineProps({
   size: {
     type: String,
     default: "md", // "sm" / "md" / "lg" / "xl" / "fit" / "full"
-  },
-  height: {
-    type: String,
-    default: "md", // "md" / "lg"
-  },
-  background: {
-    type: String,
-    default: "primary", // "primary" / "outline" / "transparent"
   },
   disabled: {
     type: Boolean,
