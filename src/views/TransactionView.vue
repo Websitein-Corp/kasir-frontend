@@ -1,5 +1,5 @@
 <template>
-  <PageContainer title="Transactions" subtitle="Daftar transaksi masuk...">
+  <PageContainer title="Transaksi" subtitle="Daftar transaksi masuk...">
     <DataTable>
       <template v-slot:action-2>
         <div class="flex space-x-2">
@@ -9,7 +9,12 @@
       </template>
       <template v-slot:action-3>
         <div>
-          <CustomButton size="md" label="Export" @click="exportTransactions" />
+          <CustomButton
+            size="md"
+            label="Export"
+            class="bg-primary-700 hover:bg-primary-800"
+            @click="exportTransactions"
+          />
         </div>
       </template>
       <template v-slot:thead>
@@ -60,6 +65,8 @@ onMounted(async () => {
 });
 
 watch(table.filters, () => {
+  table.page.current = 1;
+
   if (debounce) {
     clearTimeout(debounce);
   }
@@ -88,14 +95,12 @@ const fetchTransactions = async () => {
     }
   );
 
-  console.log(data);
-
   table.items = data.data.map((item) => {
     return {
-      invoiceNumber: item["invoice_number"],
-      trDatetime: item["tr_datetime"],
-      paymentMethod: item["payment_method"]["name"],
-      totalPrice: item["total_price"],
+      invoiceNumber: item.invoice_number,
+      trDatetime: item.tr_datetime,
+      paymentMethod: item.payment_method.name,
+      totalPrice: item.total_price,
     };
   });
 
@@ -103,7 +108,6 @@ const fetchTransactions = async () => {
   table.page.last = data.meta.last_page;
   table.page.per = data.meta.per_page;
   table.page.total = data.meta.total;
-  //table.page.links = data.links;
 };
 
 const exportTransactions = async () => {
