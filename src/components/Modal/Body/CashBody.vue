@@ -23,9 +23,11 @@ import useToast from "@/stores/useToast";
 import axios from "axios";
 import router from "@/router";
 import usePage from "@/stores/usePage";
+import useAuth from "@/stores/useAuth";
 
 const totalPaid = ref(0);
 
+const auth = useAuth();
 const cart = useCart();
 const modal = useModal();
 const toast = useToast();
@@ -49,7 +51,7 @@ const checkOut = async () => {
   const { data } = await axios.post(
     `${process.env.VUE_APP_API_BASE_URL}/api/checkout`,
     {
-      shop_id: "76L1",
+      shop_id: auth.shopId,
       cart: cart.items.map((item) => {
         if (item.amount) {
           return {
@@ -70,7 +72,7 @@ const checkOut = async () => {
     },
     {
       headers: {
-        Authorization: `Bearer ${localStorage.getItem("auth_token")}`,
+        Authorization: `Bearer ${auth.authToken}`,
       },
       withCredentials: true,
     }

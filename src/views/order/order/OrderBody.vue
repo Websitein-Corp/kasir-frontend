@@ -47,6 +47,7 @@ import usePage from "@/stores/usePage";
 import CategoryTab from "@/components/Tab/CategoryTab.vue";
 import { onMounted, ref, watch } from "vue";
 import axios from "axios";
+import useAuth from "@/stores/useAuth";
 
 const categories = ref([
   {
@@ -182,10 +183,11 @@ const products = ref([
   },
 ]);
 
-const currentCategory = ref("");
-
+const auth = useAuth();
 const cart = useCart();
 const page = usePage();
+
+const currentCategory = ref("");
 
 onMounted(async () => {
   await fetchCategories();
@@ -198,10 +200,10 @@ watch(currentCategory, async () => {
 
 const fetchCategories = async () => {
   const response = await axios.get(
-    `${process.env.VUE_APP_API_BASE_URL}/api/products/categories?shop_id=76L1`,
+    `${process.env.VUE_APP_API_BASE_URL}/api/products/categories?shop_id=${auth.shopId}`,
     {
       headers: {
-        Authorization: `Bearer ${localStorage.getItem("auth_token")}`,
+        Authorization: `Bearer ${auth.authToken}`,
       },
       withCredentials: true,
     }
@@ -216,10 +218,10 @@ const fetchCategories = async () => {
 
 const fetchProducts = async () => {
   const response = await axios.get(
-    `${process.env.VUE_APP_API_BASE_URL}/api/products?category=${currentCategory.value}&shop_id=76L1`,
+    `${process.env.VUE_APP_API_BASE_URL}/api/products?category=${currentCategory.value}&shop_id=${auth.shopId}`,
     {
       headers: {
-        Authorization: `Bearer ${localStorage.getItem("auth_token")}`,
+        Authorization: `Bearer ${auth.authToken}`,
       },
       withCredentials: true,
     }

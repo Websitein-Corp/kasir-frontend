@@ -109,6 +109,7 @@ import FormCard from "@/components/Card/FormCard.vue";
 import CustomButton from "@/components/Button/CustomButton.vue";
 import SwitchInput from "@/components/Input/SwitchInput.vue";
 import useToast from "@/stores/useToast";
+import useAuth from "@/stores/useAuth";
 
 const TextInput = defineAsyncComponent(() =>
   import("@/components/Input/TextInput.vue")
@@ -127,6 +128,7 @@ const props = defineProps({
 
 const emit = defineEmits(["closeForm"]);
 
+const auth = useAuth();
 const toast = useToast();
 
 const permissionList = ref([]);
@@ -141,8 +143,6 @@ const form = reactive({
 
 onMounted(() => {
   fetchPermissions();
-
-  console.log(form);
 });
 
 const submitSubuser = async () => {
@@ -161,7 +161,7 @@ const submitSubuser = async () => {
         },
         {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem("auth_token")}`,
+            Authorization: `Bearer ${auth.authToken}`,
           },
           withCredentials: true,
         }
@@ -170,7 +170,7 @@ const submitSubuser = async () => {
       response = await axios.post(
         `${process.env.VUE_APP_API_BASE_URL}/api/subusers`,
         {
-          shop_id: "76L1",
+          shop_id: auth.shopId,
           email: form.email,
           password: form.password,
           name: form.name,
@@ -178,7 +178,7 @@ const submitSubuser = async () => {
         },
         {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem("auth_token")}`,
+            Authorization: `Bearer ${auth.authToken}`,
           },
           withCredentials: true,
         }
@@ -187,12 +187,12 @@ const submitSubuser = async () => {
 
     if (response.data["error_type"]) {
       toast.message = "Gagal";
-      toast.description = data.message;
+      toast.description = response.data.message;
       toast.type = "FAILED";
       toast.trigger();
     } else {
       toast.message = "Sukses";
-      toast.description = data.message;
+      toast.description = response.data.message;
       toast.type = "SUCCESS";
       toast.trigger();
 
@@ -220,10 +220,10 @@ const validateForm = () => {
 
 const fetchPermissions = async () => {
   const { data } = await axios.get(
-    `${process.env.VUE_APP_API_BASE_URL}/api/permissions?shop_id=76L1`,
+    `${process.env.VUE_APP_API_BASE_URL}/api/permissions?shop_id=${auth.shopId}`,
     {
       headers: {
-        Authorization: `Bearer ${localStorage.getItem("auth_token")}`,
+        Authorization: `Bearer ${auth.authToken}`,
       },
       withCredentials: true,
     }

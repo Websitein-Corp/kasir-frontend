@@ -109,7 +109,9 @@ import { CircleCheckBig, CircleX, CircleEllipsis } from "lucide-vue-next";
 import { onMounted, ref } from "vue";
 import axios from "axios";
 import useToast from "@/stores/useToast";
+import useAuth from "@/stores/useAuth";
 
+const auth = useAuth();
 const toast = useToast();
 
 const props = defineProps({
@@ -151,10 +153,10 @@ onMounted(async () => {
 
 const showBill = async () => {
   const { data } = await axios.get(
-    `${process.env.VUE_APP_API_BASE_URL}/api/checkout/receipt?ref_id=${props.invoiceNumber}&shop_id=76L1`,
+    `${process.env.VUE_APP_API_BASE_URL}/api/checkout/receipt?ref_id=${props.invoiceNumber}&shop_id=${auth.shopId}`,
     {
       headers: {
-        Authorization: `Bearer ${localStorage.getItem("auth_token")}`,
+        Authorization: `Bearer ${auth.authToken}`,
       },
       withCredentials: true,
     }
