@@ -42,6 +42,11 @@ const routes = [
     name: "subuser",
     component: () => import("@/views/subuser/SubuserView.vue"),
   },
+  {
+    path: "/shop",
+    name: "shop",
+    component: () => import("@/views/ShopListView.vue"),
+  },
 ];
 
 const router = createRouter({
