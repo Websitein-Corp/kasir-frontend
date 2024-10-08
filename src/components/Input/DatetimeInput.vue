@@ -8,6 +8,7 @@
     :range="range"
     :disabled="disabled"
     :enable-time-picker="timePicker"
+    v-bind="$attrs"
   />
 </template>
 

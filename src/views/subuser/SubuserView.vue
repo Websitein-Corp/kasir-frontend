@@ -70,7 +70,9 @@ import CustomButton from "@/components/Button/CustomButton.vue";
 import SubuserFormView from "@/views/subuser/SubuserFormView.vue";
 import { Trash2, Pencil } from "lucide-vue-next";
 import useToast from "@/stores/useToast";
+import useAuth from "@/stores/useAuth";
 
+const auth = useAuth();
 const table = useTable();
 const toast = useToast();
 
@@ -80,6 +82,7 @@ const isShowingForm = ref(false);
 const selectedSubuser = ref(null);
 
 onMounted(async () => {
+  table.resetPage();
   await fetchSubusers();
 });
 
@@ -101,16 +104,14 @@ watch(
 
 const fetchSubusers = async () => {
   const { data } = await axios.get(
-    `${process.env.VUE_APP_API_BASE_URL}/api/subusers?shop_id=76L1?keyword=${table.filters.keyword}&page=${table.page.current}`,
+    `${process.env.VUE_APP_API_BASE_URL}/api/subusers?shop_id=${auth.shopId}?keyword=${table.filters.keyword}&page=${table.page.current}`,
     {
       headers: {
-        Authorization: `Bearer ${localStorage.getItem("auth_token")}`,
+        Authorization: `Bearer ${auth.authToken}`,
       },
       withCredentials: true,
     }
   );
-
-  console.log(data);
 
   table.items = data.data.map((item) => {
     return {
@@ -147,7 +148,7 @@ const deleteSubuser = async (id) => {
     },
     {
       headers: {
-        Authorization: `Bearer ${localStorage.getItem("auth_token")}`,
+        Authorization: `Bearer ${auth.authToken}`,
       },
       withCredentials: true,
     }

@@ -3,7 +3,11 @@
     <DataTable>
       <template v-slot:action-2>
         <div class="flex space-x-2">
-          <DatetimeInput v-model="table.filters.date" range></DatetimeInput>
+          <DatetimeInput
+            v-model="table.filters.date"
+            :max-date="new Date()"
+            range
+          ></DatetimeInput>
           <SearchInput v-model="table.filters.keyword"></SearchInput>
         </div>
       </template>
@@ -55,12 +59,15 @@ import axios from "axios";
 import useTable from "@/stores/useTable";
 import CustomButton from "@/components/Button/CustomButton.vue";
 import router from "@/router";
+import useAuth from "@/stores/useAuth";
 
+const auth = useAuth();
 const table = useTable();
 
 let debounce;
 
 onMounted(async () => {
+  table.resetPage();
   await fetchTransactions();
 });
 
@@ -86,10 +93,10 @@ const fetchTransactions = async () => {
   );
 
   const { data } = await axios.get(
-    `${process.env.VUE_APP_API_BASE_URL}/api/transactions?shop_id=76L1&date_start=${formattedDate[0]}&date_end=${formattedDate[1]}&keyword=${table.filters.keyword}&page=${table.page.current}`,
+    `${process.env.VUE_APP_API_BASE_URL}/api/transactions?shop_id=${auth.shopId}&date_start=${formattedDate[0]}&date_end=${formattedDate[1]}&keyword=${table.filters.keyword}&page=${table.page.current}`,
     {
       headers: {
-        Authorization: `Bearer ${localStorage.getItem("auth_token")}`,
+        Authorization: `Bearer ${auth.authToken}`,
       },
       withCredentials: true,
     }
@@ -112,10 +119,10 @@ const fetchTransactions = async () => {
 
 const exportTransactions = async () => {
   const response = await axios.get(
-    `${process.env.VUE_APP_API_BASE_URL}/api/transactions?shop_id=76L1&date_start=${table.filters.date[0]}&date_end=${table.filters.date[1]}&keyword=`,
+    `${process.env.VUE_APP_API_BASE_URL}/api/transactions?shop_id=${auth.shopId}&date_start=${table.filters.date[0]}&date_end=${table.filters.date[1]}&keyword=`,
     {
       headers: {
-        Authorization: `Bearer ${localStorage.getItem("auth_token")}`,
+        Authorization: `Bearer ${auth.authToken}`,
       },
       withCredentials: true,
     }

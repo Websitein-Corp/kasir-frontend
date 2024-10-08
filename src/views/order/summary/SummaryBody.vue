@@ -141,7 +141,9 @@ import useModal from "@/stores/useModal";
 import { ref, watch } from "vue";
 import CashBody from "@/components/Modal/Body/CashBody.vue";
 import axios from "axios";
+import useAuth from "@/stores/useAuth";
 
+const auth = useAuth();
 const cart = useCart();
 const page = usePage();
 const modal = useModal();
@@ -179,7 +181,7 @@ const fetchPaymentMethods = async () => {
     `${process.env.VUE_APP_API_BASE_URL}/api/checkout/methods`,
     {
       headers: {
-        Authorization: `Bearer ${localStorage.getItem("auth_token")}`,
+        Authorization: `Bearer ${auth.authToken}`,
       },
       withCredentials: true,
     }
