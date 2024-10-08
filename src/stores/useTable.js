@@ -6,7 +6,9 @@ export default defineStore("table", {
     filters: {
       keyword: "",
       date: [
-        new Date().toISOString().slice(0, 10),
+        new Date(new Date().setMonth(new Date().getMonth() - 1))
+          .toISOString()
+          .slice(0, 10),
         new Date().toISOString().slice(0, 10),
       ],
     },
@@ -41,6 +43,17 @@ export default defineStore("table", {
 
     lastPage() {
       this.page.current = this.page.last;
+    },
+
+    resetPage() {
+      this.page.current = 1;
+      this.filters.keyword = "";
+      this.filters.date = [
+        new Date(new Date().setMonth(new Date().getMonth() - 1))
+          .toISOString()
+          .slice(0, 10),
+        new Date().toISOString().slice(0, 10),
+      ];
     },
   },
 });
