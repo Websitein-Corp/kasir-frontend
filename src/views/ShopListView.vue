@@ -29,6 +29,7 @@ import FormCard from "@/components/Card/FormCard.vue";
 import useToast from "@/stores/useToast";
 import router from "@/router";
 import useAuth from "@/stores/useAuth";
+import { useRoute } from "vue-router";
 
 const props = defineProps({
   subuserData: {
@@ -43,11 +44,12 @@ const props = defineProps({
 
 const auth = useAuth();
 const toast = useToast();
+const route = useRoute();
 
 const shopList = ref([]);
 
 onMounted(() => {
-  auth.checkLoginSession();
+  auth.checkLoginSession(route);
   fetchShopList();
 });
 

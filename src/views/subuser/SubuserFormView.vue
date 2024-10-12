@@ -2,7 +2,7 @@
   <PageContainer
     :title="isEdit ? 'Ubah Karyawan' : 'Tambah Karyawan'"
     :subtitle="
-      isEdit ? 'Mengubah detail karyawan...' : 'Menambah daftar karyawan...'
+      isEdit ? 'Mengubah detail karyawan...' : 'Menambah karyawan baru...'
     "
     enable-back
     @back="$emit('closeForm')"
@@ -42,8 +42,8 @@
           <div class="flex justify-center pt-4">
             <CustomButton
               size="xl"
-              label="Add"
-              :icon="Plus"
+              :label="isEdit ? 'Edit' : 'Add'"
+              :icon="isEdit ? Pencil : Plus"
               class="bg-primary-700 hover:bg-primary-800"
               @click="submitSubuser"
             />
@@ -101,7 +101,7 @@
 </template>
 
 <script setup>
-import { Users, Plus } from "lucide-vue-next";
+import { Users, Plus, Pencil } from "lucide-vue-next";
 import { ref, onMounted, defineAsyncComponent, reactive } from "vue";
 import PageContainer from "@/views/PageContainer.vue";
 import axios from "axios";

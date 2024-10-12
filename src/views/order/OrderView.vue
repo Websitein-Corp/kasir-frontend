@@ -1,5 +1,5 @@
 <template>
-  <div class="flex">
+  <div v-if="auth.isAuthenticated" class="flex">
     <div
       class="w-full lg:w-full h-screen pb-20 px-2 xl:px-8 overflow-x-hidden overflow-y-scroll no-scrollbar"
     >
@@ -47,6 +47,11 @@
       </div>
     </div>
   </div>
+  <div v-else>
+    <DefaultSkeleton class="mb-2" />
+    <DefaultSkeleton class="mb-2" />
+    <DefaultSkeleton class="mb-2" />
+  </div>
 </template>
 
 <script setup>
@@ -59,6 +64,16 @@ import OrderBody from "@/views/order/order/OrderBody.vue";
 import SummaryBody from "@/views/order/summary/SummaryBody.vue";
 import SummarySidebar from "@/views/order/summary/SummarySidebar.vue";
 import SummaryBottomMenu from "@/views/order/summary/SummaryBottomMenu.vue";
+import useAuth from "@/stores/useAuth";
+import { onMounted } from "vue";
+import DefaultSkeleton from "@/components/Skeleton/DefaultSkeleton.vue";
+import { useRoute } from "vue-router";
 
+const auth = useAuth();
 const page = usePage();
+const route = useRoute();
+
+onMounted(() => {
+  auth.checkLoginSession(route);
+});
 </script>
