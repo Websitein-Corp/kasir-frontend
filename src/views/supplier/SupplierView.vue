@@ -8,12 +8,18 @@
     />
   </div>
   <div v-else>
-    <PageContainer title="Supplier" subtitle="Daftar supplier yang ada...">
-      <DashboardTable>
+    <DashboardCard title="Supplier" subtitle="Daftar supplier yang ada...">
+      <DataTable :pageLength="10" v-model:activePage="currentPage">
         <template v-slot:action-2>
-          <SearchInput v-model="table.filters.keyword"></SearchInput>
-        </template>
-        <template v-slot:action-3>
+          <DatetimeInput
+            v-model="table.filters.date"
+            :max-date="new Date()"
+            range
+          ></DatetimeInput>
+          <SearchInput
+            class="mx-4"
+            v-model="table.filters.keyword"
+          ></SearchInput>
           <div class="flex gap-5">
             <DashboardButton @click="handleAddSupplier"
               >Add Supplier</DashboardButton
@@ -38,8 +44,11 @@
               <span v-if="item.status === 'PAID'">Sudah Dibayar</span>
             </td>
             <td>{{ item.tr_datetime }}</td>
+            <!-- Use tr_datetime field -->
             <td>{{ item.due_date }}</td>
+            <!-- Use due_date field -->
             <td>{{ item.total_price }}</td>
+            <!-- Use total_price field -->
             <td>
               <div class="flex flex-row space-x-4">
                 <CustomButton
@@ -50,31 +59,33 @@
                   align="center"
                   :icon="mdiContentSave"
                   @click="handleEditSupplier(item)"
+                  class="bg-primary-600"
                 />
                 <CustomButton
                   size="full"
                   height="lg"
                   iconSide="right"
                   label="DELETE"
-                  textColor="red"
                   align="center"
                   :icon="mdiDelete"
                   @click="deleteItem(item, index)"
+                  class="bg-red-600"
                 />
               </div>
             </td>
           </tr>
         </template>
-      </DashboardTable>
-    </PageContainer>
+      </DataTable>
+    </DashboardCard>
   </div>
 </template>
 
 <script setup>
 import { onMounted, ref, watch, reactive } from "vue";
 
-import DashboardTable from "@/components/Table/DashboardTable.vue";
-import PageContainer from "@/views/PageContainer.vue";
+import DashboardCard from "@/components/Card/DashboardCard.vue";
+import DataTable from "@/components/Table/DataTable.vue";
+import DatetimeInput from "@/components/Input/DatetimeInput.vue";
 import SearchInput from "@/components/Input/SearchInput.vue";
 import CustomButton from "@/components/Button/CustomButton.vue";
 import DashboardButton from "@/components/Button/DashboardButton.vue";
@@ -82,11 +93,13 @@ import SupplierFormView from "./SupplierFormView.vue";
 import axios from "axios";
 import useTable from "@/stores/useTable";
 import useToast from "@/stores/useToast";
+import useAuth from "@/stores/useAuth";
 
-const table = reactive(useTable());
+const auth = useAuth();
+const table = useTable();
 const toast = useToast();
-const isShowingForm = ref(false); // State to toggle between table and form view
-const selectedSupplier = ref(null); // State to hold the selected supplier for editing
+const isShowingForm = ref(false);
+const selectedSupplier = ref(null);
 
 let debounce;
 
@@ -99,48 +112,66 @@ onMounted(async () => {
 });
 
 watch(table.filters, () => {
-  clearTimeout(debounce);
-  debounce = setTimeout(() => fetchSupplier(), 500);
+  table.page.current = 1;
+
+  if (debounce) {
+    clearTimeout(debounce);
+  }
+  debounce = setTimeout(() => fetchTransactions(), 500);
 });
 
-// Function to fetch supplier list
+watch(
+  () => table.page.current,
+  () => {
+    fetchSupplier();
+  }
+);
+
 const fetchSupplier = async () => {
-  const data = {
-    items: [
-      {
-        id: "supply19agt",
-        status: "NOT_PAID",
-        tr_datetime: "2024-08-19 12:00:00",
-        due_date: "2024-09-19",
-        total_price: "Rp25.000.000",
+  const formattedDate = table.filters.date.map((rawDate) =>
+    new Date(rawDate).toISOString().slice(0, 10)
+  );
+
+  const { data } = await axios.get(
+    `${process.env.VUE_APP_API_BASE_URL}/api/supplier/supply/list?shop_id=${auth.shopId}&date_start=${formattedDate[0]}&date_end=${formattedDate[1]}&keyword=${table.filters.keyword}&page=${table.page.current}`,
+    {
+      headers: {
+        Authorization: `Bearer ${auth.authToken}`,
       },
-      {
-        id: "supply19agt-2",
-        status: "PAID",
-        tr_datetime: "2024-08-19 13:00:00",
-        due_date: "2024-09-19",
-        total_price: "Rp25.000.000",
-      },
-    ],
-  };
-  table.items = data.items;
+      withCredentials: true,
+    }
+  );
+
+  table.items = data.data.map((item) => {
+    return {
+      id: item.id,
+      status: item.status,
+      tr_datetime: item.tr_datetime,
+      due_date: item.due_date,
+      total_price: item.total_price,
+    };
+  });
+
+  table.page.current = data.meta.current_page;
+  table.page.last = data.meta.last_page;
+  table.page.per = data.meta.per_page;
+  table.page.total = data.meta.total;
+  isShowingForm.value = false;
 };
 
-// Function to handle add supplier action
 const handleAddSupplier = () => {
-  selectedSupplier.value = null; // Clear selected supplier data
-  isShowingForm.value = true; // Show the form view
+  selectedSupplier.value = null;
+  isShowingForm.value = true;
 };
 
 // Function to handle edit supplier action
 const handleEditSupplier = (item) => {
-  selectedSupplier.value = { ...item }; // Set the selected supplier for editing
-  isShowingForm.value = true; // Show the form view
+  selectedSupplier.value = { ...item };
+  isShowingForm.value = true;
 };
 
-// Function to handle cancel action from SupplierFormView
 const handleCancel = () => {
-  isShowingForm.value = false; // Hide the form and show the table
+  isShowingForm.value = false;
 };
 
 const deleteItem = async (item, index) => {
@@ -154,7 +185,7 @@ const deleteItem = async (item, index) => {
         withCredentials: true,
       }
     );
-    // Remove item from table after successful delete
+
     table.items.splice(index, 1);
     toast.message = "Sukses";
     toast.description = "Berhasil Menghapus Item!";
