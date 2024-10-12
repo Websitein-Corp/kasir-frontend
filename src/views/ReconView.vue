@@ -3,59 +3,63 @@
     title="Recon"
     subtitle="Daftar stock barang pada akhir hari..."
   >
-    <DashboardTable>
-      <template v-slot:action-2>
-        <SearchInput v-model="table.filters.keyword"></SearchInput>
-      </template>
-      <template v-slot:thead>
-        <tr>
-          <th>Name</th>
-          <th>Stock</th>
-          <th>Unit</th>
-          <th>Action</th>
-        </tr>
-      </template>
-      <template v-slot:tbody>
-        <tr v-for="(item, index) in table.items" :key="index">
-          <td>{{ item.name }}</td>
-          <td>
-            <input
-              type="text"
-              v-model="item.stock"
-              @input="handleStockChange(item, index)"
-              class="border border-primary-600 rounded-md p-1"
-            />
-          </td>
-          <td>{{ item.unit }}</td>
-          <td>
-            <CustomButton
-              size="full"
-              height="lg"
-              iconSide="right"
-              label="SAVE"
-              align="center"
-              :icon="mdi - content - save"
-              @click="saveStock(item, index)"
-            />
-          </td>
-        </tr>
-      </template>
-    </DashboardTable>
+    <DashboardCard>
+      <DataTable :pageLength="10" v-model:activePage="currentPage">
+        <template v-slot:action-2>
+          <SearchInput v-model="table.filters.keyword"></SearchInput>
+        </template>
+        <template v-slot:thead>
+          <tr>
+            <th>Name</th>
+            <th>Stock</th>
+            <th>Unit</th>
+            <th>Action</th>
+          </tr>
+        </template>
+        <template v-slot:tbody>
+          <tr v-for="(item, index) in table.items" :key="index">
+            <td>{{ item.name }}</td>
+            <td>
+              <input
+                type="text"
+                v-model="item.stock"
+                @input="handleStockChange(item, index)"
+                class="border border-primary-600 rounded-md p-1"
+              />
+            </td>
+            <td>{{ item.unit }}</td>
+            <td>
+              <CustomButton
+                size="full"
+                height="lg"
+                label="SAVE"
+                align="center"
+                @click="saveStock(item, index)"
+                class="bg-primary-600"
+              />
+            </td>
+          </tr>
+        </template>
+      </DataTable>
+    </DashboardCard>
   </PageContainer>
 </template>
 
 <script setup>
 import { onMounted, ref, watch, reactive } from "vue";
 
-import DashboardTable from "@/components/Table/DashboardTable.vue";
+import DashboardCard from "@/components/Card/DashboardCard.vue";
+import DataTable from "@/components/Table/DataTable.vue";
 import PageContainer from "@/views/PageContainer.vue";
 import SearchInput from "@/components/Input/SearchInput.vue";
 import CustomButton from "@/components/Button/CustomButton.vue";
 import axios from "axios";
 import useTable from "@/stores/useTable";
 import useToast from "@/stores/useToast";
+import useAuth from "@/stores/useAuth";
 
-const table = reactive(useTable());
+const auth = useAuth();
+const table = useTable();
 const toast = useToast();
 
 let debounce;
@@ -65,44 +69,53 @@ const doSearch = (event) => {
 };
 
 onMounted(async () => {
+  table.resetPage();
   await fetchRecon();
 });
 
 watch(table.filters, () => {
-  clearTimeout(debounce);
+  table.page.current = 1;
+
+  if (debounce) {
+    clearTimeout(debounce);
+  }
+
   debounce = setTimeout(() => fetchRecon(), 500);
 });
 
+watch(
+  () => table.page.current,
+  async () => {
+    await fetchRecon();
+  }
+);
+
 const fetchRecon = async () => {
-  const data = {
-    items: [
-      {
-        name: "Roti Tawar",
-        stock: "111",
-        unit: "Pack",
+  const { data } = await axios.get(
+    `${process.env.VUE_APP_API_BASE_URL}/api/ingredients?shop_id=${auth.shopId}`,
+    {
+      headers: {
+        Authorization: `Bearer ${auth.authToken}`,
       },
-      {
-        name: "Beras",
-        stock: "321",
-        unit: "Kg",
-      },
-    ],
-    filters: {
-      keyword: "",
-      date: [
-        new Date().toISOString().slice(0, 10),
-        new Date().toISOString().slice(0, 10),
-      ],
-    },
-    page: {
-      current: 1,
-      last: 1,
-      per: 10,
-      total: 0,
-      links: [],
-    },
-  };
-  table.items = data.items;
+      withCredentials: true,
+    }
+  );
+
+  table.items = data.data.map((item) => {
+    return {
+      id: item.id,
+      name: item.name,
+      stock: item.stock,
+      unitName: item.unit_name,
+    };
+  });
+
+  if (data.meta) {
+    table.page.current = data.meta.current_page || 1;
+    table.page.last = data.meta.last_page || 1;
+    table.page.per = data.meta.per_page || 10;
+    table.page.total = data.meta.total || table.items.length;
+  }
 };
 
 const handleStockChange = (item, index) => {
@@ -114,9 +127,9 @@ const saveStock = async (item, index) => {
     const response = await axios.put(
       `${process.env.VUE_APP_API_BASE_URL}/api/ingredients/recon`,
       {
-        id: item.name.toLowerCase(),
+        id: item.id,
         end_stock: item.stock,
-        shop_id: "76L1",
+        shop_id: auth.shopId,
       },
       {
         headers: {
