@@ -2,24 +2,13 @@ import { defineStore } from "pinia";
 
 export default defineStore("table", {
   state: () => ({
-    items: [
-      {
-        invoiceNumber: "tokotok_001",
-        trDatetime: "2024-08-19 10:00:00",
-        totalPrice: "Rp200.000",
-        status: "SUCCESS",
-      },
-      {
-        invoiceNumber: "tokotok_002",
-        trDatetime: "2024-08-19 10:00:00",
-        totalPrice: "Rp200.000",
-        status: "SUCCESS",
-      },
-    ],
+    items: [],
     filters: {
       keyword: "",
       date: [
-        new Date().toISOString().slice(0, 10),
+        new Date(new Date().setMonth(new Date().getMonth() - 1))
+          .toISOString()
+          .slice(0, 10),
         new Date().toISOString().slice(0, 10),
       ],
     },
@@ -28,7 +17,43 @@ export default defineStore("table", {
       last: 1,
       per: 10,
       total: 0,
-      links: [],
+      links: {
+        prev: "",
+        next: "",
+      },
     },
   }),
+
+  actions: {
+    nextPage() {
+      if (this.page.current < this.page.last) {
+        this.page.current++;
+      }
+    },
+
+    prevPage() {
+      if (this.page.current > 1) {
+        this.page.current--;
+      }
+    },
+
+    firstPage() {
+      this.page.current = 1;
+    },
+
+    lastPage() {
+      this.page.current = this.page.last;
+    },
+
+    resetPage() {
+      this.page.current = 1;
+      this.filters.keyword = "";
+      this.filters.date = [
+        new Date(new Date().setMonth(new Date().getMonth() - 1))
+          .toISOString()
+          .slice(0, 10),
+        new Date().toISOString().slice(0, 10),
+      ];
+    },
+  },
 });

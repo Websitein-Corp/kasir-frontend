@@ -2,19 +2,19 @@
   <div
     class="h-[35dvh] bg-primary-100 space-y-4 p-4 flex flex-col justify-center"
     :class="{
-      'bg-red-100': type === 'FAILED',
-      'bg-yellow-100': type === 'PENDING',
+      'bg-red-100': bill.type === 'FAILED',
+      'bg-yellow-100': bill.type === 'PENDING',
     }"
   >
     <div class="flex justify-center">
       <CircleCheckBig
-        v-if="type === 'SUCCESS'"
+        v-if="bill.type === 'SUCCESS'"
         size="150"
         stroke-width="0.7"
         class="w-32 lg:w-40 text-green-600"
       />
       <CircleX
-        v-else-if="type === 'FAILED'"
+        v-else-if="bill.type === 'FAILED'"
         size="150"
         stroke-width="0.7"
         class="w-32 lg:w-40 text-red-600"
@@ -30,7 +30,7 @@
       {{ getBillMessage() }}
     </div>
     <div class="flex justify-center font-helvetica-light text-base lg:text-xl">
-      21 Agustus 2024, 18:07:12
+      {{ bill.tr_datetime }}
     </div>
   </div>
   <div
@@ -38,11 +38,11 @@
   >
     <div class="flex justify-between font-helvetica font-bold">
       <div>Nomor Order</div>
-      <div>{{ orderNumber }}</div>
+      <div>{{ bill.invoice_number }}</div>
     </div>
     <div class="flex justify-between">
       <div>Kasir</div>
-      <div>{{ cashier }}</div>
+      <div>{{ bill.cashier }}</div>
     </div>
     <hr class="my-2" />
     <div class="flex justify-between font-bold">
@@ -52,127 +52,129 @@
         <div>Harga</div>
       </div>
     </div>
-    <div v-for="item in items" :key="item.name" class="flex justify-between">
-      <div>{{ item.name }}</div>
+    <div
+      v-for="item in bill.details"
+      :key="item.name"
+      class="flex justify-between"
+    >
+      <div>{{ item.item_name }}</div>
       <div class="flex justify-between w-5/12 lg:w-1/4">
-        <div>{{ item.amount }}</div>
+        <div>{{ item.quantity }}</div>
         <div>{{ $helpers.money(item.price) }}</div>
       </div>
     </div>
     <hr class="my-2" />
     <div class="flex justify-between">
       <div>Subtotal</div>
-      <div>{{ $helpers.money(subtotal) }}</div>
+      <div>{{ bill.subtotal }}</div>
     </div>
     <div class="flex justify-between">
       <div>Diskon</div>
-      <div>{{ $helpers.money(discount) }}</div>
+      <div>{{ bill.discount }}</div>
     </div>
     <div class="flex justify-between">
       <div>Pajak</div>
       <div class="flex justify-between w-5/12 lg:w-1/4">
         <div>10%</div>
-        <div>{{ $helpers.money(tax) }}</div>
+        <div>{{ bill.tax_fee }}</div>
       </div>
     </div>
     <div class="flex justify-between">
       <div>Total</div>
       <div class="flex justify-between w-5/12 lg:w-1/4">
-        <div>{{ quantity }} barang</div>
-        <div class="font-helvetica font-bold">{{ $helpers.money(total) }}</div>
+        <div>{{ bill.total_item }} barang</div>
+        <div class="font-helvetica font-bold">{{ bill.total_price }}</div>
       </div>
     </div>
     <hr class="my-2" />
     <div class="flex justify-between">
       <div>Metode Pembayaran</div>
-      <div>{{ paymentMethod }}</div>
+      <div>{{ bill.payment_method }}</div>
     </div>
-    <div v-if="type === 'SUCCESS'" class="flex justify-between">
+    <div v-if="bill.type === 'SUCCESS'" class="flex justify-between">
       <div>Total Yang Dibayar</div>
       <div class="font-helvetica font-bold">
-        {{ $helpers.money(amountPaid) }}
+        {{ bill.amount_paid }}
       </div>
     </div>
-    <div v-if="type === 'SUCCESS'" class="flex justify-between">
+    <div v-if="bill.type === 'SUCCESS'" class="flex justify-between">
       <div>Kembalian</div>
-      <div>{{ $helpers.money(change) }}</div>
+      <div>{{ bill.change }}</div>
     </div>
   </div>
 </template>
 
 <script setup>
 import { CircleCheckBig, CircleX, CircleEllipsis } from "lucide-vue-next";
+import { onMounted, ref } from "vue";
+import axios from "axios";
+import useToast from "@/stores/useToast";
+import useAuth from "@/stores/useAuth";
+
+const auth = useAuth();
+const toast = useToast();
 
 const props = defineProps({
-  type: {
-    type: String,
-    default: "FAILED",
-  },
-  datetime: {
-    type: String,
-    default: "21 Agustus 2024, 18:07:12",
-  },
-  orderNumber: {
+  invoiceNumber: {
     type: String,
     default: "",
-  },
-  cashier: {
-    type: String,
-    default: "",
-  },
-  items: {
-    type: Array,
-    default: () => [
-      {
-        sku: "br",
-        name: "Bur",
-        amount: 2,
-        selling_price: 10000,
-      },
-      {
-        sku: "gr",
-        name: "Ger",
-        amount: 1,
-        selling_price: 15000,
-      },
-    ],
-  },
-  quantity: {
-    type: Number,
-    default: 0,
-  },
-  subtotal: {
-    type: Number,
-    default: 0,
-  },
-  discount: {
-    type: Number,
-    default: 0,
-  },
-  tax: {
-    type: Number,
-    default: 0,
-  },
-  total: {
-    type: Number,
-    default: 0,
-  },
-  paymentMethod: {
-    type: String,
-    default: "",
-  },
-  amountPaid: {
-    type: Number,
-    default: 0,
-  },
-  change: {
-    type: Number,
-    default: 0,
   },
 });
 
+const bill = ref({
+  type: "SUCCESS",
+  tr_datetime: "21 Agustus 2024, 18:07:12",
+  cashier: "",
+  details: () => [
+    {
+      item_name: "Bur",
+      quantity: 2,
+      price: 10000,
+    },
+    {
+      item_name: "Ger",
+      quantity: 1,
+      price: 15000,
+    },
+  ],
+  total_item: 0,
+  subtotal: "Rp0,00",
+  discount: "Rp0,00",
+  tax_fee: "Rp0,00",
+  total_price: "Rp0,00",
+  payment_method: "",
+  amount_paid: "Rp0,00",
+  change: "Rp0,00",
+});
+
+onMounted(async () => {
+  await showBill();
+});
+
+const showBill = async () => {
+  const { data } = await axios.get(
+    `${process.env.VUE_APP_API_BASE_URL}/api/checkout/receipt?ref_id=${props.invoiceNumber}&shop_id=${auth.shopId}`,
+    {
+      headers: {
+        Authorization: `Bearer ${auth.authToken}`,
+      },
+      withCredentials: true,
+    }
+  );
+
+  if (data["error_type"]) {
+    toast.message = "Gagal";
+    toast.description = data.message;
+    toast.type = "FAILED";
+    toast.trigger();
+  }
+
+  bill.value = data.data;
+  bill.value["type"] = "SUCCESS";
+};
+
 const getBillMessage = () => {
-  switch (props.type) {
+  switch (bill.value.type) {
     case "SUCCESS":
       return "Pembayaran Berhasil!";
     case "FAILED":

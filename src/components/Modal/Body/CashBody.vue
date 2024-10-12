@@ -20,28 +20,85 @@ import { ref } from "vue";
 import CustomButton from "@/components/Button/CustomButton.vue";
 import useModal from "@/stores/useModal";
 import useToast from "@/stores/useToast";
+import axios from "axios";
+import router from "@/router";
+import usePage from "@/stores/usePage";
+import useAuth from "@/stores/useAuth";
 
 const totalPaid = ref(0);
 
+const auth = useAuth();
 const cart = useCart();
 const modal = useModal();
 const toast = useToast();
+const page = usePage();
 
 const onSubmit = () => {
   if (totalPaid.value >= cart.total) {
     cart.totalPaid = totalPaid.value;
 
-    toast.message = "Sukses";
-    toast.description = "Pembayaran lunas!";
-    toast.type = "SUCCESS";
-    toast.trigger();
-
     modal.close();
+    checkOut();
   } else {
     toast.message = "Gagal";
     toast.description = "Total yang dibayar tidak mencukupi!";
     toast.type = "FAILED";
     toast.trigger();
   }
+};
+
+const checkOut = async () => {
+  const { data } = await axios.post(
+    `${process.env.VUE_APP_API_BASE_URL}/api/checkout`,
+    {
+      shop_id: auth.shopId,
+      cart: cart.items.map((item) => {
+        if (item.amount) {
+          return {
+            sku: item.sku,
+            amount: item.amount,
+          };
+        } else {
+          return {
+            sku: item.sku,
+            service_start: item.service_start,
+            service_end: item.service_end,
+          };
+        }
+      }),
+      payment_method: "cash",
+      customer_pay: Number(totalPaid.value),
+      discount: Number(cart.discount),
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${auth.authToken}`,
+      },
+      withCredentials: true,
+    }
+  );
+
+  if (data["error_type"]) {
+    toast.message = "Gagal";
+    toast.description = data.message;
+    toast.type = "FAILED";
+    toast.trigger();
+  } else {
+    toast.message = "Sukses";
+    toast.description = data.message;
+    toast.type = "SUCCESS";
+    toast.trigger();
+
+    setTimeout(() => showBill(data.data["ref_id"]), 3000);
+  }
+};
+
+const showBill = async (refId) => {
+  cart.clearAll();
+  page.order.step = 0;
+
+  await router.push({
+    path: `/bill/${refId}`,
+  });
 };
 </script>

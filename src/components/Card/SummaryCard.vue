@@ -19,6 +19,7 @@
           v-if="type === 'SERVICE TIME'"
           v-model="serviceRange"
           :disabled="page.order.step === 2"
+          border="primary"
           range
           time-picker
         />
@@ -59,8 +60,8 @@ const props = defineProps({
     default: "",
   },
   sellingPrice: {
-    type: Number,
-    default: 0,
+    type: String,
+    default: "",
   },
   imageUrl: {
     type: String,

@@ -5,8 +5,6 @@ import "./registerServiceWorker";
 import router from "./router";
 import "./index.css";
 import helpers from "./helpers";
-import VueVirtualScroller from "vue-virtual-scroller";
-import "vue-virtual-scroller/dist/vue-virtual-scroller.css";
 import VueLazyLoad from "vue3-lazyload";
 import "@vuepic/vue-datepicker/dist/main.css";
 
@@ -16,9 +14,4 @@ const app = createApp(App);
 
 app.config.globalProperties.$helpers = helpers;
 
-app
-  .use(pinia)
-  .use(router)
-  .use(VueVirtualScroller)
-  .use(VueLazyLoad)
-  .mount("#app");
+app.use(pinia).use(router).use(VueLazyLoad).mount("#app");
