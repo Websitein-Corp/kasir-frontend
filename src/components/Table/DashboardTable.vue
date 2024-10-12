@@ -17,7 +17,7 @@
     </table>
   </div>
   <div class="dtable-footer flex justify-end">
-    <div v-if="needPagination" class="page-nav space-x-2">
+    <div class="page-nav space-x-2">
       <button :disabled="activePage === 1" @click="changePage(activePage - 1)">
         Previous
       </button>
@@ -54,10 +54,6 @@ const props = defineProps({
   activePage: {
     type: Number,
     default: 1,
-  },
-  needPagination: {
-    type: Boolean,
-    default: true,
   },
 });
 

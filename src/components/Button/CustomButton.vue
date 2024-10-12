@@ -1,30 +1,56 @@
 <template>
   <button
-    class="bg-primary-700 hover:bg-primary-800 p-2 rounded-lg shadow-xl flex justify-center items-center gap-2 transition-all"
+    class="h-12 p-2 px-4 rounded-lg text-white shadow-xl flex justify-center items-center gap-2 cursor-pointer transition-all disabled:opacity-40 disabled:cursor-not-allowed"
     :class="{
-      'w-[200px]': size === 'sm',
-      'w-[300px]': size === 'md',
-      'w-[400px]': size === 'lg',
-      'w-[500px]': size === 'xl',
+      'w-[150px] lg:w-[200px]': size === 'sm',
+      'w-[200px] lg:w-[300px]': size === 'md',
+      'w-[250px] lg:w-[400px]': size === 'lg',
+      'w-[300px] lg:w-[500px]': size === 'xl',
+      'font-bold': labelWeight === 'bold',
+      'w-fit': size === 'fit',
+      'w-full': size === 'full',
       '!w-fit': buttonType === 'icon',
-      'justify-start': align === 'start',
-      'justify-end': align === 'end',
-      'bg-transparent hover:bg-gray-100 border border-transparent text-black shadow-none':
-        background === 'transparent',
-      '!text-red-500': textColor === 'red',
+      '!justify-start': align === 'start',
+      '!justify-end': align === 'end',
+      '!justify-between': align === 'between',
     }"
+    :disabled="disabled"
     @click="$emit('click')"
+    v-bind="$attrs"
   >
+    <slot />
     <template v-if="buttonType === 'icon'">
-      <component :is="icon"></component>
+      <component :is="icon" :size="iconSize"></component>
     </template>
     <template v-else-if="buttonType === 'text'">
-      <span>{{ label }}</span>
+      <div>{{ label }}</div>
     </template>
     <template v-else>
-      <component v-if="iconSide === 'left'" :is="icon"></component>
-      <span>{{ label }}</span>
-      <component v-if="iconSide === 'right'" :is="icon"></component>
+      <div
+        class="flex items-center space-x-2"
+        :class="{ '!flex-col !space-y-2.5': orientation === 'vertical' }"
+      >
+        <component
+          v-if="iconSide === 'left'"
+          :is="icon"
+          :size="iconSize"
+          class="mr-0.5"
+          :class="{ '!m-0': orientation === 'vertical' }"
+        ></component>
+        <span
+          v-if="label"
+          class="mt-0.5"
+          :class="{ '!m-0': orientation === 'vertical' }"
+          >{{ label }}</span
+        >
+        <component
+          v-if="iconSide === 'right'"
+          :is="icon"
+          :size="iconSize"
+          class="ml-0.5"
+          :class="{ '!m-0': orientation === 'vertical' }"
+        ></component>
+      </div>
     </template>
   </button>
 </template>
@@ -33,32 +59,40 @@
 defineProps({
   buttonType: {
     type: String,
-    default: "",
+    default: "", // "text" / "icon"
   },
   label: {
     type: String,
     default: "",
   },
-  textColor: {
+  labelWeight: {
     type: String,
-    default: "white",
+    default: "light", // "light" / "bold"
   },
   align: {
     type: String,
-    default: "center",
+    default: "center", // "start" / "end" / "center" / "between"
+  },
+  orientation: {
+    type: String,
+    default: "horizontal", // "horizontal" / "vertical"
   },
   icon: null,
+  iconSize: {
+    type: Number,
+    default: 20,
+  },
   iconSide: {
     type: String,
-    default: "left",
+    default: "left", // "left" / "right"
   },
   size: {
     type: String,
-    default: "md",
+    default: "md", // "sm" / "md" / "lg" / "xl" / "fit" / "full"
   },
-  background: {
-    type: String,
-    default: "primary",
+  disabled: {
+    type: Boolean,
+    default: false,
   },
 });
 
