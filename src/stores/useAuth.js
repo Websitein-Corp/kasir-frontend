@@ -12,15 +12,12 @@ export default defineStore("auth", {
   actions: {
     async checkLoginSession(route) {
       try {
-        const response = await axios.get(
-          `${process.env.VUE_APP_API_BASE_URL}/api/shop-list`,
-          {
-            headers: {
-              Authorization: `Bearer ${this.authToken}`,
-            },
-            withCredentials: true,
-          }
-        );
+        await axios.get(`${process.env.VUE_APP_API_BASE_URL}/api/shop-list`, {
+          headers: {
+            Authorization: `Bearer ${this.authToken}`,
+          },
+          withCredentials: true,
+        });
 
         this.isAuthenticated = true;
 
