@@ -60,14 +60,14 @@
           </div>
 
           <div class="flex flex-col mt-4 w-full">
-            <CustomInput
+            <TextInput
               v-model="email"
               name="email"
               type="email"
               label="EMAIL"
               placeholder="Enter your email"
             />
-            <CustomInput
+            <TextInput
               v-if="!isForgotPassword"
               v-model="password"
               name="password"
@@ -97,17 +97,27 @@
 </template>
 
 <script setup>
-import { defineAsyncComponent, ref } from "vue";
+import { defineAsyncComponent, onMounted, ref } from "vue";
 import axios from "axios";
+import router from "@/router";
+import useToast from "@/stores/useToast";
+import useAuth from "@/stores/useAuth";
 
-const CustomInput = defineAsyncComponent(() =>
-  import("@/components/CustomInput/CustomInput.vue")
+const TextInput = defineAsyncComponent(() =>
+  import("@/components/Input/TextInput.vue")
 );
+
+const auth = useAuth();
+const toast = useToast();
 
 const email = ref("");
 const password = ref("");
 
 const isForgotPassword = ref(false);
+
+onMounted(() => {
+  auth.checkLoginSession();
+});
 
 const toggleForgotPassword = () => {
   isForgotPassword.value = !isForgotPassword.value;
@@ -133,19 +143,28 @@ const login = async () => {
       password: password.value,
     });
 
-    console.log("Login successful:", response.data);
-
     const token = response.data.data.token;
 
     if (token) {
-      localStorage.setItem("auth_token", token);
-      console.log("Token saved to localStorage:", token);
+      auth.setAuthToken(token);
+
+      toast.message = "Sukses";
+      toast.description = "Login berhasil!";
+      toast.type = "SUCCESS";
+      toast.trigger();
+
+      await router.push("/shop");
     } else {
-      console.error("No token received in the response");
+      toast.message = "Gagal";
+      toast.description = "Login gagal!";
+      toast.type = "FAILED";
+      toast.trigger();
     }
-    alert("Login successful");
   } catch (error) {
-    console.error("Login failed:", error.response?.data || error.message);
+    toast.message = "Gagal";
+    toast.description = error.response?.data || error.message;
+    toast.type = "FAILED";
+    toast.trigger();
   }
 };
 </script>
