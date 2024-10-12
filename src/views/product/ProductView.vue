@@ -1,13 +1,13 @@
 <template>
   <div v-if="isShowingForm">
-    <SubuserFormView
-      :subuser-data="selectedSubuser"
-      :is-edit="!!selectedSubuser"
+    <ProductFormView
+      :product-data="selectedProduct"
+      :is-edit="!!selectedProduct"
       @close-form="resetForm"
     />
   </div>
   <div v-else-if="auth.isAuthenticated">
-    <PageContainer title="Karyawan" subtitle="Daftar karyawan...">
+    <PageContainer title="Produk" subtitle="Daftar produk...">
       <DataTable>
         <template v-slot:action-2>
           <div class="flex space-x-2">
@@ -26,29 +26,43 @@
         </template>
         <template v-slot:thead>
           <tr>
-            <th>Email</th>
+            <th>SKU</th>
             <th>Nama</th>
-            <th>Last Login</th>
-            <th>Actions</th>
+            <th>Tipe</th>
+            <th>Kategori</th>
+            <th>Stok</th>
+            <th>Harga Modal</th>
+            <th>Harga</th>
+            <th>Harga Retail</th>
+            <th>Diskon</th>
+            <th>Status</th>
+            <th>Action</th>
           </tr>
         </template>
         <template v-slot:tbody>
           <tr v-for="(item, index) in table.items" :key="index">
-            <td>{{ item.email || "-" }}</td>
+            <td>{{ item.sku || "-" }}</td>
             <td>{{ item.name || "-" }}</td>
-            <td>{{ item.lastLogin || "-" }}</td>
+            <td>{{ item.type || "-" }}</td>
+            <td>{{ (item.category && item.category.name) || "-" }}</td>
+            <td>{{ item.stock || "-" }}</td>
+            <td>{{ item.capitalPrice || "-" }}</td>
+            <td>{{ item.sellingPrice || "-" }}</td>
+            <td>{{ item.sellingRetailPrice || "-" }}</td>
+            <td>{{ item.discountPrice || "-" }}</td>
+            <td>{{ (item.isActive ? "Active" : "Inactive") || "-" }}</td>
             <td class="flex justify-center space-x-2">
               <CustomButton
                 size="fit"
                 :icon="Trash2"
                 class="bg-red-700 hover:bg-red-800"
-                @click="deleteSubuser(item.id)"
+                @click="deleteProduct(item.sku)"
               />
               <CustomButton
                 size="fit"
                 :icon="Pencil"
                 class="bg-primary-200 hover:bg-primary-300 text-primary-950"
-                @click="editSubuser(item)"
+                @click="editProduct(item)"
               />
             </td>
           </tr>
@@ -72,12 +86,12 @@ import SearchInput from "@/components/Input/SearchInput.vue";
 import axios from "axios";
 import useTable from "@/stores/useTable";
 import CustomButton from "@/components/Button/CustomButton.vue";
-import SubuserFormView from "@/views/subuser/SubuserFormView.vue";
+import ProductFormView from "@/views/product/ProductFormView.vue";
 import { Trash2, Pencil } from "lucide-vue-next";
 import useToast from "@/stores/useToast";
 import useAuth from "@/stores/useAuth";
-import { useRoute } from "vue-router";
 import DefaultSkeleton from "@/components/Skeleton/DefaultSkeleton.vue";
+import { useRoute } from "vue-router";
 
 const auth = useAuth();
 const table = useTable();
@@ -87,12 +101,12 @@ const route = useRoute();
 let debounce;
 
 const isShowingForm = ref(false);
-const selectedSubuser = ref(null);
+const selectedProduct = ref(null);
 
 onMounted(async () => {
   await auth.checkLoginSession(route);
   table.resetPage();
-  await fetchSubusers();
+  await fetchProducts();
 });
 
 watch(table.filters, () => {
@@ -101,60 +115,79 @@ watch(table.filters, () => {
   if (debounce) {
     clearTimeout(debounce);
   }
-  debounce = setTimeout(() => fetchSubusers(), 500);
+  debounce = setTimeout(() => fetchProducts(), 500);
 });
 
 watch(
   () => table.page.current,
   () => {
-    fetchSubusers();
+    fetchProducts();
   }
 );
 
-const fetchSubusers = async () => {
-  const { data } = await axios.get(
-    `${process.env.VUE_APP_API_BASE_URL}/api/subusers?shop_id=${auth.shopId}&keyword=${table.filters.keyword}&page=${table.page.current}`,
-    {
-      headers: {
-        Authorization: `Bearer ${auth.authToken}`,
-      },
-      withCredentials: true,
-    }
-  );
+const fetchProducts = async () => {
+  try {
+    const { data } = await axios.get(
+      `${process.env.VUE_APP_API_BASE_URL}/api/products?shop_id=${
+        auth.shopId
+      }&page=${table.page.current}${
+        table.filters.keyword ? "&keyword=" + table.filters.keyword : ""
+      }`,
+      {
+        headers: {
+          Authorization: `Bearer ${auth.authToken}`,
+        },
+        withCredentials: true,
+      }
+    );
 
-  table.items = data.data.map((item) => {
-    return {
-      id: item.id,
-      email: item.email,
-      name: item.name,
-      permissions: item.permissions,
-      lastLogin: item.last_login,
-    };
-  });
+    table.items = data.data.map((item) => {
+      return {
+        sku: item.sku,
+        name: item.name,
+        capitalPrice: item.capital_price,
+        sellingRetailPrice: item.selling_retail_price,
+        sellingPrice: item.selling_price,
+        discountPrice: item.discount_price,
+        stock: item.stock,
+        imageUrl: item.image_url,
+        type: item.type,
+        category: item.category,
+        barcode: item.barcode,
+        isActive: item.is_active,
+      };
+    });
 
-  table.page.current = data.meta.current_page;
-  table.page.last = data.meta.last_page;
-  table.page.per = data.meta.per_page;
-  table.page.total = data.meta.total;
+    table.page.current = data.meta.current_page;
+    table.page.last = data.meta.last_page;
+    table.page.per = data.meta.per_page;
+    table.page.total = data.meta.total;
+  } catch (response) {
+    auth.handleUnauthenticated(response);
+  }
 };
 
-const editSubuser = (item) => {
+const editProduct = (item) => {
   isShowingForm.value = true;
-  selectedSubuser.value = {
-    id: item.id,
-    email: item.email,
-    password: item.password,
+  selectedProduct.value = {
+    sku: item.sku,
     name: item.name,
-    permissions: item.permissions,
+    capitalPrice: item.capitalPrice,
+    sellingRetailPrice: item.sellingRetailPrice,
+    sellingPrice: item.sellingPrice,
+    discountPrice: item.discountPrice,
+    stock: item.stock,
+    imageUrl: item.imageUrl,
+    type: item.type,
+    category: item.category,
+    barcode: item.barcode,
+    isActive: item.isActive,
   };
 };
 
-const deleteSubuser = async (id) => {
-  const { data } = await axios.post(
-    `${process.env.VUE_APP_API_BASE_URL}/api/subusers`,
-    {
-      id: id,
-    },
+const deleteProduct = async (sku) => {
+  const { data } = await axios.delete(
+    `${process.env.VUE_APP_API_BASE_URL}/api/products/delete?shop_id=${auth.shopId}&sku=${sku}`,
     {
       headers: {
         Authorization: `Bearer ${auth.authToken}`,
@@ -178,6 +211,6 @@ const deleteSubuser = async (id) => {
 
 const resetForm = () => {
   isShowingForm.value = false;
-  selectedSubuser.value = null;
+  selectedProduct.value = null;
 };
 </script>
