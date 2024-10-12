@@ -84,7 +84,7 @@
         </div>
       </div>
       <hr class="!my-4" />
-      <div class="w-full flex justify-center pt-8">
+      <div class="w-full flex justify-center pt-8 gap-2">
         <CustomButton
           v-for="paymentMethod in paymentMethods"
           :key="paymentMethod.code"
@@ -93,7 +93,7 @@
           :label="paymentMethod.name"
           label-weight="bold"
           :icon-size="45"
-          class="bg-transparent hover:bg-slate-100 text-primary-800 border-2 border-primary-700 hover:border-primary-800"
+          class="bg-transparent hover:bg-slate-100 h-32 !text-primary-800 border-2 border-primary-700 hover:border-primary-800"
           orientation="vertical"
           :icon="paymentMethod.code === 'cash' ? Receipt : QrCode"
           :disabled="cart.items.length < 1"

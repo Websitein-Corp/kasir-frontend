@@ -4,7 +4,7 @@
       size="md"
       iconSide="left"
       label="Tambah Diskon"
-      class="bg-transparent hover:bg-slate-100 text-primary-800 border-2 border-primary-700 hover:border-primary-800"
+      class="bg-transparent hover:bg-slate-100 !text-primary-800 border-2 border-primary-700 hover:border-primary-800"
       :icon="TicketPercent"
       @click="modal.open()"
     />
