@@ -46,7 +46,7 @@
         />
       </div>
       <div class="h-full flex flex-col justify-end text-red-500 mb-4">
-        <NavigationMenu :icon="LogOut" />
+        <NavigationMenu :icon="LogOut" @click="() => logout()" />
       </div>
     </nav>
   </div>
@@ -73,6 +73,10 @@ import {
 } from "lucide-vue-next";
 import NavigationMenu from "@/components/Navigation/NavigationMenu.vue";
 import usePage from "@/stores/usePage";
+import axios from "axios";
+import router from "@/router";
+import useToast from "@/stores/useToast";
+import useAuth from "@/stores/useAuth";
 
 const menus = [
   {
@@ -114,17 +118,17 @@ const menus = [
       {
         label: "Kategori Produk",
         icon: Box,
-        endpoint: "/",
+        endpoint: "/category",
       },
       {
         label: "Bahan Baku Produk",
         icon: ShoppingBasket,
-        endpoint: "/",
+        endpoint: "/ingredient",
       },
       {
         label: "Daftar Produk",
         icon: List,
-        endpoint: "/",
+        endpoint: "/product",
       },
     ],
   },
@@ -150,5 +154,46 @@ const menus = [
   },
 ];
 
+const auth = useAuth();
 const page = usePage();
+const toast = useToast();
+
+const logout = async () => {
+  try {
+    const baseURL = process.env.VUE_APP_API_BASE_URL;
+    const endpoint = `${baseURL}/api/auth/logout`;
+
+    const { data } = await axios.post(
+      endpoint,
+      {},
+      {
+        headers: {
+          Authorization: `Bearer ${auth.authToken}`,
+        },
+        withCredentials: true,
+      }
+    );
+
+    if (!data.error_type) {
+      toast.message = "Sukses";
+      toast.description = "Logout berhasil!";
+      toast.type = "SUCCESS";
+      toast.trigger();
+
+      await router.push("/login");
+    } else {
+      toast.message = "Gagal";
+      toast.description = "Logout gagal!";
+      toast.type = "FAILED";
+      toast.trigger();
+    }
+  } catch (error) {
+    toast.message = "Gagal";
+    toast.description = error.response?.data || error.message;
+    toast.type = "FAILED";
+    toast.trigger();
+  }
+
+  auth.clearLocalStorage();
+};
 </script>
