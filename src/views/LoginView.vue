@@ -162,7 +162,7 @@ const login = async () => {
     }
   } catch (error) {
     toast.message = "Gagal";
-    toast.description = error.response?.data || error.message;
+    toast.description = error.response?.data.message || error.message;
     toast.type = "FAILED";
     toast.trigger();
   }
