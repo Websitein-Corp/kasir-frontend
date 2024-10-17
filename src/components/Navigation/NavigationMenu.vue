@@ -3,6 +3,7 @@
     <component
       :is="submenus.length > 0 ? 'span' : 'router-link'"
       :to="endpoint"
+      @click="() => handleMenuClick(submenus.length > 0)"
       class="w-full group/menu px-2 space-y-1 cursor-pointer"
     >
       <div
@@ -23,6 +24,7 @@
     >
       <template v-for="(submenu, index) in submenus" :key="index">
         <div
+          @click="() => handleMenuClick(false)"
           class="w-full bg-primary-100 group/submenu p-2 space-y-1 cursor-pointer hover:bg-primary-300 transition-all"
         >
           <router-link :to="submenu.endpoint">
@@ -42,6 +44,8 @@
 </template>
 
 <script setup>
+import usePage from "@/stores/usePage";
+
 defineProps({
   label: {
     type: String,
@@ -61,4 +65,12 @@ defineProps({
     default: false,
   },
 });
+
+const page = usePage();
+
+const handleMenuClick = (hasSubmenu) => {
+  if (!hasSubmenu && window.innerWidth < 1024) {
+    page.navIsOpened = false;
+  }
+};
 </script>

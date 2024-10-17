@@ -153,6 +153,7 @@ const fetchProducts = async () => {
         imageUrl: item.image_url,
         type: item.type,
         category: item.category,
+        ingredients: item.ingredients,
         barcode: item.barcode,
         isActive: item.is_active,
       };
@@ -180,6 +181,7 @@ const editProduct = (item) => {
     imageUrl: item.imageUrl,
     type: item.type,
     category: item.category,
+    ingredients: item.ingredients,
     barcode: item.barcode,
     isActive: item.isActive,
   };

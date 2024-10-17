@@ -1,4 +1,11 @@
 <template>
+  <div
+    class="fixed z-40 top-0 left-0 h-screen bg-slate-800/50"
+    :class="{
+      'w-screen lg:w-0': page.navIsOpened,
+      'w-0': !page.navIsOpened,
+    }"
+  ></div>
   <div class="fixed z-50 top-4 left-5 p-2 mt-3">
     <Menu
       class="cursor-pointer transition-all"

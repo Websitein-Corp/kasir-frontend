@@ -11,6 +11,7 @@
         :sku="product.sku"
         :name="product.name"
         :type="product.type"
+        :amount="cart.getItem(product.sku) && cart.getItem(product.sku).amount"
         :selling-price="product.selling_price"
         :image-url="product.image_url"
         :selected="cart.has(product.sku)"

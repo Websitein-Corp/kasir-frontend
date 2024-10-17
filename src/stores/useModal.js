@@ -6,6 +6,7 @@ export default defineStore("modal", {
     title: "",
     icon: null,
     body: null,
+    props: null,
   }),
   actions: {
     open() {

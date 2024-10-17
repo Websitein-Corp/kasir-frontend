@@ -88,6 +88,19 @@
               placeholder="Masukkan kategori produk..."
               class="col-span-2 lg:col-span-1"
             />
+            <div class="col-span-2 flex justify-center">
+              <FileInput
+                label="Gambar"
+                :acceptedFiles="['png', 'jpg', 'jpeg']"
+                :clickable="true"
+                dropzoneMessageClassName="dropzone-message"
+                @addedFile="
+                  (file) => {
+                    form.image = file.file;
+                  }
+                "
+              />
+            </div>
           </div>
           <div class="flex justify-center pt-4">
             <CustomButton
@@ -118,6 +131,7 @@
           </div>
         </FormCard>
         <FormCard
+          v-if="productData.type === 'FOODS'"
           title="Actions"
           :icon="Gavel"
           class="col-span-3 lg:col-span-1"
@@ -126,11 +140,11 @@
             <div class="flex space-x-4 mt-4">
               <div class="h-7">
                 <CustomButton
-                  size="xl"
+                  size="full"
                   label="Atur Bahan Baku"
                   :icon="FileBox"
                   class="bg-primary-700 hover:bg-primary-800"
-                  @click="submitProduct"
+                  @click="modal.open()"
                 />
               </div>
             </div>
@@ -149,6 +163,7 @@ import {
   Plus,
   Gavel,
   Pencil,
+  Receipt,
 } from "lucide-vue-next";
 import { ref, onMounted, defineAsyncComponent, reactive } from "vue";
 import PageContainer from "@/views/PageContainer.vue";
@@ -158,6 +173,10 @@ import CustomButton from "@/components/Button/CustomButton.vue";
 import SwitchInput from "@/components/Input/SwitchInput.vue";
 import useToast from "@/stores/useToast";
 import useAuth from "@/stores/useAuth";
+import useModal from "@/stores/useModal";
+import IngredientBody from "@/components/Modal/Body/IngredientBody.vue";
+import useIngredient from "@/stores/useIngredient";
+import FileInput from "@/components/Input/File/FileInput.vue";
 
 const TextInput = defineAsyncComponent(() =>
   import("@/components/Input/TextInput.vue")
@@ -178,6 +197,8 @@ const emit = defineEmits(["closeForm"]);
 
 const auth = useAuth();
 const toast = useToast();
+const modal = useModal();
+const ingredient = useIngredient();
 
 const categoryList = ref([]);
 
@@ -191,7 +212,6 @@ const form = reactive({
   sellingPrice: props.productData ? props.productData.sellingPrice : 0,
   discountPrice: props.productData ? props.productData.discountPrice : 0,
   stock: props.productData ? props.productData.stock : 0,
-  imageUrl: props.productData ? props.productData.imageUrl : "",
   type: props.productData ? props.productData.type : "",
   category: props.productData ? props.productData.category.code : "",
   barcode: props.productData ? props.productData.barcode : "",
@@ -201,6 +221,13 @@ const form = reactive({
 
 onMounted(() => {
   fetchCategories();
+
+  modal.title = "Atur Bahan Baku";
+  modal.icon = Receipt;
+  modal.body = IngredientBody;
+
+  ingredient.sku = props.productData ? props.productData.sku : "";
+  ingredient.used = props.productData ? props.productData.ingredients : [];
 });
 
 const submitProduct = async () => {
@@ -227,6 +254,7 @@ const submitProduct = async () => {
         {
           headers: {
             Authorization: `Bearer ${auth.authToken}`,
+            "Content-Type": "multipart/form-data",
           },
           withCredentials: true,
         }
@@ -251,6 +279,7 @@ const submitProduct = async () => {
         {
           headers: {
             Authorization: `Bearer ${auth.authToken}`,
+            "Content-Type": "multipart/form-data",
           },
           withCredentials: true,
         }
@@ -304,3 +333,13 @@ const fetchCategories = async () => {
   categoryList.value = data.data;
 };
 </script>
+
+<style>
+.dropzone-message {
+  @apply flex-grow text-center mt-3;
+}
+
+.dropzone-message::after {
+  content: " or click (.png, .jpg, .jpeg)";
+}
+</style>
