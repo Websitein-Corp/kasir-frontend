@@ -10,7 +10,7 @@ export default defineStore("file", {
       this.file = new UploadableFile(file);
     },
 
-    removeFile(file) {
+    removeFile() {
       this.file = null;
     },
   },
