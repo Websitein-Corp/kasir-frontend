@@ -3,8 +3,11 @@ import { defineStore } from "pinia";
 export default defineStore("ingredient", {
   state: () => ({
     sku: "",
+    all: [],
     list: [],
     used: [],
+    updatedAll: [],
+    updated: [],
     filters: {
       keyword: "",
     },
