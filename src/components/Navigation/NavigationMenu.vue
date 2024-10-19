@@ -21,13 +21,24 @@
     <div
       v-if="submenus.length > 0"
       class="absolute top-1/3 left-20 rounded-lg bg-primary-100 w-44 opacity-0 z-50 pointer-events-none group-hover/container:pointer-events-auto group-hover/container:opacity-100 group-hover/container:translate-x-1 overflow-hidden transition-all"
+      :class="{
+        '!-top-12': isLogout,
+      }"
     >
       <template v-for="(submenu, index) in submenus" :key="index">
         <div
-          @click="() => handleMenuClick(false)"
+          @click="
+            () => {
+              handleMenuClick(false);
+              $emit('submenuClick', submenu.label);
+            }
+          "
           class="w-full bg-primary-100 group/submenu p-2 space-y-1 cursor-pointer hover:bg-primary-300 transition-all"
         >
-          <router-link :to="submenu.endpoint">
+          <component
+            :is="submenu.endpoint ? 'router-link' : 'span'"
+            :to="submenu.endpoint"
+          >
             <span class="w-full flex items-center space-x-2 p-2">
               <span class="group-hover/submenu:scale-125 transition-all">
                 <component :is="submenu.icon"></component>
@@ -36,7 +47,7 @@
                 {{ submenu.label }}
               </span>
             </span>
-          </router-link>
+          </component>
         </div>
       </template>
     </div>
@@ -64,7 +75,13 @@ defineProps({
     type: Boolean,
     default: false,
   },
+  isLogout: {
+    type: Boolean,
+    default: false,
+  },
 });
+
+defineEmits(["submenuClick"]);
 
 const page = usePage();
 
