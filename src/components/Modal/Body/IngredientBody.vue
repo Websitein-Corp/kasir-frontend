@@ -39,7 +39,7 @@
 </template>
 
 <script setup>
-import { computed, onMounted, ref, watch } from "vue";
+import { computed, onMounted, watch } from "vue";
 import useModal from "@/stores/useModal";
 import useToast from "@/stores/useToast";
 import SearchInput from "@/components/Input/SearchInput.vue";
@@ -74,12 +74,6 @@ onMounted(async () => {
   await filterAllUsedIngredients();
   await fetchIngredients();
   await filterUsedIngredients();
-
-  console.log("list: ", ingredient.list);
-  console.log("used: ", ingredient.used);
-  console.log("all: ", ingredient.all);
-  console.log("updated: ", ingredient.updated);
-  console.log("updatedAll: ", ingredient.updatedAll);
 });
 
 watch(ingredient.filters, () => {
