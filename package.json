@@ -11,6 +11,7 @@
     "@vuepic/vue-datepicker": "^9.0.3",
     "axios": "^1.7.7",
     "core-js": "^3.8.3",
+    "dropzone-vue": "^0.1.11",
     "lucide-vue-next": "^0.438.0",
     "pinia": "^2.2.2",
     "register-service-worker": "^1.7.2",

@@ -3,6 +3,7 @@
     <component
       :is="submenus.length > 0 ? 'span' : 'router-link'"
       :to="endpoint"
+      @click="() => handleMenuClick(submenus.length > 0)"
       class="w-full group/menu px-2 space-y-1 cursor-pointer"
     >
       <div
@@ -20,12 +21,24 @@
     <div
       v-if="submenus.length > 0"
       class="absolute top-1/3 left-20 rounded-lg bg-primary-100 w-44 opacity-0 z-50 pointer-events-none group-hover/container:pointer-events-auto group-hover/container:opacity-100 group-hover/container:translate-x-1 overflow-hidden transition-all"
+      :class="{
+        '!-top-12': isLogout,
+      }"
     >
       <template v-for="(submenu, index) in submenus" :key="index">
         <div
+          @click="
+            () => {
+              handleMenuClick(false);
+              $emit('submenuClick', submenu.label);
+            }
+          "
           class="w-full bg-primary-100 group/submenu p-2 space-y-1 cursor-pointer hover:bg-primary-300 transition-all"
         >
-          <router-link :to="submenu.endpoint">
+          <component
+            :is="submenu.endpoint ? 'router-link' : 'span'"
+            :to="submenu.endpoint"
+          >
             <span class="w-full flex items-center space-x-2 p-2">
               <span class="group-hover/submenu:scale-125 transition-all">
                 <component :is="submenu.icon"></component>
@@ -34,7 +47,7 @@
                 {{ submenu.label }}
               </span>
             </span>
-          </router-link>
+          </component>
         </div>
       </template>
     </div>
@@ -42,6 +55,8 @@
 </template>
 
 <script setup>
+import usePage from "@/stores/usePage";
+
 defineProps({
   label: {
     type: String,
@@ -60,5 +75,19 @@ defineProps({
     type: Boolean,
     default: false,
   },
+  isLogout: {
+    type: Boolean,
+    default: false,
+  },
 });
+
+defineEmits(["submenuClick"]);
+
+const page = usePage();
+
+const handleMenuClick = (hasSubmenu) => {
+  if (!hasSubmenu && window.innerWidth < 1024) {
+    page.navIsOpened = false;
+  }
+};
 </script>

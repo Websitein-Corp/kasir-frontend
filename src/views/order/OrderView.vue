@@ -8,17 +8,30 @@
         class="w-full transition-all flex items-center ml-4"
         :class="{ 'pl-10 lg:pl-8': !page.navIsOpened }"
       >
-        <div v-if="page.order.step > 0 && page.navIsOpened">
-          <ArrowLeft @click="page.order.step--" class="cursor-pointer" />
-        </div>
         <div
-          class="p-8 pb-8"
+          class="p-8 pb-8 flex"
           :class="{
             '!pl-28 lg:!pl-4': page.navIsOpened,
           }"
         >
-          <div class="font-bold text-2xl">Pesan</div>
-          <div class="text-slate-400">Membuat pesanan baru...</div>
+          <div
+            v-if="page.order.step > 0"
+            class="flex items-center"
+            :class="{
+              'hidden lg:flex': page.navIsOpened,
+            }"
+          >
+            <ArrowLeft @click="page.order.step--" class="cursor-pointer" />
+          </div>
+          <div
+            class="ml-4"
+            :class="{
+              'ml-0 lg:ml-4': page.navIsOpened,
+            }"
+          >
+            <div class="font-bold text-2xl">Pesan</div>
+            <div class="text-slate-400">Membuat pesanan baru...</div>
+          </div>
         </div>
       </div>
       <OrderBody v-if="page.order.step === 0" />

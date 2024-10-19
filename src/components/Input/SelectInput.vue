@@ -1,21 +1,24 @@
 <template>
   <div class="relative mt-6">
-    <input
+    <select
       :id="name"
-      :type="type"
       :name="name"
-      :placeholder="placeholder"
       :value="modelValue"
-      class="peer w-full border-b rounded-lg placeholder:text-transparent p-4 focus:outline-none focus:ring-2 ring-primary-600 transition-all"
+      class="peer w-full h-14 border-b rounded-lg placeholder:text-transparent p-4 focus:outline-none ring-2 ring-primary-600 transition-all"
       :class="{
-        'ring-2': modelValue,
         'cursor-not-allowed !bg-white !ring-slate-500 !text-slate-500':
           disabled,
       }"
       :disabled="disabled"
       @input="$emit('update:modelValue', $event.target.value)"
       v-bind="$attrs"
-    />
+    >
+      <template v-for="item in list" :key="item.code">
+        <option :value="item.code">
+          {{ item.label }}
+        </option>
+      </template>
+    </select>
     <label
       :for="name"
       class="absolute left-0 ml-1 -translate-y-3 bg-white px-1 text-sm duration-100 ease-linear peer-placeholder-shown:translate-y-0 peer-placeholder-shown:text-base peer-placeholder-shown:text-primary-700 text-primary-600 peer-focus:ml-1 peer-focus:-translate-y-3 peer-focus:px-1 peer-focus:text-sm"
@@ -29,19 +32,15 @@
 const props = defineProps({
   name: {
     type: String,
-    default: "username",
+    default: "",
   },
-  type: {
-    type: String,
-    default: "text",
+  list: {
+    type: Array,
+    default: () => [],
   },
   label: {
     type: String,
-    default: "Username",
-  },
-  placeholder: {
-    type: String,
-    default: "username",
+    default: "",
   },
   disabled: {
     type: Boolean,
