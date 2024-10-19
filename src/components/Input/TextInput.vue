@@ -6,8 +6,15 @@
       :name="name"
       :placeholder="placeholder"
       :value="modelValue"
-      class="peer w-full border-b rounded-lg placeholder:text-transparent p-4 focus:outline-none focus:ring-2 focus:ring-primary-600 transition-all"
+      class="peer w-full border-b rounded-lg placeholder:text-transparent p-4 focus:outline-none focus:ring-2 ring-primary-600 transition-all"
+      :class="{
+        'ring-2': modelValue,
+        'cursor-not-allowed !bg-white !ring-slate-500 !text-slate-500':
+          disabled,
+      }"
+      :disabled="disabled"
       @input="$emit('update:modelValue', $event.target.value)"
+      v-bind="$attrs"
     />
     <label
       :for="name"
@@ -35,6 +42,10 @@ const props = defineProps({
   placeholder: {
     type: String,
     default: "username",
+  },
+  disabled: {
+    type: Boolean,
+    default: false,
   },
   modelValue: null,
 });
