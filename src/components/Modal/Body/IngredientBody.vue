@@ -12,12 +12,16 @@
       </tr>
     </template>
     <template v-slot:tbody>
-      <tr v-for="(item, index) in usedIngredients" :key="index">
+      <tr v-for="(item, index) in ingredient.updated" :key="index">
         <td>{{ item.name || "-" }}</td>
         <td class="flex justify-center items-center space-x-2">
-          <NumberInput v-model="item.qty" />
+          <NumberInput
+            :model-value="item.qty"
+            allow-zero
+            @update:model-value="(val) => setIngredientQuantity(item.name, val)"
+          />
           <div class="w-20 ml-2 text-slate-500">
-            {{ item.unitName }}
+            {{ item.unit_name }}
           </div>
         </td>
       </tr>
@@ -54,9 +58,8 @@ const ingredient = useIngredient();
 
 let debounce;
 
-const usedIngredients = ref(ingredient.used);
 const formattedUsedIngredients = computed(() =>
-  usedIngredients.value
+  ingredient.updated
     .filter((item) => item.qty > 0)
     .map((item) => {
       return {
@@ -66,8 +69,17 @@ const formattedUsedIngredients = computed(() =>
     })
 );
 
-onMounted(() => {
-  filterUsedIngredients();
+onMounted(async () => {
+  await fetchAllIngredients();
+  await filterAllUsedIngredients();
+  await fetchIngredients();
+  await filterUsedIngredients();
+
+  console.log("list: ", ingredient.list);
+  console.log("used: ", ingredient.used);
+  console.log("all: ", ingredient.all);
+  console.log("updated: ", ingredient.updated);
+  console.log("updatedAll: ", ingredient.updatedAll);
 });
 
 watch(ingredient.filters, () => {
@@ -76,28 +88,69 @@ watch(ingredient.filters, () => {
   if (debounce) {
     clearTimeout(debounce);
   }
-  debounce = setTimeout(() => fetchIngredients(), 500);
+  debounce = setTimeout(async () => {
+    await fetchIngredients();
+    filterUsedIngredients();
+  }, 500);
 });
 
 watch(
   () => ingredient.page.current,
-  () => {
+  async () => {
+    await fetchIngredients();
     filterUsedIngredients();
   }
 );
 
-const filterUsedIngredients = async () => {
-  await fetchIngredients();
+const filterAllUsedIngredients = async () => {
+  ingredient.updatedAll = ingredient.all.map((item) => {
+    const itemOnHold = item;
 
-  usedIngredients.value = ingredient.list.map((item) => {
-    if (ingredient.used.includes(item)) {
-      item.qty = ingredient.used.find(
-        (subItem) => subItem.name === item.name
+    if (
+      ingredient.used.find(
+        (itemToCompare) => itemToCompare.name === itemOnHold.name
+      )
+    ) {
+      itemOnHold.qty = ingredient.used.find(
+        (subItem) => subItem.name === itemOnHold.name
       ).qty;
     }
 
-    return item;
+    return itemOnHold;
   });
+};
+
+const filterUsedIngredients = () => {
+  ingredient.updated = ingredient.list.map((item) => {
+    const itemOnHold = item;
+
+    ingredient.updatedAll.map((itemToBeReset) => ({
+      ...itemToBeReset,
+      qty: 0,
+    }));
+
+    if (
+      ingredient.updatedAll.find(
+        (itemToCompare) =>
+          itemToCompare.name === itemOnHold.name && itemToCompare.qty > -1
+      )
+    ) {
+      itemOnHold.qty = ingredient.updatedAll.find(
+        (subItem) => subItem.name === itemOnHold.name
+      ).qty;
+    }
+
+    return itemOnHold;
+  });
+};
+
+const setIngredientQuantity = (name, qty) => {
+  const ingredientIndex = ingredient.updatedAll.indexOf(
+    ingredient.updatedAll.find((item) => item.name === name)
+  );
+
+  ingredient.updatedAll[ingredientIndex].qty = qty;
+  filterUsedIngredients();
 };
 
 const onSubmit = () => {
@@ -132,6 +185,33 @@ const onSubmit = () => {
   }
 };
 
+const fetchAllIngredients = async () => {
+  try {
+    const { data } = await axios.get(
+      `${process.env.VUE_APP_API_BASE_URL}/api/ingredients?shop_id=${auth.shopId}&keyword=&page=`,
+      {
+        headers: {
+          Authorization: `Bearer ${auth.authToken}`,
+        },
+        withCredentials: true,
+      }
+    );
+
+    ingredient.all = data.data.map((item) => {
+      return {
+        id: item.id,
+        name: item.name,
+        stock: item.stock,
+        unit_name: item.unit_name,
+        price: item.price,
+        qty: 0,
+      };
+    });
+  } catch (response) {
+    auth.handleUnauthenticated(response);
+  }
+};
+
 const fetchIngredients = async () => {
   try {
     const { data } = await axios.get(
@@ -149,7 +229,7 @@ const fetchIngredients = async () => {
         id: item.id,
         name: item.name,
         stock: item.stock,
-        unitName: item.unit_name,
+        unit_name: item.unit_name,
         price: item.price,
         qty: 0,
       };

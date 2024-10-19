@@ -68,24 +68,25 @@
             />
             <TextInput
               v-model="form.stock"
+              disabled
               name="stock"
               label="Stok"
               type="number"
               placeholder="Masukkan stok..."
               class="col-span-2 lg:col-span-1"
             />
-            <TextInput
+            <SelectInput
               v-model="form.type"
               name="type"
               label="Tipe Produk"
-              placeholder="Masukkan tipe produk..."
+              :list="typeList"
               class="col-span-2 lg:col-span-1"
             />
-            <TextInput
+            <SelectInput
               v-model="form.category"
               name="category"
               label="Kategori Produk"
-              placeholder="Masukkan kategori produk..."
+              :list="categoryList"
               class="col-span-2 lg:col-span-1"
             />
             <div class="col-span-2 flex justify-center">
@@ -177,6 +178,7 @@ import useModal from "@/stores/useModal";
 import IngredientBody from "@/components/Modal/Body/IngredientBody.vue";
 import useIngredient from "@/stores/useIngredient";
 import FileInput from "@/components/Input/File/FileInput.vue";
+import SelectInput from "@/components/Input/SelectInput.vue";
 
 const TextInput = defineAsyncComponent(() =>
   import("@/components/Input/TextInput.vue")
@@ -199,6 +201,25 @@ const auth = useAuth();
 const toast = useToast();
 const modal = useModal();
 const ingredient = useIngredient();
+
+const typeList = [
+  {
+    label: "Makanan",
+    code: "FOODS",
+  },
+  {
+    label: "Barang",
+    code: "GOODS",
+  },
+  {
+    label: "Jasa (jumlah)",
+    code: "SERVICE",
+  },
+  {
+    label: "Jasa (waktu)",
+    code: "SERVICE TIME",
+  },
+];
 
 const categoryList = ref([]);
 
@@ -236,7 +257,7 @@ const submitProduct = async () => {
 
     if (props.isEdit) {
       response = await axios.put(
-        `${process.env.VUE_APP_API_BASE_URL}/api/products`,
+        `${process.env.VUE_APP_API_BASE_URL}/api/products/edit`,
         {
           shop_id: auth.shopId,
           sku: form.sku,
@@ -244,7 +265,6 @@ const submitProduct = async () => {
           selling_retail_price: form.sellingRetailPrice,
           selling_price: form.sellingPrice,
           capital_price: form.capitalPrice,
-          stock: form.stock,
           type: form.type,
           category: form.category,
           barcode: form.barcode,
@@ -330,7 +350,10 @@ const fetchCategories = async () => {
     }
   );
 
-  categoryList.value = data.data;
+  categoryList.value = data.data.map((category) => ({
+    code: category.code,
+    label: category.name,
+  }));
 };
 </script>
 
