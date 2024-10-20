@@ -72,6 +72,11 @@ const routes = [
     name: "supplier",
     component: () => import("../views/supplier/SupplierView.vue"),
   },
+  {
+    path: "/dashboard",
+    name: "dashboard",
+    component: () => import("../views/DashboardView.vue"),
+  },
 ];
 
 const router = createRouter({
