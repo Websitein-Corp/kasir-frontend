@@ -62,6 +62,16 @@ const routes = [
     name: "shop",
     component: () => import("@/views/ShopListView.vue"),
   },
+  {
+    path: "/recon",
+    name: "recon",
+    component: () => import("../views/ReconView.vue"),
+  },
+  {
+    path: "/supplier",
+    name: "supplier",
+    component: () => import("../views/supplier/SupplierView.vue"),
+  },
 ];
 
 const router = createRouter({
