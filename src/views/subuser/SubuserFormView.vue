@@ -24,6 +24,7 @@
               class="col-span-2 lg:col-span-1"
             />
             <TextInput
+              v-if="!isEdit"
               v-model="form.password"
               type="password"
               name="password"
@@ -155,7 +156,6 @@ const submitSubuser = async () => {
         {
           id: form.id,
           email: form.email,
-          password: form.password,
           name: form.name,
           permissions: form.permissions,
         },
