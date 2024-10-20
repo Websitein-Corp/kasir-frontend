@@ -98,7 +98,7 @@ import { ref } from "vue";
 const menus = ref([
   {
     label: "Beranda",
-    endpoint: "/",
+    endpoint: "/dashboard",
     icon: ChartPie,
     current: true,
   },
@@ -160,13 +160,13 @@ const menus = ref([
   {
     label: "Supplier",
     icon: Truck,
-    endpoint: "/",
+    endpoint: "/supplier",
     current: false,
   },
   {
     label: "Rekon",
     icon: Shuffle,
-    endpoint: "/",
+    endpoint: "/recon",
     current: false,
   },
   {

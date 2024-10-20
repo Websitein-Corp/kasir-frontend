@@ -17,7 +17,7 @@
         <template v-slot:action-3>
           <div class="flex space-x-2">
             <CustomButton
-              size="sm"
+              size="mobile"
               label="Add"
               class="bg-primary-700 hover:bg-primary-800"
               @click="isShowingForm = true"

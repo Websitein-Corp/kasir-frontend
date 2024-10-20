@@ -1,12 +1,14 @@
 <template>
   <div class="dtable-header space-y-5">
     <slot name="action-1"></slot>
-    <div class="flex justify-between my-6 mb-12">
+    <div
+      class="flex flex-col md:flex-row space-y-4 md:space-y-0 space-x-0 md:space-x-4 justify-between my-6 mb-12"
+    >
       <slot name="action-2"></slot>
       <slot name="action-3"></slot>
     </div>
   </div>
-  <div class="dtable-content">
+  <div class="dtable-content overflow-x-auto">
     <table class="w-full p-2 overflow-x-auto">
       <thead class="text-center text-gray-400 border-b-2 border-gray-100">
         <slot name="thead"></slot>
@@ -16,7 +18,10 @@
       </tbody>
     </table>
   </div>
-  <div v-if="table.page.links" class="dtable-footer flex justify-between mt-8">
+  <div
+    v-if="table.page.links"
+    class="dtable-footer flex justify-between items-center mt-8 text-sm"
+  >
     <div>Page {{ table.page.current }} / {{ table.page.last }}</div>
     <div class="page-nav space-x-2 flex">
       <CustomButton
@@ -65,5 +70,9 @@ const table = useTable();
 
 .page-nav button:disabled {
   @apply text-gray-400;
+}
+
+.dtable-content td {
+  @apply min-w-[150px];
 }
 </style>
