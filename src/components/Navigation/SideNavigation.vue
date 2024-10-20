@@ -1,4 +1,11 @@
 <template>
+  <div
+    class="fixed z-40 top-0 left-0 h-screen bg-slate-800/50"
+    :class="{
+      'w-screen lg:w-0': page.navIsOpened,
+      'w-0': !page.navIsOpened,
+    }"
+  ></div>
   <div class="fixed z-50 top-4 left-5 p-2 mt-3">
     <Menu
       class="cursor-pointer transition-all"
@@ -43,10 +50,18 @@
           :endpoint="menu.endpoint"
           :submenus="menu.submenus"
           :current="menu.current"
+          @click="setCurrent(menu.label)"
         />
       </div>
       <div class="h-full flex flex-col justify-end text-red-500 mb-4">
-        <NavigationMenu :icon="LogOut" />
+        <NavigationMenu
+          :icon="LogOut"
+          :submenus="logoutSubmenus"
+          isLogout
+          @submenu-click="
+            (label) => (label === 'Logout' ? logout() : backToShopList())
+          "
+        />
       </div>
     </nav>
   </div>
@@ -70,15 +85,22 @@ import {
   ShoppingBasket,
   List,
   Menu,
+  Store,
 } from "lucide-vue-next";
 import NavigationMenu from "@/components/Navigation/NavigationMenu.vue";
 import usePage from "@/stores/usePage";
+import axios from "axios";
+import router from "@/router";
+import useToast from "@/stores/useToast";
+import useAuth from "@/stores/useAuth";
+import { ref } from "vue";
 
-const menus = [
+const menus = ref([
   {
     label: "Beranda",
     endpoint: "/",
     icon: ChartPie,
+    current: true,
   },
   {
     label: "Pesan",
@@ -105,7 +127,7 @@ const menus = [
         endpoint: "/order",
       },
     ],
-    current: true,
+    current: false,
   },
   {
     label: "Produk",
@@ -114,41 +136,108 @@ const menus = [
       {
         label: "Kategori Produk",
         icon: Box,
-        endpoint: "/",
+        endpoint: "/category",
       },
       {
         label: "Bahan Baku Produk",
         icon: ShoppingBasket,
-        endpoint: "/",
+        endpoint: "/ingredient",
       },
       {
         label: "Daftar Produk",
         icon: List,
-        endpoint: "/",
+        endpoint: "/product",
       },
     ],
+    current: false,
   },
   {
     label: "Transaksi",
     icon: ArrowRightLeft,
     endpoint: "/transaction",
+    current: false,
   },
   {
     label: "Supplier",
     icon: Truck,
     endpoint: "/",
+    current: false,
   },
   {
     label: "Rekon",
     icon: Shuffle,
     endpoint: "/",
+    current: false,
   },
   {
     label: "Karyawan",
     icon: Users,
     endpoint: "/subuser",
+    current: false,
+  },
+]);
+
+const logoutSubmenus = [
+  {
+    label: "Toko",
+    icon: Store,
+  },
+  {
+    label: "Logout",
+    icon: LogOut,
   },
 ];
 
+const auth = useAuth();
 const page = usePage();
+const toast = useToast();
+
+const backToShopList = () => {
+  auth.clearLocalStorage("shop_id");
+  router.push("/shop");
+};
+
+const logout = async () => {
+  try {
+    const baseURL = process.env.VUE_APP_API_BASE_URL;
+    const endpoint = `${baseURL}/api/auth/logout`;
+
+    const { data } = await axios.post(
+      endpoint,
+      {},
+      {
+        headers: {
+          Authorization: `Bearer ${auth.authToken}`,
+        },
+        withCredentials: true,
+      }
+    );
+
+    if (!data.error_type) {
+      toast.message = "Sukses";
+      toast.description = "Logout berhasil!";
+      toast.type = "SUCCESS";
+      toast.trigger();
+
+      await router.push("/login");
+    } else {
+      toast.message = "Gagal";
+      toast.description = "Logout gagal!";
+      toast.type = "FAILED";
+      toast.trigger();
+    }
+  } catch (error) {
+    toast.message = "Gagal";
+    toast.description = error.response?.data || error.message;
+    toast.type = "FAILED";
+    toast.trigger();
+  }
+
+  auth.clearLocalStorage();
+};
+
+const setCurrent = (label) => {
+  menus.value.map((menu) => (menu.current = false));
+  menus.value.find((menu) => menu["label"] === label).current = true;
+};
 </script>

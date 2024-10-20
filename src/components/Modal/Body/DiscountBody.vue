@@ -9,7 +9,12 @@
     />
   </div>
   <div class="flex justify-center mt-8">
-    <CustomButton size="md" label="Lanjut" @click="onSubmit" />
+    <CustomButton
+      size="md"
+      label="Lanjut"
+      class="bg-primary-700 hover:bg-primary-800"
+      @click="onSubmit"
+    />
   </div>
 </template>
 

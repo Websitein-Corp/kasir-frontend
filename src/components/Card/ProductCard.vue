@@ -72,6 +72,10 @@ const props = defineProps({
     type: String,
     default: "",
   },
+  amount: {
+    type: Number,
+    default: 0,
+  },
   sellingPrice: null,
   imageUrl: {
     type: String,
@@ -89,7 +93,7 @@ const props = defineProps({
 
 const cart = useCart();
 
-const amount = ref(0);
+const amount = ref(props.amount);
 const watchAmount = ref(false);
 
 watch(amount, (newVal, oldVal) => {
