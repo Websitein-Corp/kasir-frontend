@@ -1,11 +1,7 @@
 <template>
   <div class="relative w-screen h-screen">
-    <!-- SVG as the background -->
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      version="1.1"
-      xmlns:xlink="http://www.w3.org/1999/xlink"
-      xmlns:svgjs="http://svgjs.dev/svgjs"
       width="1980"
       height="1080"
       preserveAspectRatio="none"
@@ -102,6 +98,7 @@ import axios from "axios";
 import router from "@/router";
 import useToast from "@/stores/useToast";
 import useAuth from "@/stores/useAuth";
+import { useRoute } from "vue-router";
 
 const TextInput = defineAsyncComponent(() =>
   import("@/components/Input/TextInput.vue")
@@ -109,6 +106,7 @@ const TextInput = defineAsyncComponent(() =>
 
 const auth = useAuth();
 const toast = useToast();
+const route = useRoute();
 
 const email = ref("");
 const password = ref("");
@@ -116,7 +114,7 @@ const password = ref("");
 const isForgotPassword = ref(false);
 
 onMounted(() => {
-  auth.checkLoginSession();
+  auth.checkLoginSession(route);
 });
 
 const toggleForgotPassword = () => {
@@ -124,10 +122,8 @@ const toggleForgotPassword = () => {
 };
 
 const formAction = () => {
-  console.log(process.env);
-
   if (isForgotPassword.value) {
-    sendResetPasswordEmail();
+    //sendResetPasswordEmail();
   } else {
     login();
   }
@@ -146,6 +142,7 @@ const login = async () => {
     const token = response.data.data.token;
 
     if (token) {
+      auth.clearLocalStorage();
       auth.setAuthToken(token);
 
       toast.message = "Sukses";

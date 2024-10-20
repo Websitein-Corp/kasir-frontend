@@ -19,7 +19,7 @@
         :label="paymentMethod.name"
         label-weight="bold"
         :icon-size="45"
-        class="h-32 bg-transparent hover:bg-slate-100 text-primary-800 border-2 border-primary-700 hover:border-primary-800"
+        class="h-32 bg-transparent hover:bg-slate-100 !text-primary-800 border-2 border-primary-700 hover:border-primary-800"
         orientation="vertical"
         :icon="paymentMethod.code === 'cash' ? Receipt : QrCode"
         :disabled="cart.items.length < 1"

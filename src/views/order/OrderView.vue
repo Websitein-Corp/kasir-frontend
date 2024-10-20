@@ -1,5 +1,5 @@
 <template>
-  <div class="flex">
+  <div v-if="auth.isAuthenticated" class="flex">
     <div
       class="w-full lg:w-full h-screen pb-20 px-2 xl:px-8 overflow-x-hidden overflow-y-scroll no-scrollbar"
     >
@@ -8,17 +8,30 @@
         class="w-full transition-all flex items-center ml-4"
         :class="{ 'pl-10 lg:pl-8': !page.navIsOpened }"
       >
-        <div v-if="page.order.step > 0 && page.navIsOpened">
-          <ArrowLeft @click="page.order.step--" class="cursor-pointer" />
-        </div>
         <div
-          class="p-8 pb-8"
+          class="p-8 pb-8 flex"
           :class="{
             '!pl-28 lg:!pl-4': page.navIsOpened,
           }"
         >
-          <div class="font-bold text-2xl">Pesan</div>
-          <div class="text-slate-400">Membuat pesanan baru...</div>
+          <div
+            v-if="page.order.step > 0"
+            class="flex items-center"
+            :class="{
+              'hidden lg:flex': page.navIsOpened,
+            }"
+          >
+            <ArrowLeft @click="page.order.step--" class="cursor-pointer" />
+          </div>
+          <div
+            class="ml-4"
+            :class="{
+              'ml-0 lg:ml-4': page.navIsOpened,
+            }"
+          >
+            <div class="font-bold text-2xl">Pesan</div>
+            <div class="text-slate-400">Membuat pesanan baru...</div>
+          </div>
         </div>
       </div>
       <OrderBody v-if="page.order.step === 0" />
@@ -47,6 +60,11 @@
       </div>
     </div>
   </div>
+  <div v-else>
+    <DefaultSkeleton class="mb-2" />
+    <DefaultSkeleton class="mb-2" />
+    <DefaultSkeleton class="mb-2" />
+  </div>
 </template>
 
 <script setup>
@@ -59,6 +77,16 @@ import OrderBody from "@/views/order/order/OrderBody.vue";
 import SummaryBody from "@/views/order/summary/SummaryBody.vue";
 import SummarySidebar from "@/views/order/summary/SummarySidebar.vue";
 import SummaryBottomMenu from "@/views/order/summary/SummaryBottomMenu.vue";
+import useAuth from "@/stores/useAuth";
+import { onMounted } from "vue";
+import DefaultSkeleton from "@/components/Skeleton/DefaultSkeleton.vue";
+import { useRoute } from "vue-router";
 
+const auth = useAuth();
 const page = usePage();
+const route = useRoute();
+
+onMounted(() => {
+  auth.checkLoginSession(route);
+});
 </script>

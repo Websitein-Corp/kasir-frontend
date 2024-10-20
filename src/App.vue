@@ -1,6 +1,6 @@
 <template>
   <div class="font-helvetica flex">
-    <SideNavigation v-if="route.path !== '/login'" />
+    <SideNavigation v-if="route.path !== '/login' && route.path !== '/shop'" />
     <ModalPopup />
     <ToastAlert />
     <div class="w-full h-screen shrink overflow-hidden">

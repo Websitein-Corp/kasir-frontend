@@ -5,7 +5,7 @@
       iconSide="right"
       label="Hapus Semua"
       :icon="Trash2"
-      class="bg-transparent !text-red-500 hover:bg-slate-100 shadow-none"
+      class="bg-transparent !text-red-500 hover:bg-slate-100 !shadow-none"
       @click="cart.clearAll()"
     />
   </div>
