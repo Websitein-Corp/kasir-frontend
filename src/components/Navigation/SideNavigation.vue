@@ -243,7 +243,7 @@ function filterMenuByRole(menus, role) {
   }
 }
 
-const filteredMenus = filterMenuByRole(menus, auth.permission);
+const filteredMenus = filterMenuByRole(menus.value, auth.permission);
 
 const logout = async () => {
   try {
