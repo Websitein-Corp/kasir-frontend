@@ -12,6 +12,12 @@ export default defineStore("auth", {
 
   actions: {
     async checkLoginSession(route) {
+      if (!this.authToken) {
+        await router.push("/login");
+      } else if (!this.shopId) {
+        await router.push("/shop");
+      }
+
       try {
         await axios.get(`${process.env.VUE_APP_API_BASE_URL}/api/shop-list`, {
           headers: {
@@ -26,7 +32,7 @@ export default defineStore("auth", {
           route.path === "/login" ||
           (this.shopId && route.path === "/shop")
         ) {
-          router.push("/");
+          await router.push("/");
         }
       } catch (response) {
         this.handleUnauthenticated(response);
@@ -64,10 +70,25 @@ export default defineStore("auth", {
       localStorage.setItem("permission", permission);
     },
 
-    clearLocalStorage() {
-      localStorage.removeItem("auth_token");
-      localStorage.removeItem("shop_id");
-      localStorage.removeItem("permission");
+    clearLocalStorage(key = null) {
+      if (key) {
+        if (key === "shop_id") {
+          localStorage.removeItem("shop_id");
+          this.shopId = null;
+        } else if (key === "permission") {
+          localStorage.removeItem("permission");
+          this.permission = null;
+        } else {
+          localStorage.removeItem("auth_token");
+          this.authToken = null;
+        }
+      } else {
+        localStorage.removeItem("auth_token");
+        localStorage.removeItem("permission");
+        localStorage.removeItem("shop_id");
+        this.authToken = null;
+        this.shopId = null;
+      }
     },
   },
 });

@@ -6,7 +6,7 @@
         'text-slate-400': disabled,
       }"
       :disabled="disabled"
-      @click="model > 1 && model--"
+      @click="model > 1 ? model-- : allowZero && (model = 0)"
     >
       <Minus class="h-8 lg:h-10" />
     </button>
@@ -37,6 +37,10 @@ import { Minus, Plus } from "lucide-vue-next";
 
 defineProps({
   disabled: {
+    type: Boolean,
+    default: false,
+  },
+  allowZero: {
     type: Boolean,
     default: false,
   },

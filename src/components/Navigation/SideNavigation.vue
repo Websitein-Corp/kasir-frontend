@@ -1,4 +1,11 @@
 <template>
+  <div
+    class="fixed z-40 top-0 left-0 h-screen bg-slate-800/50"
+    :class="{
+      'w-screen lg:w-0': page.navIsOpened,
+      'w-0': !page.navIsOpened,
+    }"
+  ></div>
   <div class="fixed z-50 top-4 left-5 p-2 mt-3">
     <Menu
       class="cursor-pointer transition-all"
@@ -43,10 +50,18 @@
           :endpoint="menu.endpoint"
           :submenus="menu.submenus"
           :current="menu.current"
+          @click="setCurrent(menu.label)"
         />
       </div>
       <div class="h-full flex flex-col justify-end text-red-500 mb-4">
-        <NavigationMenu :icon="LogOut" @click="() => logout()" />
+        <NavigationMenu
+          :icon="LogOut"
+          :submenus="logoutSubmenus"
+          isLogout
+          @submenu-click="
+            (label) => (label === 'Logout' ? logout() : backToShopList())
+          "
+        />
       </div>
     </nav>
   </div>
@@ -70,6 +85,7 @@ import {
   ShoppingBasket,
   List,
   Menu,
+  Store,
 } from "lucide-vue-next";
 import NavigationMenu from "@/components/Navigation/NavigationMenu.vue";
 import usePage from "@/stores/usePage";
@@ -77,12 +93,14 @@ import axios from "axios";
 import router from "@/router";
 import useToast from "@/stores/useToast";
 import useAuth from "@/stores/useAuth";
+import { ref } from "vue";
 
-const menus = [
+const menus = ref([
   {
     label: "Beranda",
     endpoint: "/",
     icon: ChartPie,
+    current: true,
   },
   {
     label: "Pesan",
@@ -109,7 +127,7 @@ const menus = [
         endpoint: "/order",
       },
     ],
-    current: true,
+    current: false,
   },
   {
     label: "Produk",
@@ -131,26 +149,42 @@ const menus = [
         endpoint: "/product",
       },
     ],
+    current: false,
   },
   {
     label: "Transaksi",
     icon: ArrowRightLeft,
     endpoint: "/transaction",
+    current: false,
   },
   {
     label: "Supplier",
     icon: Truck,
     endpoint: "/",
+    current: false,
   },
   {
     label: "Rekon",
     icon: Shuffle,
     endpoint: "/",
+    current: false,
   },
   {
     label: "Karyawan",
     icon: Users,
     endpoint: "/subuser",
+    current: false,
+  },
+]);
+
+const logoutSubmenus = [
+  {
+    label: "Toko",
+    icon: Store,
+  },
+  {
+    label: "Logout",
+    icon: LogOut,
   },
 ];
 
@@ -177,6 +211,11 @@ const rolePermissions = {
 const auth = useAuth();
 const page = usePage();
 const toast = useToast();
+
+const backToShopList = () => {
+  auth.clearLocalStorage("shop_id");
+  router.push("/shop");
+};
 
 function filterMenuByRole(menus, role) {
   const allowedLabels = rolePermissions[role] || [];
@@ -243,5 +282,10 @@ const logout = async () => {
   }
 
   auth.clearLocalStorage();
+};
+
+const setCurrent = (label) => {
+  menus.value.map((menu) => (menu.current = false));
+  menus.value.find((menu) => menu["label"] === label).current = true;
 };
 </script>

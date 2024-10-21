@@ -148,7 +148,7 @@ const editIngredient = (item) => {
 
 const deleteIngredient = async (id) => {
   const { data } = await axios.delete(
-    `${process.env.VUE_APP_API_BASE_URL}/api/ingredients/delete?shop_id=${auth.shopId}&id=${id}`,
+    `${process.env.VUE_APP_API_BASE_URL}/api/ingredients/delete?shop_id=${auth.shopId}&name=${id}`,
     {
       headers: {
         Authorization: `Bearer ${auth.authToken}`,
