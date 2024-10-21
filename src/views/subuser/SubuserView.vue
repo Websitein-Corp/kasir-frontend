@@ -8,7 +8,7 @@
   </div>
   <div v-else-if="auth.isAuthenticated">
     <PageContainer title="Karyawan" subtitle="Daftar karyawan...">
-      <DataTable>
+      <DataTable :column-count="4">
         <template v-slot:action-2>
           <div class="flex space-x-2">
             <SearchInput v-model="table.filters.keyword"></SearchInput>
@@ -28,7 +28,7 @@
           <tr>
             <th>Email</th>
             <th>Nama</th>
-            <th>Last Login</th>
+            <th>Login Terakhir</th>
             <th>Actions</th>
           </tr>
         </template>

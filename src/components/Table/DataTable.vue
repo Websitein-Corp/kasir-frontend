@@ -8,19 +8,31 @@
       <slot name="action-3"></slot>
     </div>
   </div>
-  <div class="dtable-content overflow-x-auto">
-    <table class="w-full p-2 overflow-x-auto">
+  <div class="dtable-content overflow-x-auto no-scrollbar">
+    <table class="w-full p-2">
       <thead class="text-center text-gray-400 border-b-2 border-gray-100">
         <slot name="thead"></slot>
       </thead>
       <tbody class="text-center">
-        <slot name="tbody"></slot>
+        <template v-if="table.items.length > 0">
+          <slot name="tbody"></slot>
+        </template>
+        <template v-else>
+          <tr>
+            <td :colspan="columnCount" class="!pt-12 py-4 text-slate-500">
+              <div class="flex items-center justify-center space-x-4">
+                <SearchX />
+                <span>No data found...</span>
+              </div>
+            </td>
+          </tr>
+        </template>
       </tbody>
     </table>
   </div>
   <div
     v-if="table.page.links"
-    class="dtable-footer flex justify-between items-center mt-8 text-sm"
+    class="dtable-footer flex justify-between items-center mt-8 text-sm border-t-2 border-gray-100"
   >
     <div>Page {{ table.page.current }} / {{ table.page.last }}</div>
     <div class="page-nav space-x-2 flex">
@@ -59,6 +71,14 @@
 <script setup>
 import useTable from "@/stores/useTable";
 import CustomButton from "@/components/Button/CustomButton.vue";
+import { SearchX } from "lucide-vue-next";
+
+defineProps({
+  columnCount: {
+    type: Number,
+    default: 1,
+  },
+});
 
 const table = useTable();
 </script>
@@ -72,7 +92,8 @@ const table = useTable();
   @apply text-gray-400;
 }
 
-.dtable-content td {
+.dtable-content td,
+.dtable-content th {
   @apply min-w-[150px];
 }
 </style>

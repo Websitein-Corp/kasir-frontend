@@ -1,10 +1,10 @@
 <template>
-  <PageContainer
-    title="Recon"
-    subtitle="Daftar stock barang pada akhir hari..."
-  >
-    <DashboardCard>
-      <DataTable :pageLength="10" v-model:activePage="currentPage">
+  <div v-if="auth.isAuthenticated">
+    <PageContainer
+      title="Recon"
+      subtitle="Daftar stok barang pada akhir hari..."
+    >
+      <DataTable :column-count="4">
         <template v-slot:action-2>
           <SearchInput v-model="table.filters.keyword"></SearchInput>
         </template>
@@ -13,7 +13,7 @@
             <th>Name</th>
             <th>Stock</th>
             <th>Unit</th>
-            <th>Action</th>
+            <th>Actions</th>
           </tr>
         </template>
         <template v-slot:tbody>
@@ -27,7 +27,7 @@
                 class="border border-primary-600 rounded-md p-1"
               />
             </td>
-            <td>{{ item.unit }}</td>
+            <td>{{ item.unitName }}</td>
             <td>
               <CustomButton
                 size="full"
@@ -41,8 +41,13 @@
           </tr>
         </template>
       </DataTable>
-    </DashboardCard>
-  </PageContainer>
+    </PageContainer>
+  </div>
+  <div v-else>
+    <DefaultSkeleton class="mb-2" />
+    <DefaultSkeleton class="mb-2" />
+    <DefaultSkeleton class="mb-2" />
+  </div>
 </template>
 
 <script setup>
@@ -57,16 +62,13 @@ import axios from "axios";
 import useTable from "@/stores/useTable";
 import useToast from "@/stores/useToast";
 import useAuth from "@/stores/useAuth";
+import DefaultSkeleton from "@/components/Skeleton/DefaultSkeleton.vue";
 
 const auth = useAuth();
 const table = useTable();
 const toast = useToast();
 
 let debounce;
-
-const doSearch = (event) => {
-  console.log(event.target.value);
-};
 
 onMounted(async () => {
   table.resetPage();
@@ -92,7 +94,7 @@ watch(
 
 const fetchRecon = async () => {
   const { data } = await axios.get(
-    `${process.env.VUE_APP_API_BASE_URL}/api/ingredients?shop_id=${auth.shopId}`,
+    `${process.env.VUE_APP_API_BASE_URL}/api/ingredients?shop_id=${auth.shopId}&keyword=${table.filters.keyword}&page=${table.page.current}`,
     {
       headers: {
         Authorization: `Bearer ${auth.authToken}`,
