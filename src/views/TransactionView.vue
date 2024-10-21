@@ -1,7 +1,7 @@
 <template>
   <div v-if="auth.isAuthenticated">
     <PageContainer title="Transaksi" subtitle="Daftar transaksi masuk...">
-      <DataTable>
+      <DataTable :column-count="4">
         <template v-slot:action-2>
           <div class="flex space-x-2">
             <DatetimeInput
@@ -15,7 +15,7 @@
         <template v-slot:action-3>
           <div>
             <CustomButton
-              size="md"
+              size="mobile"
               label="Export"
               class="bg-primary-700 hover:bg-primary-800"
               @click="exportTransactions"
@@ -133,7 +133,7 @@ const fetchTransactions = async () => {
 };
 
 const exportTransactions = async () => {
-  const response = await axios.get(
+  await axios.get(
     `${process.env.VUE_APP_API_BASE_URL}/api/transactions?shop_id=${auth.shopId}&date_start=${table.filters.date[0]}&date_end=${table.filters.date[1]}&keyword=`,
     {
       headers: {

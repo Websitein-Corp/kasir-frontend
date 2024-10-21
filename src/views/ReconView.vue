@@ -1,10 +1,10 @@
 <template>
-  <PageContainer
-    title="Recon"
-    subtitle="Daftar stock barang pada akhir hari..."
-  >
-    <DashboardCard>
-      <DataTable :pageLength="10" v-model:activePage="currentPage">
+  <div v-if="auth.isAuthenticated">
+    <PageContainer
+      title="Recon"
+      subtitle="Daftar stok barang pada akhir hari..."
+    >
+      <DataTable :column-count="4">
         <template v-slot:action-2>
           <SearchInput v-model="table.filters.keyword"></SearchInput>
         </template>
@@ -13,7 +13,7 @@
             <th>Name</th>
             <th>Stock</th>
             <th>Unit</th>
-            <th>Action</th>
+            <th>Actions</th>
           </tr>
         </template>
         <template v-slot:tbody>
@@ -23,11 +23,10 @@
               <input
                 type="text"
                 v-model="item.stock"
-                @input="handleStockChange(item, index)"
                 class="border border-primary-600 rounded-md p-1"
               />
             </td>
-            <td>{{ item.unit }}</td>
+            <td>{{ item.unitName }}</td>
             <td>
               <CustomButton
                 size="full"
@@ -41,14 +40,18 @@
           </tr>
         </template>
       </DataTable>
-    </DashboardCard>
-  </PageContainer>
+    </PageContainer>
+  </div>
+  <div v-else>
+    <DefaultSkeleton class="mb-2" />
+    <DefaultSkeleton class="mb-2" />
+    <DefaultSkeleton class="mb-2" />
+  </div>
 </template>
 
 <script setup>
-import { onMounted, ref, watch, reactive } from "vue";
+import { onMounted, watch } from "vue";
 
-import DashboardCard from "@/components/Card/DashboardCard.vue";
 import DataTable from "@/components/Table/DataTable.vue";
 import PageContainer from "@/views/PageContainer.vue";
 import SearchInput from "@/components/Input/SearchInput.vue";
@@ -57,16 +60,13 @@ import axios from "axios";
 import useTable from "@/stores/useTable";
 import useToast from "@/stores/useToast";
 import useAuth from "@/stores/useAuth";
+import DefaultSkeleton from "@/components/Skeleton/DefaultSkeleton.vue";
 
 const auth = useAuth();
 const table = useTable();
 const toast = useToast();
 
 let debounce;
-
-const doSearch = (event) => {
-  console.log(event.target.value);
-};
 
 onMounted(async () => {
   table.resetPage();
@@ -92,7 +92,7 @@ watch(
 
 const fetchRecon = async () => {
   const { data } = await axios.get(
-    `${process.env.VUE_APP_API_BASE_URL}/api/ingredients?shop_id=${auth.shopId}`,
+    `${process.env.VUE_APP_API_BASE_URL}/api/ingredients?shop_id=${auth.shopId}&keyword=${table.filters.keyword}&page=${table.page.current}`,
     {
       headers: {
         Authorization: `Bearer ${auth.authToken}`,
@@ -118,13 +118,9 @@ const fetchRecon = async () => {
   }
 };
 
-const handleStockChange = (item, index) => {
-  console.log(`Stock for item ${item.name} changed to: ${item.stock}`);
-};
-
-const saveStock = async (item, index) => {
+const saveStock = async (item) => {
   try {
-    const response = await axios.put(
+    await axios.put(
       `${process.env.VUE_APP_API_BASE_URL}/api/ingredients/recon`,
       {
         id: item.id,
@@ -142,9 +138,7 @@ const saveStock = async (item, index) => {
     toast.description = "Berhasil Update Stock!";
     toast.type = "SUCCESS";
     toast.trigger();
-    console.log("Stock updated successfully:", response.data);
   } catch (error) {
-    console.error("Error updating stock:", error);
     toast.message = "Gagal";
     toast.description = error.response.data.message;
     toast.type = "FAILED";

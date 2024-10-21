@@ -9,6 +9,7 @@
       'font-bold': labelWeight === 'bold',
       'w-fit': size === 'fit',
       'w-full': size === 'full',
+      'w-full md:w-[200px]': size === 'mobile',
       '!w-fit': buttonType === 'icon',
       '!justify-start': align === 'start',
       '!justify-end': align === 'end',

@@ -8,7 +8,7 @@
   </div>
   <div v-else-if="auth.isAuthenticated">
     <PageContainer title="Produk Kategori" subtitle="Daftar kategori produk...">
-      <DataTable>
+      <DataTable :column-count="3">
         <template v-slot:action-2>
           <div class="flex space-x-2">
             <SearchInput v-model="table.filters.keyword"></SearchInput>
@@ -17,7 +17,7 @@
         <template v-slot:action-3>
           <div class="flex space-x-2">
             <CustomButton
-              size="sm"
+              size="mobile"
               label="Add"
               class="bg-primary-700 hover:bg-primary-800"
               @click="isShowingForm = true"
@@ -28,6 +28,7 @@
           <tr>
             <th>Kode</th>
             <th>Nama</th>
+            <th>Actions</th>
           </tr>
         </template>
         <template v-slot:tbody>
