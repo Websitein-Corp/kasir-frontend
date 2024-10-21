@@ -140,17 +140,24 @@ const login = async () => {
     });
 
     const token = response.data.data.token;
+    const permission = response.data.data.permission;
+    const userType = response.data.data.is_user;
 
     if (token) {
       auth.clearLocalStorage();
       auth.setAuthToken(token);
+      auth.setPermission(permission);
 
       toast.message = "Sukses";
       toast.description = "Login berhasil!";
       toast.type = "SUCCESS";
       toast.trigger();
 
-      await router.push("/shop");
+      if (userType === "USER") {
+        await router.push("/shop");
+      } else {
+        await router.push("/home");
+      }
     } else {
       toast.message = "Gagal";
       toast.description = "Login gagal!";

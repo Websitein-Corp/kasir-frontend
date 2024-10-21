@@ -43,7 +43,7 @@
         :class="{ 'pointer-events-none': !page.navIsOpened }"
       >
         <NavigationMenu
-          v-for="(menu, index) in menus"
+          v-for="(menu, index) in filteredMenus"
           :key="index"
           :label="menu.label"
           :icon="menu.icon"
@@ -188,6 +188,26 @@ const logoutSubmenus = [
   },
 ];
 
+const rolePermissions = {
+  KASIR: ["Pesan", "Transaksi"],
+  PENYIMPANAN: [
+    "Kategori Produk",
+    "Daftar Produk",
+    "Bahan Baku Produk",
+    "Supplier",
+  ],
+  MANAGER: [
+    "Beranda",
+    "Pesan",
+    "Produk",
+    "Transaksi",
+    "Supplier",
+    "Rekon",
+    "Karyawan",
+  ],
+  MASTER: null,
+};
+
 const auth = useAuth();
 const page = usePage();
 const toast = useToast();
@@ -196,6 +216,34 @@ const backToShopList = () => {
   auth.clearLocalStorage("shop_id");
   router.push("/shop");
 };
+
+function filterMenuByRole(menus, role) {
+  const allowedLabels = rolePermissions[role] || [];
+
+  if (role === "MASTER") {
+    return menus;
+  } else {
+    return menus
+      .map((menu) => {
+        if (menu.submenus) {
+          const filteredSubmenus = menu.submenus.filter((submenu) =>
+            allowedLabels.includes(submenu.label)
+          );
+          if (filteredSubmenus.length > 0) {
+            return { ...menu, submenus: filteredSubmenus };
+          }
+        }
+
+        if (allowedLabels.includes(menu.label)) {
+          return menu;
+        }
+        return null;
+      })
+      .filter((menu) => menu !== null);
+  }
+}
+
+const filteredMenus = filterMenuByRole(menus, auth.permission);
 
 const logout = async () => {
   try {

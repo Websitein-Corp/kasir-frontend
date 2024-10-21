@@ -6,6 +6,7 @@ export default defineStore("auth", {
   state: () => ({
     authToken: localStorage.getItem("auth_token"),
     shopId: localStorage.getItem("shop_id"),
+    permission: localStorage.getItem("permission"),
     isAuthenticated: false,
   }),
 
@@ -64,17 +65,26 @@ export default defineStore("auth", {
       localStorage.setItem("shop_id", id);
     },
 
+    setPermission(permission) {
+      this.permission = permission;
+      localStorage.setItem("permission", permission);
+    },
+
     clearLocalStorage(key = null) {
       if (key) {
         if (key === "shop_id") {
           localStorage.removeItem("shop_id");
           this.shopId = null;
+        } else if (key === "permission") {
+          localStorage.removeItem("permission");
+          this.permission = null;
         } else {
           localStorage.removeItem("auth_token");
           this.authToken = null;
         }
       } else {
         localStorage.removeItem("auth_token");
+        localStorage.removeItem("permission");
         localStorage.removeItem("shop_id");
         this.authToken = null;
         this.shopId = null;
