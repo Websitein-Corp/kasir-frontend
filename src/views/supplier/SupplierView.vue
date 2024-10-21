@@ -81,9 +81,8 @@
 </template>
 
 <script setup>
-import { onMounted, ref, watch, reactive } from "vue";
+import { onMounted, ref, watch } from "vue";
 
-import DashboardCard from "@/components/Card/DashboardCard.vue";
 import DataTable from "@/components/Table/DataTable.vue";
 import DatetimeInput from "@/components/Input/DatetimeInput.vue";
 import SearchInput from "@/components/Input/SearchInput.vue";
@@ -188,9 +187,7 @@ const deleteItem = async (item, index) => {
     toast.description = "Berhasil Menghapus Item!";
     toast.type = "SUCCESS";
     toast.trigger();
-    console.log("Item deleted successfully:", response.data);
   } catch (error) {
-    console.error("Error deleting item:", error);
     toast.message = "Gagal";
     toast.description =
       error.response?.data?.message || "An error occurred while deleting.";

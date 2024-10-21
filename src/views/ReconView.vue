@@ -23,7 +23,6 @@
               <input
                 type="text"
                 v-model="item.stock"
-                @input="handleStockChange(item, index)"
                 class="border border-primary-600 rounded-md p-1"
               />
             </td>
@@ -51,9 +50,8 @@
 </template>
 
 <script setup>
-import { onMounted, ref, watch, reactive } from "vue";
+import { onMounted, watch } from "vue";
 
-import DashboardCard from "@/components/Card/DashboardCard.vue";
 import DataTable from "@/components/Table/DataTable.vue";
 import PageContainer from "@/views/PageContainer.vue";
 import SearchInput from "@/components/Input/SearchInput.vue";
@@ -120,11 +118,7 @@ const fetchRecon = async () => {
   }
 };
 
-const handleStockChange = (item, index) => {
-  console.log(`Stock for item ${item.name} changed to: ${item.stock}`);
-};
-
-const saveStock = async (item, index) => {
+const saveStock = async (item) => {
   try {
     const response = await axios.put(
       `${process.env.VUE_APP_API_BASE_URL}/api/ingredients/recon`,
@@ -144,9 +138,7 @@ const saveStock = async (item, index) => {
     toast.description = "Berhasil Update Stock!";
     toast.type = "SUCCESS";
     toast.trigger();
-    console.log("Stock updated successfully:", response.data);
   } catch (error) {
-    console.error("Error updating stock:", error);
     toast.message = "Gagal";
     toast.description = error.response.data.message;
     toast.type = "FAILED";

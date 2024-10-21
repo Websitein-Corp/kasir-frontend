@@ -133,7 +133,7 @@ const fetchTransactions = async () => {
 };
 
 const exportTransactions = async () => {
-  const response = await axios.get(
+  await axios.get(
     `${process.env.VUE_APP_API_BASE_URL}/api/transactions?shop_id=${auth.shopId}&date_start=${table.filters.date[0]}&date_end=${table.filters.date[1]}&keyword=`,
     {
       headers: {
