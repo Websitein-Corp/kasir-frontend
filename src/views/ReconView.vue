@@ -120,7 +120,7 @@ const fetchRecon = async () => {
 
 const saveStock = async (item) => {
   try {
-    const response = await axios.put(
+    await axios.put(
       `${process.env.VUE_APP_API_BASE_URL}/api/ingredients/recon`,
       {
         id: item.id,

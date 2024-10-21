@@ -172,7 +172,7 @@ const handleCancel = () => {
 
 const deleteItem = async (item, index) => {
   try {
-    const response = await axios.delete(
+    await axios.delete(
       `${process.env.VUE_APP_API_BASE_URL}/api/ingredients/${item.id}`,
       {
         headers: {
