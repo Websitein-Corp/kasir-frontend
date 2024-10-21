@@ -87,6 +87,7 @@ export default defineStore("auth", {
         localStorage.removeItem("permission");
         localStorage.removeItem("shop_id");
         this.authToken = null;
+        this.permission = null;
         this.shopId = null;
       }
     },
