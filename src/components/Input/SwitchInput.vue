@@ -15,7 +15,7 @@
 </template>
 
 <script setup>
-import { computed, ref } from "vue";
+import { computed, ref, watch } from "vue";
 
 const props = defineProps({
   isActive: {
@@ -27,6 +27,13 @@ const props = defineProps({
 const emit = defineEmits(["switch"]);
 
 const currentState = ref(props.isActive);
+
+watch(
+  () => props.isActive,
+  () => {
+    currentState.value = props.isActive;
+  }
+);
 
 const backgroundStyles = computed(() => {
   return {

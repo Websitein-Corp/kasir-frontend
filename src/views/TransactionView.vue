@@ -1,5 +1,5 @@
 <template>
-  <div v-if="auth.isAuthenticated">
+  <div v-if="auth.isAuthenticated && !page.loading">
     <PageContainer title="Transaksi" subtitle="Daftar transaksi masuk...">
       <DataTable :column-count="4">
         <template v-slot:action-2>
@@ -69,17 +69,22 @@ import router from "@/router";
 import useAuth from "@/stores/useAuth";
 import DefaultSkeleton from "@/components/Skeleton/DefaultSkeleton.vue";
 import { useRoute } from "vue-router";
+import usePage from "@/stores/usePage";
 
 const auth = useAuth();
 const table = useTable();
+const page = usePage();
 const route = useRoute();
 
 let debounce;
 
 onMounted(async () => {
-  await auth.checkLoginSession(route);
+  page.loading = true;
   table.resetPage();
-  await fetchTransactions();
+
+  if (await auth.checkLoginSession(route)) {
+    await fetchTransactions();
+  }
 });
 
 watch(table.filters, () => {
@@ -128,7 +133,9 @@ const fetchTransactions = async () => {
     table.page.per = data.meta.per_page;
     table.page.total = data.meta.total;
   } catch (response) {
-    auth.handleUnauthenticated(response);
+    auth.handleAxiosError(response);
+  } finally {
+    page.loading = false;
   }
 };
 

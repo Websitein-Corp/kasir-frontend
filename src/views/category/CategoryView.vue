@@ -3,10 +3,11 @@
     <CategoryFormView
       :category-data="selectedCategory"
       :is-edit="!!selectedCategory"
-      @close-form="resetForm"
+      @form-back="resetForm"
+      @submit-success="resetForm"
     />
   </div>
-  <div v-else-if="auth.isAuthenticated">
+  <div v-else-if="auth.isAuthenticated && !page.loading">
     <PageContainer title="Produk Kategori" subtitle="Daftar kategori produk...">
       <DataTable :column-count="3">
         <template v-slot:action-2>
@@ -40,7 +41,7 @@
                 size="fit"
                 :icon="Trash2"
                 class="bg-red-700 hover:bg-red-800"
-                @click="deleteCategory(item.code)"
+                @click="deleteCategory(item.id)"
               />
               <CustomButton
                 size="fit"
@@ -76,10 +77,12 @@ import useAuth from "@/stores/useAuth";
 import CategoryFormView from "@/views/category/CategoryFormView.vue";
 import DefaultSkeleton from "@/components/Skeleton/DefaultSkeleton.vue";
 import { useRoute } from "vue-router";
+import usePage from "@/stores/usePage";
 
 const auth = useAuth();
 const table = useTable();
 const toast = useToast();
+const page = usePage();
 const route = useRoute();
 
 let debounce;
@@ -88,9 +91,12 @@ const isShowingForm = ref(false);
 const selectedCategory = ref(null);
 
 onMounted(async () => {
-  await auth.checkLoginSession(route);
+  page.loading = true;
   table.resetPage();
-  await fetchCategories();
+
+  if (await auth.checkLoginSession(route)) {
+    await fetchCategories();
+  }
 });
 
 watch(table.filters, () => {
@@ -128,7 +134,9 @@ const fetchCategories = async () => {
     table.page.per = data.meta.per_page;
     table.page.total = data.meta.total;
   } catch (response) {
-    auth.handleUnauthenticated(response);
+    auth.handleAxiosError(response);
+  } finally {
+    page.loading = false;
   }
 };
 
@@ -137,9 +145,9 @@ const editCategory = (item) => {
   selectedCategory.value = item;
 };
 
-const deleteCategory = async (code) => {
+const deleteCategory = async (id) => {
   const { data } = await axios.delete(
-    `${process.env.VUE_APP_API_BASE_URL}/api/categories/delete?shop_id=${auth.shopId}&code=${code}`,
+    `${process.env.VUE_APP_API_BASE_URL}/api/categories/${id}`,
     {
       headers: {
         Authorization: `Bearer ${auth.authToken}`,
@@ -158,11 +166,15 @@ const deleteCategory = async (code) => {
     toast.description = data.message;
     toast.type = "SUCCESS";
     toast.trigger();
+
+    await fetchCategories();
   }
 };
 
 const resetForm = () => {
   isShowingForm.value = false;
   selectedCategory.value = null;
+
+  fetchCategories();
 };
 </script>

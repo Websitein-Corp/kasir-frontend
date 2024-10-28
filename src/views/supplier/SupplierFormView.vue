@@ -129,6 +129,7 @@ import axios from "axios";
 import CustomButton from "@/components/Button/CustomButton.vue";
 import DashboardCard from "@/components/Card/DashboardCard.vue";
 import useAuth from "@/stores/useAuth";
+import PageContainer from "@/views/PageContainer.vue";
 
 const auth = useAuth();
 

@@ -86,7 +86,9 @@ const auth = useAuth();
 const page = usePage();
 const route = useRoute();
 
-onMounted(() => {
-  auth.checkLoginSession(route);
+onMounted(async () => {
+  page.loading = true;
+
+  await auth.checkLoginSession(route);
 });
 </script>

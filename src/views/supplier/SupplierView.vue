@@ -104,7 +104,11 @@ const selectedSupplier = ref(null);
 let debounce;
 
 onMounted(async () => {
-  await fetchSupplier();
+  table.resetPage();
+
+  if (await auth.checkLoginSession(route)) {
+    await fetchSupplier();
+  }
 });
 
 watch(table.filters, () => {

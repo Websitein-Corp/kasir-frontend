@@ -77,10 +77,6 @@ import {
   Shuffle,
   Users,
   LogOut,
-  Ham,
-  Package,
-  HandPlatter,
-  Clock,
   Box,
   ShoppingBasket,
   List,
@@ -98,35 +94,14 @@ import { ref } from "vue";
 const menus = ref([
   {
     label: "Beranda",
-    endpoint: "/dashboard",
+    endpoint: "/",
     icon: ChartPie,
     current: true,
   },
   {
     label: "Pesan",
     icon: ShoppingCart,
-    submenus: [
-      {
-        label: "Makanan",
-        icon: Ham,
-        endpoint: "/order",
-      },
-      {
-        label: "Barang",
-        icon: Package,
-        endpoint: "/order",
-      },
-      {
-        label: "Jasa",
-        icon: HandPlatter,
-        endpoint: "/order",
-      },
-      {
-        label: "Jasa Berwaktu",
-        icon: Clock,
-        endpoint: "/order",
-      },
-    ],
+    endpoint: "/order",
     current: false,
   },
   {

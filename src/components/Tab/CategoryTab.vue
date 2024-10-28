@@ -32,7 +32,7 @@ const emit = defineEmits(["tabChange"]);
 
 const page = usePage();
 
-const currentTab = ref(props.items[0].code);
+const currentTab = ref(props.items[0] ? props.items[0].code : "");
 
 const onTabChange = (tab) => {
   currentTab.value = tab;

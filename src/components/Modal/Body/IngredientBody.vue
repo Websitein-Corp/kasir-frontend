@@ -148,8 +148,8 @@ const setIngredientQuantity = (name, qty) => {
 };
 
 const onSubmit = () => {
-  try {
-    const response = axios.post(
+  axios
+    .post(
       `${process.env.VUE_APP_API_BASE_URL}/api/products/set-ingredient`,
       {
         shop_id: auth.shopId,
@@ -163,20 +163,21 @@ const onSubmit = () => {
         },
         withCredentials: true,
       }
-    );
+    )
+    .then((response) => {
+      toast.message = "Sukses";
+      toast.description = response.data.message;
+      toast.type = "SUCCESS";
+      toast.trigger();
 
-    toast.message = "Sukses";
-    toast.description = response.data.message;
-    toast.type = "SUCCESS";
-    toast.trigger();
-
-    modal.close();
-  } catch (response) {
-    toast.message = "Gagal";
-    toast.description = response.data.message;
-    toast.type = "FAILED";
-    toast.trigger();
-  }
+      modal.close();
+    })
+    .catch((response) => {
+      toast.message = "Gagal";
+      toast.description = response.data.message;
+      toast.type = "FAILED";
+      toast.trigger();
+    });
 };
 
 const fetchAllIngredients = async () => {
@@ -202,7 +203,7 @@ const fetchAllIngredients = async () => {
       };
     });
   } catch (response) {
-    auth.handleUnauthenticated(response);
+    auth.handleAxiosError(response);
   }
 };
 
@@ -234,7 +235,7 @@ const fetchIngredients = async () => {
     ingredient.page.per = data.meta.per_page;
     ingredient.page.total = data.meta.total;
   } catch (response) {
-    auth.handleUnauthenticated(response);
+    auth.handleAxiosError(response);
   }
 };
 </script>

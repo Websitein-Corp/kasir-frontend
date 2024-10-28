@@ -14,32 +14,63 @@ export default defineStore("auth", {
     async checkLoginSession(route) {
       if (!this.authToken) {
         await router.push("/login");
+        return;
       } else if (!this.shopId) {
         await router.push("/shop");
+        return;
       }
 
-      try {
-        await axios.get(`${process.env.VUE_APP_API_BASE_URL}/api/shop-list`, {
+      axios
+        .get(`${process.env.VUE_APP_API_BASE_URL}/api/auth/check`, {
           headers: {
             Authorization: `Bearer ${this.authToken}`,
           },
           withCredentials: true,
+        })
+        .then((res) => {
+          this.isAuthenticated = res.data.data.is_logged_in;
+
+          if (this.isAuthenticated) {
+            if (
+              route.path === "/login" ||
+              (this.shopId && route.path === "/shop")
+            ) {
+              router.push("/");
+              return true;
+            }
+          } else {
+            this.handleUnauthenticated(res);
+            return false;
+          }
+        })
+        .catch(async (response) => {
+          await this.handleUnauthenticated(response);
+          return false;
         });
-
-        this.isAuthenticated = true;
-
-        if (
-          route.path === "/login" ||
-          (this.shopId && route.path === "/shop")
-        ) {
-          await router.push("/");
-        }
-      } catch (response) {
-        this.handleUnauthenticated(response);
-      }
     },
 
-    handleUnauthenticated(response) {
+    async handleUnauthenticated(response) {
+      const baseURL = process.env.VUE_APP_API_BASE_URL;
+      const endpoint = `${baseURL}/api/auth/logout`;
+
+      try {
+        await axios.post(
+          endpoint,
+          {},
+          {
+            headers: {
+              Authorization: `Bearer ${this.authToken}`,
+            },
+            withCredentials: true,
+          }
+        );
+      } catch (error) {}
+      this.clearLocalStorage();
+
+      await router.push("/login");
+    },
+
+    handleAxiosError(response) {
       if (response.status === 401) {
         router.push("/login");
       } else {

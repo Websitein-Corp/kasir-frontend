@@ -70,7 +70,10 @@ let debounce;
 
 onMounted(async () => {
   table.resetPage();
-  await fetchRecon();
+
+  if (await auth.checkLoginSession(route)) {
+    await fetchRecon();
+  }
 });
 
 watch(table.filters, () => {

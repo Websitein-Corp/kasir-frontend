@@ -23,7 +23,7 @@
         orientation="vertical"
         :icon="paymentMethod.code === 'cash' ? Receipt : QrCode"
         :disabled="cart.items.length < 1"
-        @click="modal.toggle()"
+        @click="handleModal(paymentMethod.code)"
       />
     </template>
   </div>
@@ -39,6 +39,7 @@ import CashBody from "@/components/Modal/Body/CashBody.vue";
 import useCart from "@/stores/useCart";
 import axios from "axios";
 import useAuth from "@/stores/useAuth";
+import QrisBody from "@/components/Modal/Body/QrisBody.vue";
 
 const auth = useAuth();
 const cart = useCart();
@@ -64,9 +65,7 @@ watch(
   () => page.order.step,
   async () => {
     if (page.order.step === 2) {
-      modal.title = "Tunai";
       modal.icon = Receipt;
-      modal.body = CashBody;
 
       await fetchPaymentMethods();
     }
@@ -85,5 +84,17 @@ const fetchPaymentMethods = async () => {
   );
 
   paymentMethods.value = response.data.data;
+};
+
+const handleModal = (method) => {
+  if (method === "cash") {
+    modal.title = "Tunai";
+    modal.body = CashBody;
+    modal.toggle();
+  } else {
+    modal.title = "QRIS";
+    modal.body = QrisBody;
+    modal.toggle();
+  }
 };
 </script>

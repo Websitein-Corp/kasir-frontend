@@ -3,10 +3,11 @@
     <IngredientFormView
       :ingredient-data="selectedIngredient"
       :is-edit="!!selectedIngredient"
-      @close-form="resetForm"
+      @form-back="resetForm"
+      @submit-success="resetForm"
     />
   </div>
-  <div v-else-if="auth.isAuthenticated">
+  <div v-else-if="auth.isAuthenticated && !page.loading">
     <PageContainer title="Bahan Baku" subtitle="Daftar bahan baku produk...">
       <DataTable :column-count="5">
         <template v-slot:action-2>
@@ -80,10 +81,13 @@ import useAuth from "@/stores/useAuth";
 import IngredientFormView from "@/views/ingredient/IngredientFormView.vue";
 import DefaultSkeleton from "@/components/Skeleton/DefaultSkeleton.vue";
 import { useRoute } from "vue-router";
+import SubuserFormView from "@/views/subuser/SubuserFormView.vue";
+import usePage from "@/stores/usePage";
 
 const auth = useAuth();
 const table = useTable();
 const toast = useToast();
+const page = usePage();
 const route = useRoute();
 
 let debounce;
@@ -92,9 +96,12 @@ const isShowingForm = ref(false);
 const selectedIngredient = ref(null);
 
 onMounted(async () => {
-  await auth.checkLoginSession(route);
+  page.loading = true;
   table.resetPage();
-  await fetchIngredients();
+
+  if (await auth.checkLoginSession(route)) {
+    await fetchIngredients();
+  }
 });
 
 watch(table.filters, () => {
@@ -140,7 +147,9 @@ const fetchIngredients = async () => {
     table.page.per = data.meta.per_page;
     table.page.total = data.meta.total;
   } catch (response) {
-    auth.handleUnauthenticated(response);
+    auth.handleAxiosError(response);
+  } finally {
+    page.loading = false;
   }
 };
 
@@ -176,5 +185,7 @@ const deleteIngredient = async (id) => {
 const resetForm = () => {
   isShowingForm.value = false;
   selectedIngredient.value = null;
+
+  fetchIngredients();
 };
 </script>

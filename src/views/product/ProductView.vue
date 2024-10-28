@@ -3,10 +3,11 @@
     <ProductFormView
       :product-data="selectedProduct"
       :is-edit="!!selectedProduct"
-      @close-form="resetForm"
+      @form-back="resetForm"
+      @submit-success="resetForm"
     />
   </div>
-  <div v-else-if="auth.isAuthenticated">
+  <div v-else-if="auth.isAuthenticated && !page.loading">
     <PageContainer title="Produk" subtitle="Daftar produk...">
       <DataTable :column-count="11">
         <template v-slot:action-2>
@@ -92,10 +93,13 @@ import useToast from "@/stores/useToast";
 import useAuth from "@/stores/useAuth";
 import DefaultSkeleton from "@/components/Skeleton/DefaultSkeleton.vue";
 import { useRoute } from "vue-router";
+import SubuserFormView from "@/views/subuser/SubuserFormView.vue";
+import usePage from "@/stores/usePage";
 
 const auth = useAuth();
 const table = useTable();
 const toast = useToast();
+const page = usePage();
 const route = useRoute();
 
 let debounce;
@@ -104,9 +108,12 @@ const isShowingForm = ref(false);
 const selectedProduct = ref(null);
 
 onMounted(async () => {
-  await auth.checkLoginSession(route);
+  page.loading = true;
   table.resetPage();
-  await fetchProducts();
+
+  if (await auth.checkLoginSession(route)) {
+    await fetchProducts();
+  }
 });
 
 watch(table.filters, () => {
@@ -164,7 +171,9 @@ const fetchProducts = async () => {
     table.page.per = data.meta.per_page;
     table.page.total = data.meta.total;
   } catch (response) {
-    auth.handleUnauthenticated(response);
+    auth.handleAxiosError(response);
+  } finally {
+    page.loading = false;
   }
 };
 
@@ -214,5 +223,7 @@ const deleteProduct = async (sku) => {
 const resetForm = () => {
   isShowingForm.value = false;
   selectedProduct.value = null;
+
+  fetchProducts();
 };
 </script>
