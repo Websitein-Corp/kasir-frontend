@@ -102,8 +102,6 @@ const form = reactive({
 
 const submitProduct = async () => {
   if (validateForm()) {
-    let response;
-
     if (props.isEdit) {
       axios
         .put(

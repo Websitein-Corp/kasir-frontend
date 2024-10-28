@@ -81,7 +81,6 @@ import useAuth from "@/stores/useAuth";
 import IngredientFormView from "@/views/ingredient/IngredientFormView.vue";
 import DefaultSkeleton from "@/components/Skeleton/DefaultSkeleton.vue";
 import { useRoute } from "vue-router";
-import SubuserFormView from "@/views/subuser/SubuserFormView.vue";
 import usePage from "@/stores/usePage";
 
 const auth = useAuth();

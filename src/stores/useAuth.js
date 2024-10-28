@@ -39,17 +39,17 @@ export default defineStore("auth", {
               return true;
             }
           } else {
-            this.handleUnauthenticated(res);
+            this.handleUnauthenticated();
             return false;
           }
         })
-        .catch(async (response) => {
-          await this.handleUnauthenticated(response);
+        .catch(async () => {
+          await this.handleUnauthenticated();
           return false;
         });
     },
 
-    async handleUnauthenticated(response) {
+    async handleUnauthenticated() {
       const baseURL = process.env.VUE_APP_API_BASE_URL;
       const endpoint = `${baseURL}/api/auth/logout`;
 
