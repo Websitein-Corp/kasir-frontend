@@ -3,8 +3,8 @@ import { createRouter, createWebHistory } from "vue-router";
 const routes = [
   {
     path: "/",
-    name: "home",
-    component: () => import("@/views/HomeView.vue"),
+    name: "dashboard",
+    component: () => import("@/views/DashboardView.vue"),
   },
   {
     path: "/table",
@@ -65,17 +65,12 @@ const routes = [
   {
     path: "/recon",
     name: "recon",
-    component: () => import("../views/ReconView.vue"),
+    component: () => import("@/views/ReconView.vue"),
   },
   {
     path: "/supplier",
     name: "supplier",
-    component: () => import("../views/supplier/SupplierView.vue"),
-  },
-  {
-    path: "/dashboard",
-    name: "dashboard",
-    component: () => import("../views/DashboardView.vue"),
+    component: () => import("@/views/supplier/SupplierView.vue"),
   },
 ];
 

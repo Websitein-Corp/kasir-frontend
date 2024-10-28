@@ -72,6 +72,7 @@ import {
   LinearScale,
   Title,
 } from "chart.js";
+import { useRoute } from "vue-router";
 
 Chart.register(
   DoughnutController,
@@ -87,6 +88,7 @@ Chart.register(
 );
 
 const auth = useAuth();
+const route = useRoute();
 const frequencies = ref(["Daily", "Weekly", "Monthly", "Yearly"]);
 const selectedFrequency = ref("Daily");
 
@@ -191,6 +193,7 @@ const doughnutChartData = ref({
 });
 
 onMounted(async () => {
+  await auth.checkLoginSession(route);
   await showData();
 });
 

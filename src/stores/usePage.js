@@ -6,5 +6,6 @@ export default defineStore("page", {
     order: {
       step: 0,
     },
+    loading: false,
   }),
 });

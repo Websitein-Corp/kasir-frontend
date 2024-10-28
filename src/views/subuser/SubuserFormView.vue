@@ -5,7 +5,7 @@
       isEdit ? 'Mengubah detail karyawan...' : 'Menambah karyawan baru...'
     "
     enable-back
-    @back="$emit('closeForm')"
+    @back="$emit('formBack')"
   >
     <div class="grid grid-cols-3 gap-4">
       <FormCard
@@ -75,22 +75,8 @@
               >
                 <SwitchInput
                   :label="permission.name"
-                  :is-active="
-                    form.permissions
-                      ? form.permissions
-                          .map((perm) => perm.code)
-                          .includes(permission.code)
-                      : false
-                  "
-                  @switch="
-                    (newVal) =>
-                      newVal
-                        ? form.permissions.push(permission.code)
-                        : form.permissions.splice(
-                            form.permissions.indexOf(permission.code),
-                            1
-                          )
-                  "
+                  :is-active="form.permission === permission.code"
+                  @switch="(newVal) => changeRole(newVal, permission)"
                 />
               </div>
             </div>
@@ -127,7 +113,7 @@ const props = defineProps({
   },
 });
 
-const emit = defineEmits(["closeForm"]);
+const emit = defineEmits(["formBack", "submitSuccess"]);
 
 const auth = useAuth();
 const toast = useToast();
@@ -139,7 +125,7 @@ const form = reactive({
   name: props.subuserData ? props.subuserData.name : "",
   email: props.subuserData ? props.subuserData.email : "",
   password: props.subuserData ? props.subuserData.password : "",
-  permissions: props.subuserData ? props.subuserData.permissions : [],
+  permission: props.subuserData ? props.subuserData.permission : "",
 });
 
 onMounted(() => {
@@ -148,55 +134,83 @@ onMounted(() => {
 
 const submitSubuser = async () => {
   if (validateForm()) {
-    let response;
-
     if (props.isEdit) {
-      response = await axios.put(
-        `${process.env.VUE_APP_API_BASE_URL}/api/subusers`,
-        {
-          id: form.id,
-          email: form.email,
-          name: form.name,
-          permissions: form.permissions,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${auth.authToken}`,
+      axios
+        .put(
+          `${process.env.VUE_APP_API_BASE_URL}/api/subusers`,
+          {
+            id: form.id,
+            email: form.email,
+            name: form.name,
+            permission: form.permission,
           },
-          withCredentials: true,
-        }
-      );
+          {
+            headers: {
+              Authorization: `Bearer ${auth.authToken}`,
+            },
+            withCredentials: true,
+          }
+        )
+        .then((response) => {
+          if (response.data["error_type"]) {
+            toast.message = "Gagal";
+            toast.description = response.data.message;
+            toast.type = "FAILED";
+            toast.trigger();
+          } else {
+            toast.message = "Sukses";
+            toast.description = response.data.message;
+            toast.type = "SUCCESS";
+            toast.trigger();
+
+            emit("submitSuccess");
+          }
+        })
+        .catch((error) => {
+          toast.message = "Gagal";
+          toast.description = error.response.data.message;
+          toast.type = "FAILED";
+          toast.trigger();
+        });
     } else {
-      response = await axios.post(
-        `${process.env.VUE_APP_API_BASE_URL}/api/subusers`,
-        {
-          shop_id: auth.shopId,
-          email: form.email,
-          password: form.password,
-          name: form.name,
-          permissions: form.permissions,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${auth.authToken}`,
+      axios
+        .post(
+          `${process.env.VUE_APP_API_BASE_URL}/api/subusers`,
+          {
+            shop_id: auth.shopId,
+            email: form.email,
+            password: form.password,
+            name: form.name,
+            permissions: form.permission,
           },
-          withCredentials: true,
-        }
-      );
-    }
+          {
+            headers: {
+              Authorization: `Bearer ${auth.authToken}`,
+            },
+            withCredentials: true,
+          }
+        )
+        .then((response) => {
+          if (response.data["error_type"]) {
+            toast.message = "Gagal";
+            toast.description = response.data.message;
+            toast.type = "FAILED";
+            toast.trigger();
+          } else {
+            toast.message = "Sukses";
+            toast.description = response.data.message;
+            toast.type = "SUCCESS";
+            toast.trigger();
 
-    if (response.data["error_type"]) {
-      toast.message = "Gagal";
-      toast.description = response.data.message;
-      toast.type = "FAILED";
-      toast.trigger();
-    } else {
-      toast.message = "Sukses";
-      toast.description = response.data.message;
-      toast.type = "SUCCESS";
-      toast.trigger();
-
-      emit("closeForm");
+            emit("submitSuccess");
+          }
+        })
+        .catch((error) => {
+          toast.message = "Gagal";
+          toast.description = error.response.data.message;
+          toast.type = "FAILED";
+          toast.trigger();
+        });
     }
   }
 };
@@ -205,13 +219,15 @@ const validateForm = () => {
   let isValid = true;
 
   Object.keys(form).forEach((field) => {
-    if (!form[field]) {
-      toast.message = "Gagal";
-      toast.description = `Kolom ${field} harus diisi!`;
-      toast.type = "FAILED";
-      toast.trigger();
+    if (!form[field] && field !== "id") {
+      if (!props.isEdit || field !== "password") {
+        toast.message = "Gagal";
+        toast.description = `Kolom ${field} harus diisi!`;
+        toast.type = "FAILED";
+        toast.trigger();
 
-      isValid = false;
+        isValid = false;
+      }
     }
   });
 
@@ -219,16 +235,28 @@ const validateForm = () => {
 };
 
 const fetchPermissions = async () => {
-  const { data } = await axios.get(
-    `${process.env.VUE_APP_API_BASE_URL}/api/permissions?shop_id=${auth.shopId}`,
-    {
-      headers: {
-        Authorization: `Bearer ${auth.authToken}`,
-      },
-      withCredentials: true,
-    }
-  );
+  try {
+    const { data } = await axios.get(
+      `${process.env.VUE_APP_API_BASE_URL}/api/permissions?shop_id=${auth.shopId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${auth.authToken}`,
+        },
+        withCredentials: true,
+      }
+    );
 
-  permissionList.value = data.data;
+    permissionList.value = data.data;
+  } catch (response) {
+    auth.handleAxiosError(response);
+  }
+};
+
+const changeRole = (newVal, permission) => {
+  if (newVal) {
+    form.permission = permission.code;
+  } else {
+    form.permission = "";
+  }
 };
 </script>

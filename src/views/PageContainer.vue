@@ -30,8 +30,8 @@
             'ml-0 lg:ml-4': page.navIsOpened,
           }"
         >
-          <div class="font-bold text-2xl">{{ title }}</div>
-          <div class="text-slate-400">{{ subtitle }}</div>
+          <div class="font-bold text-lg md:text-2xl">{{ title }}</div>
+          <div class="text-slate-400 text-sm md:text-base">{{ subtitle }}</div>
         </div>
       </div>
     </div>

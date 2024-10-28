@@ -140,6 +140,7 @@ const login = async () => {
     });
 
     const token = response.data.data.token;
+    const shopId = response.data.data.shop_id;
     const permission = response.data.data.permission;
     const userType = response.data.data.is_user;
 
@@ -156,7 +157,8 @@ const login = async () => {
       if (userType === "USER") {
         await router.push("/shop");
       } else {
-        await router.push("/home");
+        auth.setShopId(shopId);
+        await router.push("/");
       }
     } else {
       toast.message = "Gagal";

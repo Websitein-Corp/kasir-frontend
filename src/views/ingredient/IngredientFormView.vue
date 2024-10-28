@@ -5,7 +5,7 @@
       isEdit ? 'Mengubah detail bahan baku...' : 'Menambah bahan baku baru...'
     "
     enable-back
-    @back="$emit('closeForm')"
+    @back="$emit('formBack')"
   >
     <div class="grid grid-cols-3 gap-4">
       <FormCard
@@ -19,8 +19,8 @@
               v-if="!isEdit"
               v-model="form.name"
               name="name"
-              label="Nama Kategori"
-              placeholder="Masukkan nama kategori..."
+              label="Nama"
+              placeholder="Masukkan nama..."
               class="col-span-2 lg:col-span-1"
             />
             <TextInput
@@ -88,7 +88,7 @@ const props = defineProps({
   },
 });
 
-const emit = defineEmits(["closeForm"]);
+const emit = defineEmits(["formBack", "submitSuccess"]);
 
 const auth = useAuth();
 const toast = useToast();
@@ -102,54 +102,82 @@ const form = reactive({
 
 const submitProduct = async () => {
   if (validateForm()) {
-    let response;
-
     if (props.isEdit) {
-      response = await axios.put(
-        `${process.env.VUE_APP_API_BASE_URL}/api/ingredients`,
-        {
-          shop_id: auth.shopId,
-          unit_name: form.unit_name,
-          price: form.price,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${auth.authToken}`,
+      axios
+        .put(
+          `${process.env.VUE_APP_API_BASE_URL}/api/ingredients`,
+          {
+            shop_id: auth.shopId,
+            unit_name: form.unit_name,
+            price: form.price,
           },
-          withCredentials: true,
-        }
-      );
+          {
+            headers: {
+              Authorization: `Bearer ${auth.authToken}`,
+            },
+            withCredentials: true,
+          }
+        )
+        .then((response) => {
+          if (response.data["error_type"]) {
+            toast.message = "Gagal";
+            toast.description = response.data.message;
+            toast.type = "FAILED";
+            toast.trigger();
+          } else {
+            toast.message = "Sukses";
+            toast.description = response.data.message;
+            toast.type = "SUCCESS";
+            toast.trigger();
+
+            emit("submitSuccess");
+          }
+        })
+        .catch((error) => {
+          toast.message = "Gagal";
+          toast.description = error.response.data.message;
+          toast.type = "FAILED";
+          toast.trigger();
+        });
     } else {
-      response = await axios.post(
-        `${process.env.VUE_APP_API_BASE_URL}/api/ingredients`,
-        {
-          shop_id: auth.shopId,
-          name: form.name,
-          stock: form.stock,
-          unit_name: form.unit_name,
-          price: form.price,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${auth.authToken}`,
+      axios
+        .post(
+          `${process.env.VUE_APP_API_BASE_URL}/api/ingredients`,
+          {
+            shop_id: auth.shopId,
+            name: form.name,
+            stock: form.stock,
+            unit_name: form.unit_name,
+            price: form.price,
           },
-          withCredentials: true,
-        }
-      );
-    }
+          {
+            headers: {
+              Authorization: `Bearer ${auth.authToken}`,
+            },
+            withCredentials: true,
+          }
+        )
+        .then((response) => {
+          if (response.data["error_type"]) {
+            toast.message = "Gagal";
+            toast.description = response.data.message;
+            toast.type = "FAILED";
+            toast.trigger();
+          } else {
+            toast.message = "Sukses";
+            toast.description = response.data.message;
+            toast.type = "SUCCESS";
+            toast.trigger();
 
-    if (response.data["error_type"]) {
-      toast.message = "Gagal";
-      toast.description = response.data.message;
-      toast.type = "FAILED";
-      toast.trigger();
-    } else {
-      toast.message = "Sukses";
-      toast.description = response.data.message;
-      toast.type = "SUCCESS";
-      toast.trigger();
-
-      emit("closeForm");
+            emit("submitSuccess");
+          }
+        })
+        .catch((error) => {
+          toast.message = "Gagal";
+          toast.description = error.response.data.message;
+          toast.type = "FAILED";
+          toast.trigger();
+        });
     }
   }
 };

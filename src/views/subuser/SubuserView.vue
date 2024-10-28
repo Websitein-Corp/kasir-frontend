@@ -3,10 +3,11 @@
     <SubuserFormView
       :subuser-data="selectedSubuser"
       :is-edit="!!selectedSubuser"
-      @close-form="resetForm"
+      @form-back="resetForm"
+      @submit-success="resetForm"
     />
   </div>
-  <div v-else-if="auth.isAuthenticated">
+  <div v-else-if="auth.isAuthenticated && !page.loading">
     <PageContainer title="Karyawan" subtitle="Daftar karyawan...">
       <DataTable :column-count="4">
         <template v-slot:action-2>
@@ -78,10 +79,12 @@ import useToast from "@/stores/useToast";
 import useAuth from "@/stores/useAuth";
 import { useRoute } from "vue-router";
 import DefaultSkeleton from "@/components/Skeleton/DefaultSkeleton.vue";
+import usePage from "@/stores/usePage";
 
 const auth = useAuth();
 const table = useTable();
 const toast = useToast();
+const page = usePage();
 const route = useRoute();
 
 let debounce;
@@ -90,9 +93,12 @@ const isShowingForm = ref(false);
 const selectedSubuser = ref(null);
 
 onMounted(async () => {
-  await auth.checkLoginSession(route);
+  page.loading = true;
   table.resetPage();
-  await fetchSubusers();
+
+  if (await auth.checkLoginSession(route)) {
+    await fetchSubusers();
+  }
 });
 
 watch(table.filters, () => {
@@ -112,30 +118,36 @@ watch(
 );
 
 const fetchSubusers = async () => {
-  const { data } = await axios.get(
-    `${process.env.VUE_APP_API_BASE_URL}/api/subusers?shop_id=${auth.shopId}&keyword=${table.filters.keyword}&page=${table.page.current}`,
-    {
-      headers: {
-        Authorization: `Bearer ${auth.authToken}`,
-      },
-      withCredentials: true,
-    }
-  );
+  try {
+    const { data } = await axios.get(
+      `${process.env.VUE_APP_API_BASE_URL}/api/subusers?shop_id=${auth.shopId}&keyword=${table.filters.keyword}&page=${table.page.current}`,
+      {
+        headers: {
+          Authorization: `Bearer ${auth.authToken}`,
+        },
+        withCredentials: true,
+      }
+    );
 
-  table.items = data.data.map((item) => {
-    return {
-      id: item.id,
-      email: item.email,
-      name: item.name,
-      permissions: item.permissions,
-      lastLogin: item.last_login,
-    };
-  });
+    table.items = data.data.map((item) => {
+      return {
+        id: item.id,
+        email: item.email,
+        name: item.name,
+        permission: item.permission_code,
+        lastLogin: item.last_login,
+      };
+    });
 
-  table.page.current = data.meta.current_page;
-  table.page.last = data.meta.last_page;
-  table.page.per = data.meta.per_page;
-  table.page.total = data.meta.total;
+    table.page.current = data.meta.current_page;
+    table.page.last = data.meta.last_page;
+    table.page.per = data.meta.per_page;
+    table.page.total = data.meta.total;
+  } catch (response) {
+    auth.handleAxiosError(response);
+  } finally {
+    page.loading = false;
+  }
 };
 
 const editSubuser = (item) => {
@@ -145,16 +157,13 @@ const editSubuser = (item) => {
     email: item.email,
     password: item.password,
     name: item.name,
-    permissions: item.permissions,
+    permission: item.permission,
   };
 };
 
 const deleteSubuser = async (id) => {
-  const { data } = await axios.post(
-    `${process.env.VUE_APP_API_BASE_URL}/api/subusers`,
-    {
-      id: id,
-    },
+  const { data } = await axios.delete(
+    `${process.env.VUE_APP_API_BASE_URL}/api/subusers/${id}`,
     {
       headers: {
         Authorization: `Bearer ${auth.authToken}`,
@@ -179,5 +188,7 @@ const deleteSubuser = async (id) => {
 const resetForm = () => {
   isShowingForm.value = false;
   selectedSubuser.value = null;
+
+  fetchSubusers();
 };
 </script>

@@ -49,148 +49,20 @@ import CategoryTab from "@/components/Tab/CategoryTab.vue";
 import { onMounted, ref, watch } from "vue";
 import axios from "axios";
 import useAuth from "@/stores/useAuth";
-
-const categories = ref([
-  {
-    name: "All",
-    code: "",
-  },
-  {
-    name: "Bumbu Masak",
-    code: "bmbmsk",
-  },
-  {
-    name: "Makanan",
-    code: "mkn",
-  },
-  {
-    name: "Hiburan",
-    code: "hbrn",
-  },
-]);
-
-const products = ref([
-  {
-    sku: "sarimi2ag",
-    name: "Sarimi Isi 2 Rasa Ayam Goreng",
-    selling_retail_price: 3000,
-    selling_price: 2500,
-    discount_price: 500,
-    stock: 170,
-    image_url: "https://placehold.co/400x600",
-    type: "SERVICE",
-    category: {
-      name: "Bumbu Masak",
-      code: "bmbmsk",
-    },
-    barcode: "0012345678",
-    is_active: false,
-  },
-  {
-    sku: "burger",
-    name: "Burger Biasa",
-    selling_retail_price: 15000,
-    selling_price: 15000,
-    discount_price: 0,
-    stock: null,
-    image_url: "https://placehold.co/400x600",
-    type: "FOODS",
-    category: {
-      name: "Makanan",
-      code: "mkn",
-    },
-    barcode: null,
-    is_active: false,
-  },
-  {
-    sku: "burgerblng",
-    name: "Burger Blenger",
-    selling_retail_price: 25000,
-    selling_price: 22000,
-    discount_price: 3000,
-    stock: null,
-    image_url: "https://placehold.co/400x600",
-    type: "FOODS",
-    category: {
-      name: "Makanan",
-      code: "mkn",
-    },
-    barcode: null,
-    is_active: false,
-  },
-  {
-    sku: "blrd1",
-    name: "Meja Billiard 1",
-    selling_retail_price: 25000,
-    selling_price: 25000,
-    discount_price: 0,
-    stock: null,
-    image_url: "https://placehold.co/400x600",
-    type: "SERVICE TIME",
-    category: {
-      name: "Hiburan",
-      code: "hbrn",
-    },
-    barcode: null,
-    is_active: false,
-  },
-  {
-    sku: "blrd2",
-    name: "Meja Billiard 2",
-    selling_retail_price: 25000,
-    selling_price: 25000,
-    discount_price: 0,
-    stock: null,
-    image_url: "https://placehold.co/400x600",
-    type: "SERVICE TIME",
-    category: {
-      name: "Hiburan",
-      code: "hbrn",
-    },
-    barcode: null,
-    is_active: false,
-  },
-  {
-    sku: "blrd3",
-    name: "Meja Billiard 3",
-    selling_retail_price: 25000,
-    selling_price: 25000,
-    discount_price: 0,
-    stock: null,
-    image_url: "https://placehold.co/400x600",
-    type: "SERVICE TIME",
-    category: {
-      name: "Hiburan",
-      code: "hbrn",
-    },
-    barcode: null,
-    is_active: false,
-  },
-  {
-    sku: "blrd4",
-    name: "Meja Billiard 4",
-    selling_retail_price: 25000,
-    selling_price: 25000,
-    discount_price: 0,
-    stock: null,
-    image_url: "https://placehold.co/400x600",
-    type: "SERVICE TIME",
-    category: {
-      name: "Hiburan",
-      code: "hbrn",
-    },
-    barcode: null,
-    is_active: false,
-  },
-]);
+import { useRoute } from "vue-router";
 
 const auth = useAuth();
 const cart = useCart();
 const page = usePage();
+const route = useRoute();
 
+const categories = ref([]);
+const products = ref([]);
 const currentCategory = ref("");
 
 onMounted(async () => {
+  page.loading = true;
+
   await fetchCategories();
   await fetchProducts();
 });
@@ -200,34 +72,44 @@ watch(currentCategory, async () => {
 });
 
 const fetchCategories = async () => {
-  const response = await axios.get(
-    `${process.env.VUE_APP_API_BASE_URL}/api/products/categories?shop_id=${auth.shopId}`,
-    {
-      headers: {
-        Authorization: `Bearer ${auth.authToken}`,
-      },
-      withCredentials: true,
-    }
-  );
+  try {
+    const response = await axios.get(
+      `${process.env.VUE_APP_API_BASE_URL}/api/products/categories?shop_id=${auth.shopId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${auth.authToken}`,
+        },
+        withCredentials: true,
+      }
+    );
 
-  categories.value = response.data.data;
-  categories.value.unshift({
-    name: "All",
-    code: "",
-  });
+    categories.value = response.data.data;
+    categories.value.unshift({
+      name: "All",
+      code: "",
+    });
+  } catch (response) {
+    auth.handleAxiosError(response);
+  }
 };
 
 const fetchProducts = async () => {
-  const response = await axios.get(
-    `${process.env.VUE_APP_API_BASE_URL}/api/products?category=${currentCategory.value}&shop_id=${auth.shopId}`,
-    {
-      headers: {
-        Authorization: `Bearer ${auth.authToken}`,
-      },
-      withCredentials: true,
-    }
-  );
+  try {
+    const response = await axios.get(
+      `${process.env.VUE_APP_API_BASE_URL}/api/products?category=${currentCategory.value}&shop_id=${auth.shopId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${auth.authToken}`,
+        },
+        withCredentials: true,
+      }
+    );
 
-  products.value = response.data.data;
+    products.value = response.data.data;
+  } catch (response) {
+    auth.handleAxiosError(response);
+  } finally {
+    page.loading = false;
+  }
 };
 </script>

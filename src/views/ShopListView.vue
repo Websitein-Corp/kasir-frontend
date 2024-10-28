@@ -75,6 +75,6 @@ const pickShop = (id, name) => {
   toast.type = "SUCCESS";
   toast.trigger();
 
-  router.push("/home");
+  router.push("/");
 };
 </script>

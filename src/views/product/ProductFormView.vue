@@ -3,7 +3,7 @@
     :title="isEdit ? 'Ubah Produk' : 'Tambah Produk'"
     :subtitle="isEdit ? 'Mengubah detail produk...' : 'Menambah produk baru...'"
     enable-back
-    @back="$emit('closeForm')"
+    @back="$emit('formBack')"
   >
     <div class="grid grid-cols-3 gap-4">
       <FormCard
@@ -132,7 +132,7 @@
           </div>
         </FormCard>
         <FormCard
-          v-if="productData.type === 'FOODS'"
+          v-if="productData && productData.type === 'FOODS'"
           title="Actions"
           :icon="Gavel"
           class="col-span-3 lg:col-span-1"
@@ -195,7 +195,7 @@ const props = defineProps({
   },
 });
 
-const emit = defineEmits(["closeForm"]);
+const emit = defineEmits(["formBack", "submitSuccess"]);
 
 const auth = useAuth();
 const toast = useToast();
@@ -253,71 +253,99 @@ onMounted(() => {
 
 const submitProduct = async () => {
   if (validateForm()) {
-    let response;
-
     if (props.isEdit) {
-      response = await axios.put(
-        `${process.env.VUE_APP_API_BASE_URL}/api/products/edit`,
-        {
-          shop_id: auth.shopId,
-          sku: form.sku,
-          name: form.name,
-          selling_retail_price: form.sellingRetailPrice,
-          selling_price: form.sellingPrice,
-          capital_price: form.capitalPrice,
-          type: form.type,
-          category: form.category,
-          barcode: form.barcode,
-          is_active: form.isActive,
-          image: form.image,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${auth.authToken}`,
-            "Content-Type": "multipart/form-data",
+      axios
+        .put(
+          `${process.env.VUE_APP_API_BASE_URL}/api/products/edit`,
+          {
+            shop_id: auth.shopId,
+            sku: form.sku,
+            name: form.name,
+            selling_retail_price: form.sellingRetailPrice,
+            selling_price: form.sellingPrice,
+            capital_price: form.capitalPrice,
+            type: form.type,
+            category: form.category,
+            barcode: form.barcode,
+            is_active: form.isActive,
+            image: form.image,
           },
-          withCredentials: true,
-        }
-      );
+          {
+            headers: {
+              Authorization: `Bearer ${auth.authToken}`,
+              "Content-Type": "multipart/form-data",
+            },
+            withCredentials: true,
+          }
+        )
+        .then((response) => {
+          if (response.data["error_type"]) {
+            toast.message = "Gagal";
+            toast.description = response.data.message;
+            toast.type = "FAILED";
+            toast.trigger();
+          } else {
+            toast.message = "Sukses";
+            toast.description = response.data.message;
+            toast.type = "SUCCESS";
+            toast.trigger();
+
+            emit("submitSuccess");
+          }
+        })
+        .catch((error) => {
+          toast.message = "Gagal";
+          toast.description = error.response.data.message;
+          toast.type = "FAILED";
+          toast.trigger();
+        });
     } else {
-      response = await axios.post(
-        `${process.env.VUE_APP_API_BASE_URL}/api/products`,
-        {
-          shop_id: auth.shopId,
-          sku: form.sku,
-          name: form.name,
-          selling_retail_price: form.sellingRetailPrice,
-          selling_price: form.sellingPrice,
-          capital_price: form.capitalPrice,
-          stock: form.stock,
-          type: form.type,
-          category: form.category,
-          barcode: form.barcode,
-          is_active: form.isActive,
-          image: form.image,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${auth.authToken}`,
-            "Content-Type": "multipart/form-data",
+      axios
+        .post(
+          `${process.env.VUE_APP_API_BASE_URL}/api/products`,
+          {
+            shop_id: auth.shopId,
+            sku: form.sku,
+            name: form.name,
+            selling_retail_price: form.sellingRetailPrice,
+            selling_price: form.sellingPrice,
+            capital_price: form.capitalPrice,
+            stock: form.stock,
+            type: form.type,
+            category: form.category,
+            barcode: form.barcode,
+            is_active: form.isActive,
+            image: form.image,
           },
-          withCredentials: true,
-        }
-      );
-    }
+          {
+            headers: {
+              Authorization: `Bearer ${auth.authToken}`,
+              "Content-Type": "multipart/form-data",
+            },
+            withCredentials: true,
+          }
+        )
+        .then((response) => {
+          if (response.data["error_type"]) {
+            toast.message = "Gagal";
+            toast.description = response.data.message;
+            toast.type = "FAILED";
+            toast.trigger();
+          } else {
+            toast.message = "Sukses";
+            toast.description = response.data.message;
+            toast.type = "SUCCESS";
+            toast.trigger();
 
-    if (response.data["error_type"]) {
-      toast.message = "Gagal";
-      toast.description = response.data.message;
-      toast.type = "FAILED";
-      toast.trigger();
-    } else {
-      toast.message = "Sukses";
-      toast.description = response.data.message;
-      toast.type = "SUCCESS";
-      toast.trigger();
-
-      emit("closeForm");
+            emit("submitSuccess");
+          }
+        })
+        .catch((error) => {
+          toast.message = "Gagal";
+          toast.description = error.response.data.message;
+          toast.type = "FAILED";
+          toast.trigger();
+        });
     }
   }
 };

@@ -2,10 +2,10 @@
   <transition name="slide-fade-left">
     <div
       v-if="toast.isActive"
-      class="fixed top-0 lg:top-5 right-0 lg:right-5 w-screen h-fit p-5 lg:p-0 z-50"
+      class="fixed top-0 lg:top-5 right-0 lg:right-5 w-screen md:w-1/3 xl:w-1/4 h-fit p-5 lg:p-0 z-50"
     >
       <div
-        class="z-50 relative top-0 left-0 bg-primary-50 w-full ml-auto md:w-1/3 xl:w-1/4 h-fit rounded-lg p-6 flex flex-col shadow-xl"
+        class="z-50 relative top-0 left-0 bg-primary-50 w-full ml-auto h-fit rounded-lg p-6 flex flex-col shadow-xl"
         :class="{
           'bg-yellow-200': toast.type === 'WARNING',
           'bg-green-200': toast.type === 'SUCCESS',
