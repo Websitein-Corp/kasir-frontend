@@ -107,6 +107,14 @@
         <div>{{ $helpers.money(bill.change) }}</div>
       </div>
     </div>
+    <div class="flex">
+      <CustomButton
+        label="Print"
+        size="fit"
+        class="bg-primary-400 text-black"
+        @click="function () {}"
+      />
+    </div>
   </div>
   <div v-else>
     <DefaultSkeleton class="mb-2" />
@@ -123,10 +131,13 @@ import useToast from "@/stores/useToast";
 import useAuth from "@/stores/useAuth";
 import { useRoute } from "vue-router";
 import DefaultSkeleton from "@/components/Skeleton/DefaultSkeleton.vue";
+import CustomButton from "@/components/Button/CustomButton.vue";
+import WebBluetoothReceiptPrinter from "@/assets/lib/webbluetooth-receipt-printer.esm.js";
 
 const auth = useAuth();
 const toast = useToast();
 const route = useRoute();
+const receiptPrinter = new WebBluetoothReceiptPrinter();
 
 const props = defineProps({
   invoiceNumber: {
@@ -164,6 +175,11 @@ const bill = ref({
 onMounted(async () => {
   await auth.checkLoginSession(route);
   await showBill();
+  const printer = new Printer();
+  await printer.connect();
+
+  console.log("Connected to printer!");
+  return printer;
 });
 
 const showBill = async () => {
