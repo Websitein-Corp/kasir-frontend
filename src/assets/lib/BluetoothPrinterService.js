@@ -61,7 +61,8 @@ class BluetoothPrinterService {
     const deviceConfig = {
       filters: [{ name: "RPPO2N" }], // Adjust these filters as per your printer model
       optionalServices: [
-        "000018f0-0000-1000-8000-00805f9b34fb", // Example service UUIDs
+        "000018f0-0000-1000-8000-00805f9b34fb",
+        "e7810a71-73ae-499d-8c15-faa9aef0c3f2",
       ],
     };
 
