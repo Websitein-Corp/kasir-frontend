@@ -112,7 +112,7 @@
         label="Print"
         size="fit"
         class="bg-primary-400 text-black"
-        @click="function () {}"
+        @click="handleConnectButtonClick"
       />
     </div>
   </div>
@@ -132,12 +132,14 @@ import useAuth from "@/stores/useAuth";
 import { useRoute } from "vue-router";
 import DefaultSkeleton from "@/components/Skeleton/DefaultSkeleton.vue";
 import CustomButton from "@/components/Button/CustomButton.vue";
-import WebBluetoothReceiptPrinter from "@/assets/lib/webbluetooth-receipt-printer.esm.js";
+import BluetoothPrinterService from "@/assets/lib/BluetoothPrinterService";
 
 const auth = useAuth();
 const toast = useToast();
 const route = useRoute();
-const receiptPrinter = new WebBluetoothReceiptPrinter();
+const receiptPrinter = ref(null);
+const lastUsedDevice = ref(null);
+const error = ref("");
 
 const props = defineProps({
   invoiceNumber: {
@@ -175,12 +177,75 @@ const bill = ref({
 onMounted(async () => {
   await auth.checkLoginSession(route);
   await showBill();
-  const printer = new Printer();
-  await printer.connect();
 
-  console.log("Connected to printer!");
-  return printer;
+  try {
+    if (!receiptPrinter.value) {
+      receiptPrinter.value = new BluetoothPrinterService();
+    }
+
+    // Attempt to reconnect to the last used device
+    await receiptPrinter.value.reconnect(lastUsedDevice.value);
+
+    receiptPrinter.value.addEventListener("connected", (device) => {
+      console.log(`Connected to ${device.name} (#${device.id})`);
+
+      lastUsedDevice.value = device; // Store device for reconnecting
+    });
+  } catch (err) {
+    console.error("Error connecting to the printer:", err);
+    error.value = err.toString();
+  }
 });
+
+function handleConnectButtonClick() {
+  console.log("ASD");
+  if (!receiptPrinter.value) {
+    try {
+      receiptPrinter.value = new BluetoothPrinterService();
+    } catch (error) {
+      console.error("Error initializing BluetoothPrinterService:", error);
+      error.value = error.toString(); // Assuming `error` is a Vue ref to display error messages
+    }
+  }
+
+  receiptPrinter.value
+    .connect()
+    .then((device) => {
+      console.log("Connected to printer:", device);
+      lastUsedDevice.value = device; // Store for future reconnection
+
+      device.addEventListener("gattserverdisconnected", handleDisconnect);
+    })
+    .catch((err) => {
+      console.error("Error connecting to printer:", err);
+      error.value = err.toString();
+    });
+}
+
+function handleDisconnect() {
+  console.log("Printer disconnected");
+}
+
+function printReceipt() {
+  try {
+    if (!receiptPrinter.value) {
+      throw new Error("Printer is not connected");
+    }
+
+    const encoder = new ReceiptPrinterEncoder({ language: "esc-pos" });
+    const data = encoder
+      .initialize()
+      .text("The quick brown fox jumps over the lazy dog")
+      .newline()
+      .qrcode("https://nielsleenheer.com")
+      .encode();
+
+    receiptPrinter.value.print(data);
+  } catch (exception) {
+    console.log("Error printing receipt:", exception);
+    error.value = exception.toString();
+  }
+}
 
 const showBill = async () => {
   const { data } = await axios.get(
