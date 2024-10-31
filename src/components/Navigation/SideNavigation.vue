@@ -6,11 +6,26 @@
       'w-0': !page.navIsOpened,
     }"
   ></div>
-  <div class="fixed z-50 top-4 left-5 p-2 mt-3">
+  <div
+    class="fixed z-50 top-4 left-5 p-2 lg:p-0 mt-3 lg:mt-0 hidden lg:block transition-opacity"
+    :class="{
+      'opacity-100': page.navIsOpened,
+      'opacity-0': !page.navIsOpened,
+    }"
+  >
+    <div class="w-20 h-20 p-2 mx-auto">
+      <img
+        src="@/assets/images/websiteinLogo.svg"
+        alt="websiteinLogo.svg"
+        class="object-cover"
+      />
+    </div>
+  </div>
+  <div class="fixed z-50 top-4 left-5 p-2 mt-3 lg:mt-0">
     <Menu
       class="cursor-pointer transition-all"
       :class="{
-        'rotate-180': page.navIsOpened,
+        'rotate-180 lg:ml-24': page.navIsOpened,
       }"
       size="40"
       @click="page.navIsOpened = !page.navIsOpened"
@@ -19,19 +34,24 @@
   <div
     class="shrink-0 transition-all"
     :class="{
-      'lg:w-[100px]': page.navIsOpened,
-      'lg:w-0': !page.navIsOpened,
+      'lg:w-[200px]': page.navIsOpened,
+      'lg:w-[100px]': !page.navIsOpened,
     }"
   ></div>
   <div
     class="fixed transition-all z-40"
     :class="{
-      'w-[100px] opacity-100': page.navIsOpened,
-      'w-0 opacity-0 overflow-hidden': !page.navIsOpened,
+      'w-[100px] lg:w-[200px] opacity-100': page.navIsOpened,
+      'w-0 lg:w-[100px] opacity-0 lg:opacity-100 overflow-hidden':
+        !page.navIsOpened,
     }"
   >
-    <nav class="w-[100px] h-screen bg-primary-50 flex flex-col pt-4">
-      <div class="w-20 h-20 p-2 mx-auto mt-20 relative top-0 left-0">
+    <nav
+      class="w-[100px] lg:w-[200px] h-screen bg-primary-50 flex flex-col pt-4"
+    >
+      <div
+        class="w-20 h-20 p-2 mx-auto mt-20 elative top-0 left-0 block lg:hidden"
+      >
         <img
           src="@/assets/images/websiteinLogo.svg"
           alt="websiteinLogo.svg"
@@ -39,8 +59,10 @@
         />
       </div>
       <div
-        class="flex flex-col"
-        :class="{ 'pointer-events-none': !page.navIsOpened }"
+        class="flex flex-col lg:mt-24"
+        :class="{
+          'pointer-events-none lg:pointer-events-auto': !page.navIsOpened,
+        }"
       >
         <NavigationMenu
           v-for="(menu, index) in filteredMenus"
@@ -50,7 +72,10 @@
           :endpoint="menu.endpoint"
           :submenus="menu.submenus"
           :current="menu.current"
-          @click="setCurrent(menu.label)"
+          @click="
+            setCurrent(menu.label, menu.submenus && menu.submenus.length > 0)
+          "
+          @submenu-click="setCurrent(menu.label, false)"
         />
       </div>
       <div class="h-full flex flex-col justify-end text-red-500 mb-4">
@@ -109,6 +134,11 @@ const menus = ref([
     icon: PackageSearch,
     submenus: [
       {
+        label: "Daftar Produk",
+        icon: List,
+        endpoint: "/product",
+      },
+      {
         label: "Kategori Produk",
         icon: Box,
         endpoint: "/category",
@@ -117,11 +147,6 @@ const menus = ref([
         label: "Bahan Baku Produk",
         icon: ShoppingBasket,
         endpoint: "/ingredient",
-      },
-      {
-        label: "Daftar Produk",
-        icon: List,
-        endpoint: "/product",
       },
     ],
     current: false,
@@ -259,8 +284,10 @@ const logout = async () => {
   auth.clearLocalStorage();
 };
 
-const setCurrent = (label) => {
-  menus.value.map((menu) => (menu.current = false));
-  menus.value.find((menu) => menu["label"] === label).current = true;
+const setCurrent = (label, hasSubmenu) => {
+  if (!hasSubmenu) {
+    menus.value.map((menu) => (menu.current = false));
+    menus.value.find((menu) => menu["label"] === label).current = true;
+  }
 };
 </script>
