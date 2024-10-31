@@ -114,6 +114,12 @@
         class="bg-primary-400 text-black"
         @click="handleConnectButtonClick"
       />
+      <CustomButton
+        label="Disconnect"
+        size="fit"
+        class="bg-red-400 text-white"
+        @click="handleDisconnect"
+      />
     </div>
   </div>
   <div v-else>
@@ -198,7 +204,6 @@ onMounted(async () => {
 });
 
 function handleConnectButtonClick() {
-  console.log("ASD");
   if (!receiptPrinter.value) {
     try {
       receiptPrinter.value = new BluetoothPrinterService();
@@ -224,6 +229,7 @@ function handleConnectButtonClick() {
 
 function handleDisconnect() {
   console.log("Printer disconnected");
+  receiptPrinter.value.disconnect();
 }
 
 function printReceipt() {

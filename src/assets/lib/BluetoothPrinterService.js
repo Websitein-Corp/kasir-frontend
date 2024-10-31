@@ -41,33 +41,24 @@ class TaskQueue {
 }
 
 class BluetoothPrinterService {
-  #eventManager;
-  #taskQueue;
-  #device = null;
-  #characteristics = { print: null, status: null };
-  #config = null;
-
   constructor() {
-    this.#eventManager = new EventManager();
-    this.#taskQueue = new TaskQueue();
+    this.eventManager = new EventManager();
+    this.taskQueue = new TaskQueue();
+    this.device = null;
+    this.characteristics = { print: null, status: null };
+    this.config = null;
   }
 
   async connect() {
-    // Check if Web Bluetooth API is supported
     if (!navigator.bluetooth) {
       throw new Error("Web Bluetooth API is not available in this browser.");
     }
 
     const deviceConfig = {
-      filters: [{ name: "RPP02N" }], // Adjust these filters as per your printer model
-      optionalServices: [
-        "000018f0-0000-1000-8000-00805f9b34fb",
-        "e7810a71-73ae-499d-8c15-faa9aef0c3f2",
-      ],
+      filters: [{ namePrefix: "RP" }],
     };
 
     try {
-      // Request Bluetooth device
       const device = await navigator.bluetooth.requestDevice(deviceConfig);
       await this._setupDevice(device);
     } catch (error) {
@@ -82,45 +73,64 @@ class BluetoothPrinterService {
     }
 
     const devices = await navigator.bluetooth.getDevices();
+    console.log(devices);
     const device = devices.find((d) => d.id === lastDevice.id);
 
     if (device) {
-      this.#device = device;
-      await this._setupDevice(this.#device);
+      this.device = device;
+      await this._setupDevice(this.device);
     } else {
       throw new Error("Device not found for reconnection.");
     }
   }
 
   async _setupDevice(device) {
-    this.#device = device;
-    const server = await this.#device.gatt.connect();
-    const service = await server.getPrimaryService(
-      "000018f0-0000-1000-8000-00805f9b34fb" // Customize based on your printer's service UUID
-    );
-    this.#characteristics.print = await service.getCharacteristic(
-      "00002af1-0000-1000-8000-00805f9b34fb" // Customize based on the print characteristic UUID
-    );
+    this.device = device;
 
-    // Listen for disconnection
-    this.#device.addEventListener("gattserverdisconnected", () => {
-      this.#eventManager.emit("disconnected");
-    });
+    if (!this.device.gatt) {
+      throw new Error(
+        "Device does not support GATT or is not properly connected."
+      );
+    }
 
-    this.#eventManager.emit("connected", device);
+    try {
+      console.log(this.device.gatt);
+      const server = await this.device.gatt.connect();
+      console.log("Connected to GATT server:", server);
+
+      const service = await server.getPrimaryService(
+        "000018f0-0000-1000-8000-00805f9b34fb"
+      );
+      console.log("Primary service obtained:", service);
+
+      this.characteristics.print = await service.getCharacteristic(
+        "00002af1-0000-1000-8000-00805f9b34fb"
+      );
+      console.log("Print characteristic set:", this.characteristics.print);
+
+      this.device.addEventListener("gattserverdisconnected", () => {
+        this.eventManager.emit("disconnected");
+      });
+
+      this.eventManager.emit("connected", device);
+    } catch (error) {
+      console.error("Failed to connect to GATT server:", error);
+      throw error;
+    }
   }
 
   async disconnect() {
-    if (this.#device && this.#device.gatt.connected) {
-      await this.#device.gatt.disconnect();
-      this.#eventManager.emit("disconnected");
-      this.#device = null;
-      this.#characteristics.print = null;
+    console.log(this.device.gatt);
+    if (this.device && this.device.gatt.connected) {
+      await this.device.gatt.disconnect();
+      this.eventManager.emit("disconnected");
+      this.device = null;
+      this.characteristics.print = null;
     }
   }
 
   async print(data) {
-    if (!this.#characteristics.print) {
+    if (!this.characteristics.print) {
       throw new Error("Printer is not connected.");
     }
 
@@ -129,14 +139,14 @@ class BluetoothPrinterService {
     }
 
     for (let chunk of data) {
-      await this.#taskQueue.add(() =>
-        this.#characteristics.print.writeValueWithResponse(chunk)
+      await this.taskQueue.add(() =>
+        this.characteristics.print.writeValueWithResponse(chunk)
       );
     }
   }
 
   on(event, callback) {
-    this.#eventManager.on(event, callback);
+    this.eventManager.on(event, callback);
   }
 }
 
