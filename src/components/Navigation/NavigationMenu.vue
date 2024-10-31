@@ -1,6 +1,6 @@
 <template>
   <div
-    class="relative group/container mx-2 lg:mx-0 max-h-fit h-20 lg:h-14 transition-all"
+    class="relative group/container mx-2 lg:mx-0 max-h-fit h-[4.5rem] lg:h-14 transition-all"
     :class="{
       'lg:hover:h-64': page.navIsOpened,
     }"
@@ -25,7 +25,7 @@
         </div>
       </div>
       <div
-        class="w-full text-center lg:text-left text-xs text-gray-800 transition-transform"
+        class="w-full text-center lg:text-left text-[0.65rem] lg:text-xs text-gray-800 transition-transform"
         :class="{
           'lg:translate-x-6': !page.navIsOpened,
         }"
@@ -59,7 +59,7 @@
               <span class="group-hover/submenu:scale-125 transition-all">
                 <component :is="submenu.icon"></component>
               </span>
-              <span class="text-left text-xs lg:text-[0.65rem] text-gray-800">
+              <span class="text-left text-[0.65rem] text-gray-800">
                 {{ submenu.label }}
               </span>
             </span>

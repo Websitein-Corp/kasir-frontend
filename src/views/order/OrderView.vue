@@ -6,12 +6,12 @@
       <div
         id="header"
         class="w-full transition-all flex items-center ml-4"
-        :class="{ 'pl-10 lg:pl-8': !page.navIsOpened }"
+        :class="{ 'pl-10 lg:pl-0': !page.navIsOpened }"
       >
         <div
-          class="p-8 pb-8 flex"
+          class="p-8 pb-8 flex transition-all"
           :class="{
-            '!pl-28 lg:!pl-4': page.navIsOpened,
+            '!pl-28 lg:!pl-0': page.navIsOpened,
           }"
         >
           <div
