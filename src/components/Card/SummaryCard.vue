@@ -8,10 +8,10 @@
       />
     </div>
     <div class="space-y-2">
-      <div class="font-bold text-2xl">
+      <div class="font-bold text-base lg:text-2xl">
         {{ name }}
       </div>
-      <div class="text-slate-500">
+      <div class="text-slate-500 text-sm lg:text-base">
         {{ $helpers.money(sellingPrice) }}
       </div>
       <div class="pt-2">

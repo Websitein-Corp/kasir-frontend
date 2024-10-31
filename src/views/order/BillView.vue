@@ -1,7 +1,7 @@
 <template>
   <div v-if="auth.isAuthenticated">
     <div
-      class="h-[35dvh] bg-primary-100 space-y-4 p-4 flex flex-col justify-center"
+      class="h-[30dvh] sm:h-64 lg:h-[40dvh] bg-primary-100 space-y-4 p-4 flex flex-col justify-center"
       :class="{
         'bg-red-100': bill.type === 'FAILED',
         'bg-yellow-100': bill.type === 'PENDING',
@@ -12,26 +12,28 @@
           v-if="bill.type === 'SUCCESS'"
           size="150"
           stroke-width="0.7"
-          class="w-32 lg:w-40 text-green-600"
+          class="w-32 h-32 lg:w-40 lg:h-40 text-green-600"
         />
         <CircleX
           v-else-if="bill.type === 'FAILED'"
           size="150"
           stroke-width="0.7"
-          class="w-32 lg:w-40 text-red-600"
+          class="w-32 h-32 lg:w-40 lg:h-40 text-red-600"
         />
         <CircleEllipsis
           v-else
           size="150"
           stroke-width="0.7"
-          class="w-32 lg:w-40 text-yellow-600"
+          class="w-32 h-32 lg:w-40 lg:h-40 text-yellow-600"
         />
       </div>
-      <div class="flex justify-center font-bold text-xl lg:text-3xl">
+      <div
+        class="flex justify-center font-bold text-base sm:text-lg lg:text-3xl"
+      >
         {{ getBillMessage() }}
       </div>
       <div
-        class="flex justify-center font-helvetica-light text-base lg:text-xl"
+        class="flex justify-center font-helvetica-light text-xs sm:text-sm lg:text-xl"
       >
         {{ bill.tr_datetime }}
       </div>

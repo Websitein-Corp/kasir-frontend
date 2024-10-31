@@ -50,7 +50,7 @@
       class="w-[100px] lg:w-[200px] h-screen bg-primary-50 flex flex-col pt-4"
     >
       <div
-        class="w-20 h-20 p-2 mx-auto mt-20 elative top-0 left-0 block lg:hidden"
+        class="w-20 h-20 p-2 mx-auto mt-20 relative top-0 left-0 block lg:hidden"
       >
         <img
           src="@/assets/images/websiteinLogo.svg"

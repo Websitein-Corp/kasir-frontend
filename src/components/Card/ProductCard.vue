@@ -11,10 +11,10 @@
         />
       </div>
       <div class="space-y-2 mt-2 lg:mt-6">
-        <div class="font-bold text-lg md:text-2xl">
+        <div class="font-bold text-lg lg:text-2xl">
           {{ name }}
         </div>
-        <div class="text-slate-500 text-xs md:text-base">
+        <div class="text-slate-500 text-xs lg:text-base">
           {{ $helpers.money(sellingPrice) }}
         </div>
       </div>

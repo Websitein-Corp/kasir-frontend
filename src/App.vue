@@ -3,7 +3,7 @@
     <SideNavigation v-if="route.path !== '/login' && route.path !== '/shop'" />
     <ModalPopup />
     <ToastAlert />
-    <div class="w-full h-screen shrink overflow-hidden">
+    <div class="w-full h-screen shrink overflow-x-hidden overflow-y-scroll">
       <router-view />
     </div>
   </div>
