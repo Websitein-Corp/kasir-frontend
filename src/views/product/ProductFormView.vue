@@ -256,7 +256,7 @@ const submitProduct = async () => {
     if (props.isEdit) {
       axios
         .put(
-          `${process.env.VUE_APP_API_BASE_URL}/api/products/edit`,
+          `${process.env.VUE_APP_API_BASE_URL}/api/products`,
           {
             shop_id: auth.shopId,
             sku: form.sku,
@@ -267,7 +267,7 @@ const submitProduct = async () => {
             type: form.type,
             category: form.category,
             barcode: form.barcode,
-            is_active: form.isActive,
+            status: form.isActive,
             image: form.image,
           },
           {
@@ -314,7 +314,7 @@ const submitProduct = async () => {
             type: form.type,
             category: form.category,
             barcode: form.barcode,
-            is_active: form.isActive,
+            status: form.isActive,
             image: form.image,
           },
           {
@@ -352,9 +352,14 @@ const submitProduct = async () => {
 
 const validateForm = () => {
   let isValid = true;
+  const notRequired = ["image"];
 
-  Object.keys(form).forEach((field) => {
-    if (!form[field]) {
+  const filteredForm = Object.keys(form).filter(
+    (item) => notRequired.indexOf(item) === -1
+  );
+
+  filteredForm.forEach((field) => {
+    if (form[field] === null) {
       toast.message = "Gagal";
       toast.description = `Kolom ${field} harus diisi!`;
       toast.type = "FAILED";

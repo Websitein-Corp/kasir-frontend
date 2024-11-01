@@ -96,6 +96,26 @@ watch(
   }
 );
 
+const fetchUpdatedProductIngredients = async () => {
+  try {
+    const { data } = await axios.get(
+      `${process.env.VUE_APP_API_BASE_URL}/api/products?shop_id=${auth.shopId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${auth.authToken}`,
+        },
+        withCredentials: true,
+      }
+    );
+
+    ingredient.used = data.data.find(
+      (item) => item.sku === ingredient.sku
+    ).ingredients;
+  } catch (response) {
+    auth.handleAxiosError(response);
+  }
+};
+
 const filterAllUsedIngredients = async () => {
   ingredient.updatedAll = ingredient.all.map((item) => {
     const itemOnHold = item;
@@ -164,13 +184,13 @@ const onSubmit = () => {
         withCredentials: true,
       }
     )
-    .then((response) => {
+    .then(async (response) => {
       toast.message = "Sukses";
       toast.description = response.data.message;
       toast.type = "SUCCESS";
       toast.trigger();
 
-      modal.close();
+      await fetchUpdatedProductIngredients();
     })
     .catch((response) => {
       toast.message = "Gagal";

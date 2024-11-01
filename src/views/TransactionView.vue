@@ -141,7 +141,7 @@ const fetchTransactions = async () => {
 
 const exportTransactions = async () => {
   await axios.get(
-    `${process.env.VUE_APP_API_BASE_URL}/api/transactions?shop_id=${auth.shopId}&date_start=${table.filters.date[0]}&date_end=${table.filters.date[1]}&keyword=`,
+    `${process.env.VUE_APP_API_BASE_URL}/api/transactions?shop_id=${auth.shopId}&date_start=${table.filters.date[0]}&date_end=${table.filters.date[1]}&keyword=${table.filters.keyword}&download=1`,
     {
       headers: {
         Authorization: `Bearer ${auth.authToken}`,
