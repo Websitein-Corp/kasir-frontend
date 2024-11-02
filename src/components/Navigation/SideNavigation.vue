@@ -107,6 +107,7 @@ import {
   List,
   Menu,
   Store,
+  Settings,
 } from "lucide-vue-next";
 import NavigationMenu from "@/components/Navigation/NavigationMenu.vue";
 import usePage from "@/stores/usePage";
@@ -173,6 +174,12 @@ const menus = ref([
     label: "Karyawan",
     icon: Users,
     endpoint: "/subuser",
+    current: false,
+  },
+  {
+    label: "Konfigurasi",
+    icon: Settings,
+    endpoint: "/setting",
     current: false,
   },
 ]);
