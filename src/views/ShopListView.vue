@@ -12,7 +12,7 @@
         :title="shop.name"
         :icon="Store"
         class="col-span-2 lg:col-span-1 hover:shadow-2xl cursor-pointer transition-all"
-        @click="() => pickShop(shop.id, shop.name)"
+        @click="() => pickShop(shop.id, shop.name, shop.address)"
       >
         <div>{{ shop.address }}</div>
       </FormCard>
@@ -67,8 +67,8 @@ const fetchShopList = async () => {
   shopList.value = data.data;
 };
 
-const pickShop = (id, name) => {
-  auth.setShopId(id);
+const pickShop = (id, name, address) => {
+  auth.setShopId(id, name, address);
 
   toast.message = "Sukses";
   toast.description = `${name} berhasil dipilih!`;

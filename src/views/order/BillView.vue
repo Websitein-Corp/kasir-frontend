@@ -109,10 +109,16 @@
     </div>
     <div class="flex">
       <CustomButton
-        label="Print"
+        label="Connect"
         size="fit"
         class="bg-primary-400 text-black"
         @click="handleConnectButtonClick"
+      />
+      <CustomButton
+        label="Print"
+        size="fit"
+        class="bg-primary-400 text-black"
+        @click="printReceipt"
       />
       <CustomButton
         label="Disconnect"
@@ -139,6 +145,7 @@ import { useRoute } from "vue-router";
 import DefaultSkeleton from "@/components/Skeleton/DefaultSkeleton.vue";
 import CustomButton from "@/components/Button/CustomButton.vue";
 import BluetoothPrinterService from "@/assets/lib/BluetoothPrinterService";
+import ReceiptPrinterEncoder from "@/assets/lib/receipt-printer-encoder.esm";
 
 const auth = useAuth();
 const toast = useToast();
@@ -249,7 +256,10 @@ function printReceipt() {
     receiptPrinter.value.print(data);
   } catch (exception) {
     console.log("Error printing receipt:", exception);
-    error.value = exception.toString();
+    toast.message = "Gagal";
+    toast.description = exception.toString();
+    toast.type = "FAILED";
+    toast.trigger();
   }
 }
 
