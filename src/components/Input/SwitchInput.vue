@@ -11,6 +11,9 @@
       <span class="toggle-background" :class="backgroundStyles" />
       <span class="toggle-indicator" :style="indicatorStyles" />
     </span>
+    <span v-if="label" class="ml-4">
+      {{ label }}
+    </span>
   </div>
 </template>
 
@@ -18,6 +21,10 @@
 import { computed, ref, watch } from "vue";
 
 const props = defineProps({
+  label: {
+    type: String,
+    default: "",
+  },
   isActive: {
     type: Boolean,
     default: false,
