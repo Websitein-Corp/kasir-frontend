@@ -74,7 +74,6 @@
                 class="h-7"
               >
                 <SwitchInput
-                  :label="permission.name"
                   :is-active="form.permission === permission.code"
                   @switch="(newVal) => changeRole(newVal, permission)"
                 />
