@@ -55,7 +55,7 @@ class BluetoothPrinterService {
     }
 
     const deviceConfig = {
-      filters: [{ namePrefix: "RP" }],
+      filters: [{ namePrefix: "RPP" }],
       optionalServices: [
         "000018f0-0000-1000-8000-00805f9b34fb",
         "e7810a71-73ae-499d-8c15-faa9aef0c3f2",
@@ -100,19 +100,15 @@ class BluetoothPrinterService {
     }
 
     try {
-      console.log(this.device.gatt);
       const server = await this.device.gatt.connect();
-      console.log("Connected to GATT server:", server);
 
       const service = await server.getPrimaryService(
         "000018f0-0000-1000-8000-00805f9b34fb"
       );
-      console.log("Primary service obtained:", service);
 
       this.characteristics.print = await service.getCharacteristic(
         "00002af1-0000-1000-8000-00805f9b34fb"
       );
-      console.log("Print characteristic set:", this.characteristics.print);
 
       this.device.addEventListener("gattserverdisconnected", () => {
         this.eventManager.emit("disconnected");
