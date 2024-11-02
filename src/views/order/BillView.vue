@@ -107,6 +107,7 @@
         <div>{{ $helpers.money(bill.change) }}</div>
       </div>
     </div>
+    <div>Printer Status: {{printerStatus}}</div>
     <div class="flex">
       <CustomButton
         label="Connect"
@@ -152,6 +153,7 @@ const toast = useToast();
 const route = useRoute();
 const receiptPrinter = ref(null);
 const lastUsedDevice = ref(null);
+const printerStatus = ref("WAITING...");
 const error = ref("");
 
 const props = defineProps({
@@ -190,19 +192,22 @@ const bill = ref({
 onMounted(async () => {
   await auth.checkLoginSession(route);
   await showBill();
+  const bluetooth = await getBluetoothId();
 
   try {
     if (!receiptPrinter.value) {
       receiptPrinter.value = new BluetoothPrinterService();
     }
 
-    // Attempt to reconnect to the last used device
-    await receiptPrinter.value.reconnect(lastUsedDevice.value);
+    await receiptPrinter.value.reconnect({
+      id: bluetooth.device_id
+    });
+    printerStatus.value = bluetooth.status;
 
     receiptPrinter.value.addEventListener("connected", (device) => {
       console.log(`Connected to ${device.name} (#${device.id})`);
 
-      lastUsedDevice.value = device; // Store device for reconnecting
+      lastUsedDevice.value = device.id;
     });
   } catch (err) {
     console.error("Error connecting to the printer:", err);
@@ -222,9 +227,9 @@ function handleConnectButtonClick() {
 
   receiptPrinter.value
     .connect()
-    .then((device) => {
+    .then(async (device) => {
       console.log("Connected to printer:", device);
-      lastUsedDevice.value = device; // Store for future reconnection
+      await editBluetoothId(device.id);
 
       device.addEventListener("gattserverdisconnected", handleDisconnect);
     })
@@ -234,9 +239,18 @@ function handleConnectButtonClick() {
     });
 }
 
-function handleDisconnect() {
+async function handleDisconnect() {
   console.log("Printer disconnected");
   receiptPrinter.value.disconnect();
+  await axios.delete(
+      `${process.env.VUE_APP_API_BASE_URL}/api/bluetooth`,
+      {
+        headers: {
+          Authorization: `Bearer ${auth.authToken}`,
+        },
+        withCredentials: true,
+      }
+  );
 }
 
 function printReceipt() {
@@ -283,6 +297,55 @@ const showBill = async () => {
 
   bill.value = data.data;
   bill.value["type"] = "SUCCESS";
+};
+
+const getBluetoothId = async () => {
+  const { data } = await axios.get(
+      `${process.env.VUE_APP_API_BASE_URL}/api/bluetooth`,
+      {
+        headers: {
+          Authorization: `Bearer ${auth.authToken}`,
+        },
+        withCredentials: true,
+      }
+  );
+
+  if (data["error_type"]) {
+    toast.message = "Gagal";
+    toast.description = data.message;
+    toast.type = "FAILED";
+    toast.trigger();
+  }
+
+  return {
+      'status': data.data.status,
+      'device_id': data.data.bluetooth ? data.data.bluetooth.device_id : null,
+  };
+};
+
+const editBluetoothId = async (id) => {
+  const { data } = await axios.post(
+      `${process.env.VUE_APP_API_BASE_URL}/api/bluetooth`,
+      {
+        device_id: id
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${auth.authToken}`,
+        },
+        withCredentials: true,
+      }
+  );
+
+  if (data["error_type"]) {
+    toast.message = "Gagal";
+    toast.description = data.message;
+    toast.type = "FAILED";
+    toast.trigger();
+  }
+
+  lastUsedDevice.value = data.data.bluetooth ? data.data.bluetooth.device_id : null;
+  printerStatus.value = data.data.status;
 };
 
 const getBillMessage = () => {
