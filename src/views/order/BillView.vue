@@ -109,7 +109,7 @@
         <div>{{ $helpers.money(bill.change) }}</div>
       </div>
     </div>
-    <div>Printer Status: {{printerStatus}}</div>
+    <div>Printer Status: {{ printerStatus }}</div>
     <div class="flex">
       <CustomButton
         label="Connect"
@@ -205,7 +205,7 @@ onMounted(async () => {
     }
 
     await receiptPrinter.value.reconnect({
-      id: bluetooth.device_id
+      id: bluetooth.device_id,
     });
     printerStatus.value = bluetooth.status;
 
@@ -247,15 +247,12 @@ function handleConnectButtonClick() {
 async function handleDisconnect() {
   console.log("Printer disconnected");
   receiptPrinter.value.disconnect();
-  await axios.delete(
-      `${process.env.VUE_APP_API_BASE_URL}/api/bluetooth`,
-      {
-        headers: {
-          Authorization: `Bearer ${auth.authToken}`,
-        },
-        withCredentials: true,
-      }
-  );
+  await axios.delete(`${process.env.VUE_APP_API_BASE_URL}/api/bluetooth`, {
+    headers: {
+      Authorization: `Bearer ${auth.authToken}`,
+    },
+    withCredentials: true,
+  });
 }
 
 function printReceipt() {
@@ -268,7 +265,11 @@ function printReceipt() {
       const itemName = `${item.item_name}`;
       const itemTotalPrice = `${helpers.money(item.total_price)}`;
       const itemPrice = `${helpers.money(item.price)}`;
-      return [[(encoder) => encoder.bold().text(itemName).bold()], [`${itemPrice} x ${item.quantity}`, itemTotalPrice], ['', '']];
+      return [
+        [(encoder) => encoder.bold().text(itemName).bold()],
+        [`${itemPrice} x ${item.quantity}`, itemTotalPrice],
+        ["", ""],
+      ];
     });
 
     const encoder = new ReceiptPrinterEncoder({
@@ -282,11 +283,8 @@ function printReceipt() {
           align: "center",
           style: "double",
         },
-        (encoder) => encoder
-            .size(2)
-            .line(auth.shopName)
-            .size(1)
-            .line(auth.shopAddress)
+        (encoder) =>
+          encoder.size(2).line(auth.shopName).size(1).line(auth.shopAddress)
       )
       .align("center")
       .text("===============================")
@@ -307,43 +305,50 @@ function printReceipt() {
     receiptPrinter.value.print(data);
 
     data = encoder
-        .initialize()
-        .table(
-            [
-              { width: 15, marginRight: 2, align: "left" },
-              { width: 15, align: "right" }
-            ],
-            detailBarang
-        )
-        .line("===============================")
-        .encode();
+      .initialize()
+      .table(
+        [
+          { width: 15, marginRight: 2, align: "left" },
+          { width: 15, align: "right" },
+        ],
+        detailBarang
+      )
+      .line("===============================")
+      .encode();
 
     receiptPrinter.value.print(data);
 
     data = encoder
-        .initialize()
-        .newline()
-        .table(
-            [
-              { width: 15, marginRight: 2, align: "left" },
-              { width: 15, align: "right" }
-            ],
-            [
-              [`Total Item: ${bill.value.total_item}`],
-              [''],
-              ['Subtotal', `${helpers.money(bill.value.subtotal)}`],
-              ['Diskon', `${helpers.money(bill.value.discount)}`],
-              ['Pajak', `${helpers.money(bill.value.tax_fee)}`],
-              [(encoder) => encoder.bold().text('Total').bold(), (encoder) => encoder.bold().text(`${helpers.money(bill.value.total_price)}`).bold()],
-            ]
-        )
-        .align("center")
-        .newline()
-        .text("Terimakasih sudah berbelanja di " + auth.shopName)
-        .newline()
-        .newline()
-        .newline()
-        .encode();
+      .initialize()
+      .newline()
+      .table(
+        [
+          { width: 15, marginRight: 2, align: "left" },
+          { width: 15, align: "right" },
+        ],
+        [
+          [`Total Item: ${bill.value.total_item}`],
+          [""],
+          ["Subtotal", `${helpers.money(bill.value.subtotal)}`],
+          ["Diskon", `${helpers.money(bill.value.discount)}`],
+          ["Pajak", `${helpers.money(bill.value.tax_fee)}`],
+          [
+            (encoder) => encoder.bold().text("Total").bold(),
+            (encoder) =>
+              encoder
+                .bold()
+                .text(`${helpers.money(bill.value.total_price)}`)
+                .bold(),
+          ],
+        ]
+      )
+      .align("center")
+      .newline()
+      .text("Terimakasih sudah berbelanja di " + auth.shopName)
+      .newline()
+      .newline()
+      .newline()
+      .encode();
 
     receiptPrinter.value.print(data);
   } catch (exception) {
@@ -379,13 +384,13 @@ const showBill = async () => {
 
 const getBluetoothId = async () => {
   const { data } = await axios.get(
-      `${process.env.VUE_APP_API_BASE_URL}/api/bluetooth`,
-      {
-        headers: {
-          Authorization: `Bearer ${auth.authToken}`,
-        },
-        withCredentials: true,
-      }
+    `${process.env.VUE_APP_API_BASE_URL}/api/bluetooth`,
+    {
+      headers: {
+        Authorization: `Bearer ${auth.authToken}`,
+      },
+      withCredentials: true,
+    }
   );
 
   if (data["error_type"]) {
@@ -396,23 +401,23 @@ const getBluetoothId = async () => {
   }
 
   return {
-      'status': data.data.status,
-      'device_id': data.data.bluetooth ? data.data.bluetooth.device_id : null,
+    status: data.data.status,
+    device_id: data.data.bluetooth ? data.data.bluetooth.device_id : null,
   };
 };
 
 const editBluetoothId = async (id) => {
   const { data } = await axios.post(
-      `${process.env.VUE_APP_API_BASE_URL}/api/bluetooth`,
-      {
-        device_id: id
+    `${process.env.VUE_APP_API_BASE_URL}/api/bluetooth`,
+    {
+      device_id: id,
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${auth.authToken}`,
       },
-      {
-        headers: {
-          Authorization: `Bearer ${auth.authToken}`,
-        },
-        withCredentials: true,
-      }
+      withCredentials: true,
+    }
   );
 
   if (data["error_type"]) {
@@ -422,7 +427,9 @@ const editBluetoothId = async (id) => {
     toast.trigger();
   }
 
-  lastUsedDevice.value = data.data.bluetooth ? data.data.bluetooth.device_id : null;
+  lastUsedDevice.value = data.data.bluetooth
+    ? data.data.bluetooth.device_id
+    : null;
   printerStatus.value = data.data.status;
 };
 
