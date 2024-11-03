@@ -149,6 +149,7 @@ import DefaultSkeleton from "@/components/Skeleton/DefaultSkeleton.vue";
 import CustomButton from "@/components/Button/CustomButton.vue";
 import BluetoothPrinterService from "@/assets/lib/BluetoothPrinterService";
 import ReceiptPrinterEncoder from "@/assets/lib/receipt-printer-encoder.esm";
+import helpers from "@/helpers";
 
 const auth = useAuth();
 const toast = useToast();
@@ -263,13 +264,86 @@ function printReceipt() {
       throw new Error("Printer is not connected");
     }
 
-    const encoder = new ReceiptPrinterEncoder({ language: "esc-pos" });
-    const data = encoder
+    const detailBarang = bill.value.details.flatMap((item, index) => {
+      const itemName = `${item.item_name}`;
+      const itemTotalPrice = `${helpers.money(item.total_price)}`;
+      const itemPrice = `${helpers.money(item.price)}`;
+      return [[(encoder) => encoder.bold().text(itemName).bold()], [`${itemPrice} x ${item.quantity}`, itemTotalPrice], ['', '']];
+    });
+
+    const encoder = new ReceiptPrinterEncoder({
+      language: "esc-pos",
+      columns: 32,
+    });
+    let data = encoder
       .initialize()
-      .text("The quick brown fox jumps over the lazy dog")
-      .newline()
-      .qrcode("https://nielsleenheer.com")
+      .box(
+        {
+          align: "center",
+          style: "double",
+        },
+        (encoder) => encoder
+            .size(2)
+            .line(auth.shopName)
+            .size(1)
+            .line(auth.shopAddress)
+      )
+      .align("center")
+      .text("===============================")
       .encode();
+
+    receiptPrinter.value.print(data);
+
+    data = encoder
+      .initialize()
+      .align("center")
+      .line(bill.value.tr_datetime)
+      .line(bill.value.invoice_number)
+      .line(bill.value.cashier)
+      .line("===============================")
+      .newline()
+      .encode();
+
+    receiptPrinter.value.print(data);
+
+    data = encoder
+        .initialize()
+        .table(
+            [
+              { width: 15, marginRight: 2, align: "left" },
+              { width: 15, align: "right" }
+            ],
+            detailBarang
+        )
+        .line("===============================")
+        .encode();
+
+    receiptPrinter.value.print(data);
+
+    data = encoder
+        .initialize()
+        .newline()
+        .table(
+            [
+              { width: 15, marginRight: 2, align: "left" },
+              { width: 15, align: "right" }
+            ],
+            [
+              [`Total Item: ${bill.value.total_item}`],
+              [''],
+              ['Subtotal', `${helpers.money(bill.value.subtotal)}`],
+              ['Diskon', `${helpers.money(bill.value.discount)}`],
+              ['Pajak', `${helpers.money(bill.value.tax_fee)}`],
+              [(encoder) => encoder.bold().text('Total').bold(), (encoder) => encoder.bold().text(`${helpers.money(bill.value.total_price)}`).bold()],
+            ]
+        )
+        .align("center")
+        .newline()
+        .text("Terimakasih sudah berbelanja di " + auth.shopName)
+        .newline()
+        .newline()
+        .newline()
+        .encode();
 
     receiptPrinter.value.print(data);
   } catch (exception) {
