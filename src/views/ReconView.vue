@@ -60,11 +60,13 @@ import axios from "axios";
 import useTable from "@/stores/useTable";
 import useToast from "@/stores/useToast";
 import useAuth from "@/stores/useAuth";
+import { useRoute } from "vue-router";
 import DefaultSkeleton from "@/components/Skeleton/DefaultSkeleton.vue";
 
 const auth = useAuth();
 const table = useTable();
 const toast = useToast();
+const route = useRoute();
 
 let debounce;
 
@@ -126,7 +128,7 @@ const saveStock = async (item) => {
     await axios.put(
       `${process.env.VUE_APP_API_BASE_URL}/api/ingredients/recon`,
       {
-        id: item.id,
+        id: String(item.id),
         end_stock: item.stock,
         shop_id: auth.shopId,
       },

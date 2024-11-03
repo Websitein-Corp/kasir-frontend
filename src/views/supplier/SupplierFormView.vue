@@ -4,9 +4,6 @@
     <form @submit.prevent="handleSubmit" class="max-h-[95vh] overflow-y-auto">
       <!-- Supplier Detail -->
       <DashboardCard class="form-section">
-        <h2>Supplier Detail</h2>
-        <hr />
-
         <!-- If not editing, show input field for supplier name -->
         <div v-if="!isEdit">
           <TextInput
@@ -34,11 +31,12 @@
             class="w-1/2"
           />
           <TextInput
+            :value="totalPrice"
             v-model="supplierDetail.total_price"
             name="total_price"
             label="Total Harga"
             placeholder="Enter total price"
-            required
+            readonly
             class="w-1/2"
           />
         </div>
@@ -124,6 +122,7 @@ import {
   defineProps,
   defineAsyncComponent,
   defineEmits,
+  computed,
 } from "vue";
 import axios from "axios";
 import CustomButton from "@/components/Button/CustomButton.vue";
@@ -143,6 +142,14 @@ const props = defineProps({
 });
 
 const emit = defineEmits(["cancel", "save"]);
+
+const totalPrice = computed(() => {
+  return productDetails.value.reduce((sum, product) => {
+    // Ensure capital_price is treated as a number
+    const price = parseFloat(product.capital_price) || 0;
+    return sum + price;
+  }, 0);
+});
 
 const supplierDetail = ref({
   id: props.supplierData ? props.supplierData.id : "",
@@ -177,7 +184,8 @@ const handleSubmit = async () => {
   try {
     const requestBody = {
       shop_id: auth.shopId,
-      supplier: supplierDetail.value.id,
+      supplier: supplierDetail.value.name,
+      supply_id: supplierDetail.value.id ?? 0,
       due_date: supplierDetail.value.due_date,
       data: productDetails.value.map((product) => ({
         type: product.type,
@@ -191,7 +199,7 @@ const handleSubmit = async () => {
     if (props.isEdit) {
       // Update existing supply
       response = await axios.put(
-        `${process.env.VUE_APP_API_BASE_URL}/api/supplier/supply/update`,
+        `${process.env.VUE_APP_API_BASE_URL}/api/supplier/supply`,
         requestBody,
         {
           headers: {
@@ -202,7 +210,7 @@ const handleSubmit = async () => {
     } else {
       // Add new supply
       response = await axios.post(
-        `${process.env.VUE_APP_API_BASE_URL}/api/supplier/supply/add`,
+        `${process.env.VUE_APP_API_BASE_URL}/api/supplier/supply`,
         requestBody,
         {
           headers: {
