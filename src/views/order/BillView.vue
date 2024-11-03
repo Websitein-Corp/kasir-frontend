@@ -53,6 +53,7 @@
         <div class="flex justify-between w-5/12 lg:w-1/4">
           <div>Jumlah</div>
           <div>Harga</div>
+          <div>Total</div>
         </div>
       </div>
       <div
@@ -64,6 +65,7 @@
         <div class="flex justify-between w-5/12 lg:w-1/4">
           <div>{{ item.quantity }}</div>
           <div>{{ $helpers.money(item.price) }}</div>
+          <div>{{ $helpers.money(item.total_price) }}</div>
         </div>
       </div>
       <hr class="my-2" />
@@ -172,11 +174,13 @@ const bill = ref({
       item_name: "Bur",
       quantity: 2,
       price: 10000,
+      total_price: 20000,
     },
     {
       item_name: "Ger",
       quantity: 1,
       price: 15000,
+      total_price: 15000,
     },
   ],
   total_item: 0,
