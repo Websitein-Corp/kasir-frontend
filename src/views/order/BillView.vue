@@ -330,7 +330,7 @@ function printReceipt() {
           [`Total Item: ${bill.value.total_item}`],
           [""],
           ["Subtotal", `${helpers.money(bill.value.subtotal)}`],
-          ["Diskon", `${helpers.money(bill.value.discount)}`],
+          ["Diskon", `(${helpers.money(bill.value.discount)})`],
           ["Pajak", `${helpers.money(bill.value.tax_fee)}`],
           [
             (encoder) => encoder.bold().text("Total").bold(),
