@@ -10,15 +10,6 @@
             <div class="flex space-x-4 mt-6">
               <div class="flex-col space-y-4">
                 <div
-                  v-for="(permission, index) in permissionList"
-                  v-bind:key="index"
-                  class="h-7 mt-1"
-                >
-                  {{ permission.name }}
-                </div>
-              </div>
-              <div class="flex-col space-y-4">
-                <div
                   class="h-7"
                   v-for="setting in settingsData"
                   v-bind:key="setting.name"
@@ -58,12 +49,14 @@ import useToast from "@/stores/useToast";
 import useAuth from "@/stores/useAuth";
 import DefaultSkeleton from "@/components/Skeleton/DefaultSkeleton.vue";
 import usePage from "@/stores/usePage";
+import { useRoute } from "vue-router";
 
 const settingsData = ref();
 
 const auth = useAuth();
 const toast = useToast();
 const page = usePage();
+const route = useRoute();
 
 onMounted(async () => {
   page.loading = true;
