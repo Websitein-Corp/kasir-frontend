@@ -182,6 +182,8 @@ const deleteSubuser = async (id) => {
     toast.description = data.message;
     toast.type = "SUCCESS";
     toast.trigger();
+
+    await fetchSubusers();
   }
 };
 

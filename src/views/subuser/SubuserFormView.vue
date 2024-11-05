@@ -180,7 +180,7 @@ const submitSubuser = async () => {
             email: form.email,
             password: form.password,
             name: form.name,
-            permissions: form.permission,
+            permission: form.permission,
           },
           {
             headers: {
