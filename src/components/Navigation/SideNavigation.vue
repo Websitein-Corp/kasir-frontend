@@ -160,7 +160,18 @@ const menus = ref([
   {
     label: "Supplier",
     icon: Truck,
-    endpoint: "/supplier",
+    submenus: [
+      {
+        label: "Supplier",
+        icon: Truck,
+        endpoint: "/supplier",
+      },
+      {
+        label: "Supply",
+        icon: Truck,
+        endpoint: "/supply",
+      },
+    ],
     current: false,
   },
   {
