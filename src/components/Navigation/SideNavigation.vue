@@ -47,7 +47,7 @@
     }"
   >
     <nav
-      class="w-[100px] lg:w-[200px] h-screen bg-primary-50 flex flex-col pt-4"
+      class="w-[100px] lg:w-[200px] h-screen bg-primary-50 flex flex-col pt-4 overflow-y-auto no-scrollbar"
     >
       <div
         class="w-20 h-20 p-2 mx-auto mt-20 relative top-0 left-0 block lg:hidden"
@@ -78,16 +78,28 @@
           @submenu-click="setCurrent(menu.label, false)"
         />
       </div>
-      <div class="h-full flex flex-col justify-end text-red-500 mb-4">
-        <NavigationMenu
-          :icon="LogOut"
-          label="Logout"
-          :submenus="logoutSubmenus"
-          isLogout
-          @submenu-click="
-            (label) => (label === 'Logout' ? logout() : backToShopList())
-          "
-        />
+      <div class="h-full flex flex-col justify-end text-red-500 mb-4 lg:mb-0">
+        <div class="hidden lg:block">
+          <NavigationMenu
+            :icon="LogOut"
+            label="Logout"
+            :submenus="logoutSubmenus"
+            isLogout
+            @submenu-click="
+              (label) => (label === 'Logout' ? logout() : backToShopList())
+            "
+          />
+        </div>
+        <div class="block lg:hidden">
+          <NavigationMenu
+            :icon="LogOut"
+            :submenus="logoutSubmenus"
+            isLogout
+            @submenu-click="
+              (label) => (label === 'Logout' ? logout() : backToShopList())
+            "
+          />
+        </div>
       </div>
     </nav>
   </div>
