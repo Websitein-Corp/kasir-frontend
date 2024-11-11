@@ -63,7 +63,6 @@ import {
   defineProps,
   defineAsyncComponent,
   defineEmits,
-  computed,
 } from "vue";
 import axios from "axios";
 import CustomButton from "@/components/Button/CustomButton.vue";
