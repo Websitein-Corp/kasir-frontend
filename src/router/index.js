@@ -58,8 +58,8 @@ const routes = [
     component: () => import("@/views/ingredient/IngredientView.vue"),
   },
   {
-    path: "/shop",
-    name: "shop",
+    path: "/shop-list",
+    name: "shop-list",
     component: () => import("@/views/ShopListView.vue"),
   },
   {
@@ -76,6 +76,11 @@ const routes = [
     path: "/setting",
     name: "setting",
     component: () => import("@/views/SettingView.vue"),
+  },
+  {
+    path: "/shop",
+    name: "shop",
+    component: () => import("@/views/shop/ShopView.vue"),
   },
 ];
 
