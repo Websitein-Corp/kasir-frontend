@@ -38,18 +38,50 @@
     <!-- Login Form -->
     <div class="loginview absolute inset-0 flex items-center justify-center">
       <div
-        class="flex flex-row min-w-fit w-4/12 h-[45vh] border border-1 rounded-xl bg-white shadow-lg z-10"
+        class="flex flex-row min-w-fit w-10/12 md:w-4/12 h-[55vh] md:h-[45vh] border border-1 rounded-xl bg-white shadow-lg z-10"
       >
         <!-- Image will be hidden on small screens and visible on medium (tablet) and larger screens -->
-        <img
-          src="../../public/img/login.png"
-          alt="login image"
-          class="hidden md:block aspect-square w-1/2"
-        />
+        <div
+          class="hidden md:flex flex-col items-center justify-center bg-gradient-to-br from-primary-700 via-primary-500 to-primary-300 w-1/2 px-8"
+        >
+          <h2 class="text-2xl font-semibold text-gray-800 md:text-3xl">
+            Cashier platform for your own
+            <span class="text-pink-600">Business</span>
+          </h2>
+          <p class="mt-4 text-gray-700 text-sm md:text-base">
+            Just a few clicks away to begin our business journey
+          </p>
+          <div class="mt-6 flex justify-center">
+            <div
+              class="bg-gray-200 p-2 rounded-full w-10 h-10 flex items-center justify-center"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="w-6 h-6 text-gray-700"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M5 13l4 4L19 7"
+                />
+              </svg>
+            </div>
+          </div>
+        </div>
 
-        <div class="flex flex-col items-center justify-center p-4 w-1/2">
+        <div
+          class="flex flex-col items-center justify-center p-4 w-full md:w-1/2"
+        >
           <div class="flex flex-row items-center justify-center">
-            <img src="../../public/img/logo.svg" alt="logo" class="w-16" />
+            <img
+              src="../../public/img/logo.svg"
+              alt="logo"
+              class="w-12 md:w-16"
+            />
             <h1 class="pl-2 text-xl">
               {{ isForgotPassword ? "Forgot Password" : "Login" }}
             </h1>

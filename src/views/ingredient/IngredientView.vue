@@ -27,9 +27,8 @@
         </template>
         <template v-slot:thead>
           <tr>
-            <th>Kode</th>
             <th>Nama</th>
-            <th>Satuan</th>
+            <th>Stok</th>
             <th>Harga</th>
             <th>Actions</th>
           </tr>
@@ -37,15 +36,14 @@
         <template v-slot:tbody>
           <tr v-for="(item, index) in table.items" :key="index">
             <td>{{ item.name || "-" }}</td>
-            <td>{{ item.stock || "-" }}</td>
-            <td>{{ item.unitName || "-" }}</td>
+            <td>{{ item.stock + " " + item.unitName || "-" }}</td>
             <td>{{ $helpers.money(item.price) || "-" }}</td>
             <td class="flex justify-center space-x-2">
               <CustomButton
                 size="fit"
                 :icon="Trash2"
                 class="bg-red-700 hover:bg-red-800"
-                @click="deleteIngredient(item.id)"
+                @click="deleteIngredient(item.name)"
               />
               <CustomButton
                 size="fit"
@@ -157,9 +155,9 @@ const editIngredient = (item) => {
   selectedIngredient.value = item;
 };
 
-const deleteIngredient = async (id) => {
+const deleteIngredient = async (name) => {
   const { data } = await axios.delete(
-    `${process.env.VUE_APP_API_BASE_URL}/api/ingredients/delete?shop_id=${auth.shopId}&name=${id}`,
+    `${process.env.VUE_APP_API_BASE_URL}/api/ingredients?shop_id=${auth.shopId}&name=${name}`,
     {
       headers: {
         Authorization: `Bearer ${auth.authToken}`,
@@ -178,6 +176,8 @@ const deleteIngredient = async (id) => {
     toast.description = data.message;
     toast.type = "SUCCESS";
     toast.trigger();
+
+    await fetchIngredients();
   }
 };
 
