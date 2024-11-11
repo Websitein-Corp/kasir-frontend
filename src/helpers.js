@@ -28,4 +28,9 @@ export default {
 
     return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
   },
+
+  parseRupiah: (value) => {
+    const numberString = value.replace("Rp", "").replace(".", "");
+    return parseInt(numberString, 10);
+  },
 };

@@ -89,8 +89,8 @@ import axios from "axios";
 import useTable from "@/stores/useTable";
 import useToast from "@/stores/useToast";
 import useAuth from "@/stores/useAuth";
-import { useRoute } from "vue-router";
 import DefaultSkeleton from "@/components/Skeleton/DefaultSkeleton.vue";
+import { useRoute } from "vue-router";
 
 const auth = useAuth();
 const table = useTable();

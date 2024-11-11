@@ -187,7 +187,7 @@ const login = async () => {
       toast.trigger();
 
       if (userType === "USER") {
-        await router.push("/shop");
+        await router.push("/shop-list");
       } else {
         auth.setShopId(shopId);
         await router.push("/");

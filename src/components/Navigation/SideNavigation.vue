@@ -81,6 +81,7 @@
       <div class="h-full flex flex-col justify-end text-red-500 mb-4">
         <NavigationMenu
           :icon="LogOut"
+          label="Logout"
           :submenus="logoutSubmenus"
           isLogout
           @submenu-click="
@@ -107,6 +108,7 @@ import {
   List,
   Menu,
   Store,
+  Settings,
 } from "lucide-vue-next";
 import NavigationMenu from "@/components/Navigation/NavigationMenu.vue";
 import usePage from "@/stores/usePage";
@@ -186,6 +188,18 @@ const menus = ref([
     endpoint: "/subuser",
     current: false,
   },
+  {
+    label: "Konfigurasi",
+    icon: Settings,
+    endpoint: "/setting",
+    current: false,
+  },
+  {
+    label: "Toko",
+    icon: Store,
+    endpoint: "/shop",
+    current: false,
+  },
 ]);
 
 const logoutSubmenus = [
@@ -225,7 +239,7 @@ const toast = useToast();
 
 const backToShopList = () => {
   auth.clearLocalStorage("shop_id");
-  router.push("/shop");
+  router.push("/shop-list");
 };
 
 function filterMenuByRole(menus, role) {
