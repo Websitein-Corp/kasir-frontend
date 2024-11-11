@@ -81,6 +81,7 @@
       <div class="h-full flex flex-col justify-end text-red-500 mb-4">
         <NavigationMenu
           :icon="LogOut"
+          label="Logout"
           :submenus="logoutSubmenus"
           isLogout
           @submenu-click="
