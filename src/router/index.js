@@ -73,6 +73,11 @@ const routes = [
     component: () => import("@/views/supplier/SupplierView.vue"),
   },
   {
+    path: "/supply",
+    name: "supply",
+    component: () => import("@/views/supplier/supply/SupplyView.vue"),
+  },
+  {
     path: "/setting",
     name: "setting",
     component: () => import("@/views/SettingView.vue"),

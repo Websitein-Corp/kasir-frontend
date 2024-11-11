@@ -128,7 +128,7 @@ const saveStock = async (item) => {
     await axios.put(
       `${process.env.VUE_APP_API_BASE_URL}/api/ingredients/recon`,
       {
-        id: item.id,
+        id: String(item.id),
         end_stock: item.stock,
         shop_id: auth.shopId,
       },
