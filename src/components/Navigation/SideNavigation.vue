@@ -182,6 +182,12 @@ const menus = ref([
     endpoint: "/setting",
     current: false,
   },
+  {
+    label: "Toko",
+    icon: Store,
+    endpoint: "/shop",
+    current: false,
+  },
 ]);
 
 const logoutSubmenus = [
@@ -221,7 +227,7 @@ const toast = useToast();
 
 const backToShopList = () => {
   auth.clearLocalStorage("shop_id");
-  router.push("/shop");
+  router.push("/shop-list");
 };
 
 function filterMenuByRole(menus, role) {
