@@ -18,7 +18,7 @@ export default defineStore("auth", {
         await router.push("/login");
         return;
       } else if (!this.shopId) {
-        await router.push("/shop");
+        await router.push("/shop-list");
         return;
       }
 
@@ -35,7 +35,7 @@ export default defineStore("auth", {
           if (this.isAuthenticated) {
             if (
               route.path === "/login" ||
-              (this.shopId && route.path === "/shop")
+              (this.shopId && route.path === "/shop-list")
             ) {
               router.push("/");
               return true;
@@ -80,7 +80,7 @@ export default defineStore("auth", {
           if (this.shopId) {
             router.push("/");
           } else {
-            router.push("/shop");
+            router.push("/shop-list");
           }
         } else {
           router.push("/login");

@@ -1,20 +1,16 @@
 <template>
   <div v-if="isShowingForm">
-    <SubuserFormView
-      :subuser-data="selectedSubuser"
-      :is-edit="!!selectedSubuser"
+    <ShopFormView
+      :shop-data="selectedShop"
+      :is-edit="!!selectedShop"
       @form-back="resetForm"
       @submit-success="resetForm"
     />
   </div>
   <div v-else-if="auth.isAuthenticated && !page.loading">
-    <PageContainer title="Karyawan" subtitle="Daftar karyawan...">
+    <PageContainer title="Toko" subtitle="Daftar toko terdaftar...">
       <DataTable :column-count="4">
-        <template v-slot:action-2>
-          <div class="flex space-x-2">
-            <SearchInput v-model="table.filters.keyword"></SearchInput>
-          </div>
-        </template>
+        <template v-slot:action-2> </template>
         <template v-slot:action-3>
           <div class="flex space-x-2">
             <CustomButton
@@ -27,29 +23,27 @@
         </template>
         <template v-slot:thead>
           <tr>
-            <th>Email</th>
             <th>Nama</th>
-            <th>Login Terakhir</th>
+            <th>Address</th>
             <th>Actions</th>
           </tr>
         </template>
         <template v-slot:tbody>
           <tr v-for="(item, index) in table.items" :key="index">
-            <td>{{ item.email || "-" }}</td>
             <td>{{ item.name || "-" }}</td>
-            <td>{{ item.lastLogin || "-" }}</td>
+            <td>{{ item.address || "-" }}</td>
             <td class="flex justify-center space-x-2">
               <CustomButton
                 size="fit"
                 :icon="Trash2"
                 class="bg-red-700 hover:bg-red-800"
-                @click="deleteSubuser(item.id)"
+                @click="deleteShop(item.id)"
               />
               <CustomButton
                 size="fit"
                 :icon="Pencil"
                 class="bg-primary-200 hover:bg-primary-300 text-primary-950"
-                @click="editSubuser(item)"
+                @click="editShop(item)"
               />
             </td>
           </tr>
@@ -69,17 +63,16 @@ import { onMounted, ref, watch } from "vue";
 
 import DataTable from "@/components/Table/DataTable.vue";
 import PageContainer from "@/views/PageContainer.vue";
-import SearchInput from "@/components/Input/SearchInput.vue";
 import axios from "axios";
 import useTable from "@/stores/useTable";
 import CustomButton from "@/components/Button/CustomButton.vue";
-import SubuserFormView from "@/views/subuser/SubuserFormView.vue";
 import { Trash2, Pencil } from "lucide-vue-next";
 import useToast from "@/stores/useToast";
 import useAuth from "@/stores/useAuth";
 import { useRoute } from "vue-router";
 import DefaultSkeleton from "@/components/Skeleton/DefaultSkeleton.vue";
 import usePage from "@/stores/usePage";
+import ShopFormView from "@/views/shop/ShopFormView.vue";
 
 const auth = useAuth();
 const table = useTable();
@@ -90,14 +83,14 @@ const route = useRoute();
 let debounce;
 
 const isShowingForm = ref(false);
-const selectedSubuser = ref(null);
+const selectedShop = ref(null);
 
 onMounted(async () => {
   page.loading = true;
   table.resetPage();
 
   if (await auth.checkLoginSession(route)) {
-    await fetchSubusers();
+    await fetchShops();
   }
 });
 
@@ -107,20 +100,20 @@ watch(table.filters, () => {
   if (debounce) {
     clearTimeout(debounce);
   }
-  debounce = setTimeout(() => fetchSubusers(), 500);
+  debounce = setTimeout(() => fetchShops(), 500);
 });
 
 watch(
   () => table.page.current,
   () => {
-    fetchSubusers();
+    fetchShops();
   }
 );
 
-const fetchSubusers = async () => {
+const fetchShops = async () => {
   try {
     const { data } = await axios.get(
-      `${process.env.VUE_APP_API_BASE_URL}/api/subusers?shop_id=${auth.shopId}&keyword=${table.filters.keyword}&page=${table.page.current}`,
+      `${process.env.VUE_APP_API_BASE_URL}/api/shops`,
       {
         headers: {
           Authorization: `Bearer ${auth.authToken}`,
@@ -132,17 +125,17 @@ const fetchSubusers = async () => {
     table.items = data.data.map((item) => {
       return {
         id: item.id,
-        email: item.email,
+        address: item.address,
         name: item.name,
-        permission: item.permission_code,
-        lastLogin: item.last_login,
+        balance: item.balance,
+        activeTaxFlag: item.active_tax_flag,
       };
     });
 
-    table.page.current = data.meta.current_page;
-    table.page.last = data.meta.last_page;
-    table.page.per = data.meta.per_page;
-    table.page.total = data.meta.total;
+    table.page.current = data.meta.current_page || 1;
+    table.page.last = data.meta.last_page || 1;
+    table.page.per = data.meta.per_page || 10;
+    table.page.total = data.meta.total || table.items.length;
   } catch (response) {
     auth.handleAxiosError(response);
   } finally {
@@ -150,20 +143,20 @@ const fetchSubusers = async () => {
   }
 };
 
-const editSubuser = (item) => {
+const editShop = (item) => {
   isShowingForm.value = true;
-  selectedSubuser.value = {
+  selectedShop.value = {
     id: item.id,
-    email: item.email,
-    password: item.password,
     name: item.name,
-    permission: item.permission,
+    address: item.address,
+    balance: item.balance,
+    activeTaxFlag: item.activeTaxFlag,
   };
 };
 
-const deleteSubuser = async (id) => {
+const deleteShop = async (id) => {
   const { data } = await axios.delete(
-    `${process.env.VUE_APP_API_BASE_URL}/api/subusers/${id}`,
+    `${process.env.VUE_APP_API_BASE_URL}/api/shops/${id}`,
     {
       headers: {
         Authorization: `Bearer ${auth.authToken}`,
@@ -183,14 +176,14 @@ const deleteSubuser = async (id) => {
     toast.type = "SUCCESS";
     toast.trigger();
 
-    await fetchSubusers();
+    await fetchShops();
   }
 };
 
 const resetForm = () => {
   isShowingForm.value = false;
-  selectedSubuser.value = null;
+  selectedShop.value = null;
 
-  fetchSubusers();
+  fetchShops();
 };
 </script>

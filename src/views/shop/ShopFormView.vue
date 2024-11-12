@@ -1,42 +1,38 @@
 <template>
   <PageContainer
-    :title="isEdit ? 'Ubah Karyawan' : 'Tambah Karyawan'"
-    :subtitle="
-      isEdit ? 'Mengubah detail karyawan...' : 'Menambah karyawan baru...'
-    "
+    :title="isEdit ? 'Ubah Toko' : 'Tambah Toko'"
+    :subtitle="isEdit ? 'Mengubah detail toko...' : 'Menambah toko baru...'"
     enable-back
     @back="$emit('formBack')"
   >
     <div class="grid grid-cols-3 gap-4">
       <FormCard
-        title="Informasi Karyawan"
-        :icon="Users"
+        title="Informasi Toko"
+        :icon="Store"
         class="col-span-3 lg:col-span-2"
       >
         <div class="space-y-8">
           <div class="grid grid-cols-2 gap-4">
             <TextInput
-              v-model="form.email"
-              type="email"
-              name="email"
-              label="Email"
-              placeholder="Masukkan email..."
-              class="col-span-2 lg:col-span-1"
-            />
-            <TextInput
-              v-if="!isEdit"
-              v-model="form.password"
-              type="password"
-              name="password"
-              label="Password"
-              placeholder="Masukkan password..."
-              class="col-span-2 lg:col-span-1"
-            />
-            <TextInput
               v-model="form.name"
               name="name"
               label="Nama"
               placeholder="Masukkan nama..."
+              class="col-span-2 lg:col-span-1"
+            />
+            <TextInput
+              v-model="form.address"
+              name="address"
+              label="Alamat"
+              placeholder="Masukkan alamat..."
+              class="col-span-2 lg:col-span-1"
+            />
+            <TextInput
+              v-model="form.balance"
+              type="number"
+              name="balance"
+              label="Saldo"
+              placeholder="Masukkan saldo..."
               class="col-span-2 lg:col-span-1"
             />
           </div>
@@ -46,36 +42,24 @@
               :label="isEdit ? 'Edit' : 'Add'"
               :icon="isEdit ? Pencil : Plus"
               class="bg-primary-700 hover:bg-primary-800"
-              @click="submitSubuser"
+              @click="submitShop"
             />
           </div>
         </div>
       </FormCard>
       <FormCard
-        title="Akses Karyawan"
-        :icon="Users"
+        title="Konfigurasi Toko"
+        :icon="ShoppingBag"
         class="col-span-3 lg:col-span-1"
       >
         <div class="space-y-8">
           <div class="flex space-x-4 mt-6">
             <div class="flex-col space-y-4">
-              <div
-                v-for="(permission, index) in permissionList"
-                v-bind:key="index"
-                class="h-7 mt-1"
-              >
-                {{ permission.name }}
-              </div>
-            </div>
-            <div class="flex-col space-y-4">
-              <div
-                v-for="(permission, index) in permissionList"
-                v-bind:key="index"
-                class="h-7"
-              >
+              <div class="h-7">
                 <SwitchInput
-                  :is-active="form.permission === permission.code"
-                  @switch="(newVal) => changeRole(newVal, permission)"
+                  label="Nyalakan Pajak"
+                  :is-active="form.active_tax_flag"
+                  @switch="(newVal) => (form.active_tax_flag = newVal)"
                 />
               </div>
             </div>
@@ -87,8 +71,8 @@
 </template>
 
 <script setup>
-import { Users, Plus, Pencil } from "lucide-vue-next";
-import { ref, onMounted, defineAsyncComponent, reactive } from "vue";
+import { Plus, Pencil, ShoppingBag, Store } from "lucide-vue-next";
+import { defineAsyncComponent, reactive } from "vue";
 import PageContainer from "@/views/PageContainer.vue";
 import axios from "axios";
 import FormCard from "@/components/Card/FormCard.vue";
@@ -102,7 +86,7 @@ const TextInput = defineAsyncComponent(() =>
 );
 
 const props = defineProps({
-  subuserData: {
+  shopData: {
     type: Object,
     default: null,
   },
@@ -117,31 +101,26 @@ const emit = defineEmits(["formBack", "submitSuccess"]);
 const auth = useAuth();
 const toast = useToast();
 
-const permissionList = ref([]);
-
 const form = reactive({
-  id: props.subuserData ? props.subuserData.id : "",
-  name: props.subuserData ? props.subuserData.name : "",
-  email: props.subuserData ? props.subuserData.email : "",
-  password: props.subuserData ? props.subuserData.password : "",
-  permission: props.subuserData ? props.subuserData.permission : "",
+  shop_id: props.shopData ? props.shopData.id : "",
+  name: props.shopData ? props.shopData.name : "",
+  address: props.shopData ? props.shopData.address : "",
+  balance: props.shopData ? props.shopData.balance : 0,
+  active_tax_flag: props.shopData ? props.shopData.activeTaxFlag : true,
 });
 
-onMounted(() => {
-  fetchPermissions();
-});
-
-const submitSubuser = async () => {
+const submitShop = async () => {
   if (validateForm()) {
     if (props.isEdit) {
       axios
         .put(
-          `${process.env.VUE_APP_API_BASE_URL}/api/subusers`,
+          `${process.env.VUE_APP_API_BASE_URL}/api/shops`,
           {
-            id: form.id,
-            email: form.email,
+            shop_id: form.shop_id,
+            address: form.address,
             name: form.name,
-            permission: form.permission,
+            balance: form.balance,
+            active_tax_flag: form.active_tax_flag,
           },
           {
             headers: {
@@ -174,13 +153,12 @@ const submitSubuser = async () => {
     } else {
       axios
         .post(
-          `${process.env.VUE_APP_API_BASE_URL}/api/subusers`,
+          `${process.env.VUE_APP_API_BASE_URL}/api/shops`,
           {
-            shop_id: auth.shopId,
-            email: form.email,
-            password: form.password,
+            address: form.address,
             name: form.name,
-            permission: form.permission,
+            balance: form.balance,
+            active_tax_flag: form.active_tax_flag,
           },
           {
             headers: {
@@ -218,8 +196,8 @@ const validateForm = () => {
   let isValid = true;
 
   Object.keys(form).forEach((field) => {
-    if (!form[field] && field !== "id") {
-      if (!props.isEdit || field !== "password") {
+    if (!form[field] && field !== "shop_id") {
+      if (!props.isEdit) {
         toast.message = "Gagal";
         toast.description = `Kolom ${field} harus diisi!`;
         toast.type = "FAILED";
@@ -231,31 +209,5 @@ const validateForm = () => {
   });
 
   return isValid;
-};
-
-const fetchPermissions = async () => {
-  try {
-    const { data } = await axios.get(
-      `${process.env.VUE_APP_API_BASE_URL}/api/permissions?shop_id=${auth.shopId}`,
-      {
-        headers: {
-          Authorization: `Bearer ${auth.authToken}`,
-        },
-        withCredentials: true,
-      }
-    );
-
-    permissionList.value = data.data;
-  } catch (response) {
-    auth.handleAxiosError(response);
-  }
-};
-
-const changeRole = (newVal, permission) => {
-  if (newVal) {
-    form.permission = permission.code;
-  } else {
-    form.permission = "";
-  }
 };
 </script>

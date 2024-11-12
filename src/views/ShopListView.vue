@@ -55,7 +55,7 @@ onMounted(() => {
 
 const fetchShopList = async () => {
   const { data } = await axios.get(
-    `${process.env.VUE_APP_API_BASE_URL}/api/shop-list`,
+    `${process.env.VUE_APP_API_BASE_URL}/api/shops`,
     {
       headers: {
         Authorization: `Bearer ${auth.authToken}`,

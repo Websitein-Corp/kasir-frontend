@@ -179,6 +179,7 @@ import IngredientBody from "@/components/Modal/Body/IngredientBody.vue";
 import useIngredient from "@/stores/useIngredient";
 import FileInput from "@/components/Input/File/FileInput.vue";
 import SelectInput from "@/components/Input/SelectInput.vue";
+import helpers from "@/helpers";
 
 const TextInput = defineAsyncComponent(() =>
   import("@/components/Input/TextInput.vue")
@@ -227,11 +228,17 @@ const form = reactive({
   sku: props.productData ? props.productData.sku : "",
   name: props.productData ? props.productData.name : "",
   sellingRetailPrice: props.productData
-    ? props.productData.sellingRetailPrice
+    ? helpers.parseRupiah(props.productData.sellingRetailPrice)
     : 0,
-  capitalPrice: props.productData ? props.productData.capitalPrice : 0,
-  sellingPrice: props.productData ? props.productData.sellingPrice : 0,
-  discountPrice: props.productData ? props.productData.discountPrice : 0,
+  capitalPrice: props.productData
+    ? helpers.parseRupiah(props.productData.capitalPrice)
+    : 0,
+  sellingPrice: props.productData
+    ? helpers.parseRupiah(props.productData.sellingPrice)
+    : 0,
+  discountPrice: props.productData
+    ? helpers.parseRupiah(props.productData.discountPrice)
+    : 0,
   stock: props.productData ? props.productData.stock : 0,
   type: props.productData ? props.productData.type : "",
   category: props.productData ? props.productData.category.code : "",
