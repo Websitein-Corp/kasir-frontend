@@ -45,7 +45,7 @@ import useToast from "@/stores/useToast";
 import SearchInput from "@/components/Input/SearchInput.vue";
 import DataTable from "@/components/Table/DataTable.vue";
 import NumberInput from "@/components/Input/NumberInput.vue";
-import axios from "axios";
+import { axios } from "@/sdk/axios";
 import useIngredient from "@/stores/useIngredient";
 import { Save } from "lucide-vue-next";
 import CustomButton from "@/components/Button/CustomButton.vue";
@@ -69,11 +69,11 @@ const formattedUsedIngredients = computed(() =>
     })
 );
 
-onMounted(async () => {
-  await fetchAllIngredients();
-  await filterAllUsedIngredients();
-  await fetchIngredients();
-  await filterUsedIngredients();
+onMounted(() => {
+  fetchAllIngredients();
+  filterAllUsedIngredients();
+  fetchIngredients();
+  filterUsedIngredients();
 });
 
 watch(ingredient.filters, () => {
@@ -83,7 +83,7 @@ watch(ingredient.filters, () => {
     clearTimeout(debounce);
   }
   debounce = setTimeout(async () => {
-    await fetchIngredients();
+    fetchIngredients();
     filterUsedIngredients();
   }, 500);
 });
@@ -91,14 +91,14 @@ watch(ingredient.filters, () => {
 watch(
   () => ingredient.page.current,
   async () => {
-    await fetchIngredients();
+    fetchIngredients();
     filterUsedIngredients();
   }
 );
 
-const fetchUpdatedProductIngredients = async () => {
-  try {
-    const { data } = await axios.get(
+const fetchUpdatedProductIngredients = () => {
+  axios
+    .get(
       `${process.env.VUE_APP_API_BASE_URL}/api/products?shop_id=${auth.shopId}`,
       {
         headers: {
@@ -106,17 +106,15 @@ const fetchUpdatedProductIngredients = async () => {
         },
         withCredentials: true,
       }
-    );
-
-    ingredient.used = data.data.find(
-      (item) => item.sku === ingredient.sku
-    ).ingredients;
-  } catch (response) {
-    auth.handleAxiosError(response);
-  }
+    )
+    .then(({ data }) => {
+      ingredient.used = data.data.find(
+        (item) => item.sku === ingredient.sku
+      ).ingredients;
+    });
 };
 
-const filterAllUsedIngredients = async () => {
+const filterAllUsedIngredients = () => {
   ingredient.updatedAll = ingredient.all.map((item) => {
     const itemOnHold = item;
 
@@ -190,19 +188,13 @@ const onSubmit = () => {
       toast.type = "SUCCESS";
       toast.trigger();
 
-      await fetchUpdatedProductIngredients();
-    })
-    .catch((response) => {
-      toast.message = "Gagal";
-      toast.description = response.data.message;
-      toast.type = "FAILED";
-      toast.trigger();
+      fetchUpdatedProductIngredients();
     });
 };
 
-const fetchAllIngredients = async () => {
-  try {
-    const { data } = await axios.get(
+const fetchAllIngredients = () => {
+  axios
+    .get(
       `${process.env.VUE_APP_API_BASE_URL}/api/ingredients?shop_id=${auth.shopId}&keyword=&page=`,
       {
         headers: {
@@ -210,26 +202,24 @@ const fetchAllIngredients = async () => {
         },
         withCredentials: true,
       }
-    );
-
-    ingredient.all = data.data.map((item) => {
-      return {
-        id: item.id,
-        name: item.name,
-        stock: item.stock,
-        unit_name: item.unit_name,
-        price: item.price,
-        qty: 0,
-      };
+    )
+    .then(({ data }) => {
+      ingredient.all = data.data.map((item) => {
+        return {
+          id: item.id,
+          name: item.name,
+          stock: item.stock,
+          unit_name: item.unit_name,
+          price: item.price,
+          qty: 0,
+        };
+      });
     });
-  } catch (response) {
-    auth.handleAxiosError(response);
-  }
 };
 
-const fetchIngredients = async () => {
-  try {
-    const { data } = await axios.get(
+const fetchIngredients = () => {
+  axios
+    .get(
       `${process.env.VUE_APP_API_BASE_URL}/api/ingredients?shop_id=${auth.shopId}&keyword=${ingredient.filters.keyword}&page=${ingredient.page.current}`,
       {
         headers: {
@@ -237,25 +227,23 @@ const fetchIngredients = async () => {
         },
         withCredentials: true,
       }
-    );
+    )
+    .then(({ data }) => {
+      ingredient.list = data.data.map((item) => {
+        return {
+          id: item.id,
+          name: item.name,
+          stock: item.stock,
+          unit_name: item.unit_name,
+          price: item.price,
+          qty: 0,
+        };
+      });
 
-    ingredient.list = data.data.map((item) => {
-      return {
-        id: item.id,
-        name: item.name,
-        stock: item.stock,
-        unit_name: item.unit_name,
-        price: item.price,
-        qty: 0,
-      };
+      ingredient.page.current = data.meta.current_page;
+      ingredient.page.last = data.meta.last_page;
+      ingredient.page.per = data.meta.per_page;
+      ingredient.page.total = data.meta.total;
     });
-
-    ingredient.page.current = data.meta.current_page;
-    ingredient.page.last = data.meta.last_page;
-    ingredient.page.per = data.meta.per_page;
-    ingredient.page.total = data.meta.total;
-  } catch (response) {
-    auth.handleAxiosError(response);
-  }
 };
 </script>

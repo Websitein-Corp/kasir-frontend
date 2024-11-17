@@ -125,8 +125,8 @@
 </template>
 
 <script setup>
-import { defineAsyncComponent, onMounted, ref } from "vue";
-import axios from "axios";
+import { defineAsyncComponent, ref } from "vue";
+import { axios } from "@/sdk/axios";
 import router from "@/router";
 import useToast from "@/stores/useToast";
 import useAuth from "@/stores/useAuth";
@@ -145,10 +145,6 @@ const password = ref("");
 
 const isForgotPassword = ref(false);
 
-onMounted(() => {
-  auth.checkLoginSession(route);
-});
-
 const toggleForgotPassword = () => {
   isForgotPassword.value = !isForgotPassword.value;
 };
@@ -161,51 +157,46 @@ const formAction = () => {
   }
 };
 
-const login = async () => {
-  try {
-    const baseURL = process.env.VUE_APP_API_BASE_URL;
-    const endpoint = `${baseURL}/api/auth/login`;
+const login = () => {
+  const baseURL = process.env.VUE_APP_API_BASE_URL;
+  const endpoint = `${baseURL}/api/auth/login`;
 
-    const response = await axios.post(endpoint, {
+  axios
+    .post(endpoint, {
       email: email.value,
       password: password.value,
-    });
+    })
+    .then(({ data }) => {
+      const token = data.data.token;
+      const shopId = data.data.shop_id;
+      const shopName = data.data.shop.name;
+      const shopAddress = data.data.shop.address;
+      const permission = data.data.permission;
+      const userType = data.data.is_user;
 
-    const token = response.data.data.token;
-    const shopId = response.data.data.shop.id;
-    const shopName = response.data.data.shop.name;
-    const shopAddress = response.data.data.shop.address;
-    const permission = response.data.data.permission;
-    const userType = response.data.data.is_user;
+      if (token) {
+        auth.clearLocalStorage();
+        auth.setAuthToken(token);
+        auth.setPermission(permission);
 
-    if (token) {
-      auth.clearLocalStorage();
-      auth.setAuthToken(token);
-      auth.setPermission(permission);
+        toast.message = "Sukses";
+        toast.description = "Login berhasil!";
+        toast.type = "SUCCESS";
+        toast.trigger();
 
-      toast.message = "Sukses";
-      toast.description = "Login berhasil!";
-      toast.type = "SUCCESS";
-      toast.trigger();
-
-      if (userType === "USER") {
-        await router.push("/shop-list");
+        if (userType === "USER") {
+          router.push("/shop-list");
+        } else {
+          auth.setShopId(shopId, shopName, shopAddress);
+          router.push("/");
+        }
       } else {
-        auth.setShopId(shopId, shopName, shopAddress);
-        await router.push("/");
+        toast.message = "Gagal";
+        toast.description = "Login gagal!";
+        toast.type = "FAILED";
+        toast.trigger();
       }
-    } else {
-      toast.message = "Gagal";
-      toast.description = "Login gagal!";
-      toast.type = "FAILED";
-      toast.trigger();
-    }
-  } catch (error) {
-    toast.message = "Gagal";
-    toast.description = error.response?.data.message || error.message;
-    toast.type = "FAILED";
-    toast.trigger();
-  }
+    });
 };
 </script>
 

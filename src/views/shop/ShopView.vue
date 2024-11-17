@@ -7,7 +7,7 @@
       @submit-success="resetForm"
     />
   </div>
-  <div v-else-if="auth.isAuthenticated && !page.loading">
+  <div v-else-if="!page.loading">
     <PageContainer title="Toko" subtitle="Daftar toko terdaftar...">
       <DataTable :column-count="4">
         <template v-slot:action-2> </template>
@@ -63,21 +63,21 @@ import { onMounted, ref, watch } from "vue";
 
 import DataTable from "@/components/Table/DataTable.vue";
 import PageContainer from "@/views/PageContainer.vue";
-import axios from "axios";
+import { axios } from "@/sdk/axios";
 import useTable from "@/stores/useTable";
 import CustomButton from "@/components/Button/CustomButton.vue";
 import { Trash2, Pencil } from "lucide-vue-next";
 import useToast from "@/stores/useToast";
-import useAuth from "@/stores/useAuth";
 import { useRoute } from "vue-router";
 import DefaultSkeleton from "@/components/Skeleton/DefaultSkeleton.vue";
 import usePage from "@/stores/usePage";
 import ShopFormView from "@/views/shop/ShopFormView.vue";
+import useAuth from "@/stores/useAuth";
 
-const auth = useAuth();
 const table = useTable();
 const toast = useToast();
 const page = usePage();
+const auth = useAuth();
 const route = useRoute();
 
 let debounce;
@@ -89,9 +89,7 @@ onMounted(async () => {
   page.loading = true;
   table.resetPage();
 
-  if (await auth.checkLoginSession(route)) {
-    await fetchShops();
-  }
+  await fetchShops();
 });
 
 watch(table.filters, () => {
@@ -110,37 +108,30 @@ watch(
   }
 );
 
-const fetchShops = async () => {
-  try {
-    const { data } = await axios.get(
-      `${process.env.VUE_APP_API_BASE_URL}/api/shops`,
-      {
-        headers: {
-          Authorization: `Bearer ${auth.authToken}`,
-        },
-        withCredentials: true,
-      }
-    );
+const fetchShops = () => {
+  axios
+    .get(`${process.env.VUE_APP_API_BASE_URL}/api/shops`, {
+      headers: {
+        Authorization: `Bearer ${auth.authToken}`,
+      },
+      withCredentials: true,
+    })
+    .then(({ data }) => {
+      table.items = data.data.map((item) => {
+        return {
+          id: item.id,
+          address: item.address,
+          name: item.name,
+          balance: item.balance,
+          activeTaxFlag: item.active_tax_flag,
+        };
+      });
 
-    table.items = data.data.map((item) => {
-      return {
-        id: item.id,
-        address: item.address,
-        name: item.name,
-        balance: item.balance,
-        activeTaxFlag: item.active_tax_flag,
-      };
+      table.page.current = data.meta.current_page || 1;
+      table.page.last = data.meta.last_page || 1;
+      table.page.per = data.meta.per_page || 10;
+      table.page.total = data.meta.total || table.items.length;
     });
-
-    table.page.current = data.meta.current_page || 1;
-    table.page.last = data.meta.last_page || 1;
-    table.page.per = data.meta.per_page || 10;
-    table.page.total = data.meta.total || table.items.length;
-  } catch (response) {
-    auth.handleAxiosError(response);
-  } finally {
-    page.loading = false;
-  }
 };
 
 const editShop = (item) => {

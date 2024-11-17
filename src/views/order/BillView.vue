@@ -1,5 +1,5 @@
 <template>
-  <div v-if="auth.isAuthenticated">
+  <div v-if="!page.loading">
     <div
       class="h-[30dvh] sm:h-64 lg:h-[40dvh] bg-primary-100 space-y-4 p-4 flex flex-col justify-center"
       :class="{
@@ -135,7 +135,7 @@ import {
   Bluetooth,
 } from "lucide-vue-next";
 import { onMounted, ref } from "vue";
-import axios from "axios";
+import { axios } from "@/sdk/axios";
 import useToast from "@/stores/useToast";
 import useAuth from "@/stores/useAuth";
 import useModal from "@/stores/useModal";
@@ -144,8 +144,10 @@ import { useRoute } from "vue-router";
 import DefaultSkeleton from "@/components/Skeleton/DefaultSkeleton.vue";
 import CustomButton from "@/components/Button/CustomButton.vue";
 import BluetoothBody from "@/components/Modal/Body/BluetoothBody.vue";
+import usePage from "@/stores/usePage";
 
 const auth = useAuth();
+const page = usePage();
 const toast = useToast();
 const modal = useModal();
 const bluetoothReceipt = useBluetoothReceipt();
@@ -187,8 +189,8 @@ const bill = ref({
 });
 
 onMounted(async () => {
-  await auth.checkLoginSession(route);
-  await showBill();
+  page.loading = true;
+  showBill();
   const bluetooth = await getBluetoothId();
 
   modal.title = "Bluetooth Receipt Connect";
@@ -198,26 +200,28 @@ onMounted(async () => {
   bluetoothReceipt.printerStatus = "WAITING...";
   await bluetoothReceipt.reconnect(bluetooth);
 });
-const showBill = async () => {
-  const { data } = await axios.get(
-    `${process.env.VUE_APP_API_BASE_URL}/api/checkout/receipt?ref_id=${props.invoiceNumber}&shop_id=${auth.shopId}`,
-    {
-      headers: {
-        Authorization: `Bearer ${auth.authToken}`,
-      },
-      withCredentials: true,
-    }
-  );
+const showBill = () => {
+  axios
+    .get(
+      `${process.env.VUE_APP_API_BASE_URL}/api/checkout/receipt?ref_id=${props.invoiceNumber}&shop_id=${auth.shopId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${auth.authToken}`,
+        },
+        withCredentials: true,
+      }
+    )
+    .then(({ data }) => {
+      if (data["error_type"]) {
+        toast.message = "Gagal";
+        toast.description = data.message;
+        toast.type = "FAILED";
+        toast.trigger();
+      }
 
-  if (data["error_type"]) {
-    toast.message = "Gagal";
-    toast.description = data.message;
-    toast.type = "FAILED";
-    toast.trigger();
-  }
-
-  bill.value = data.data;
-  bill.value["type"] = "SUCCESS";
+      bill.value = data.data;
+      bill.value["type"] = "SUCCESS";
+    });
 };
 
 const getBluetoothId = async () => {

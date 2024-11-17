@@ -7,7 +7,7 @@
       @submit-success="resetForm"
     />
   </div>
-  <div v-else-if="auth.isAuthenticated && !page.loading">
+  <div v-else-if="!page.loading">
     <PageContainer title="Produk" subtitle="Daftar produk...">
       <DataTable :column-count="11">
         <template v-slot:action-2>
@@ -84,7 +84,7 @@ import { onMounted, ref, watch } from "vue";
 import DataTable from "@/components/Table/DataTable.vue";
 import PageContainer from "@/views/PageContainer.vue";
 import SearchInput from "@/components/Input/SearchInput.vue";
-import axios from "axios";
+import { axios } from "@/sdk/axios";
 import useTable from "@/stores/useTable";
 import CustomButton from "@/components/Button/CustomButton.vue";
 import ProductFormView from "@/views/product/ProductFormView.vue";
@@ -110,9 +110,7 @@ onMounted(async () => {
   page.loading = true;
   table.resetPage();
 
-  if (await auth.checkLoginSession(route)) {
-    await fetchProducts();
-  }
+  fetchProducts();
 });
 
 watch(table.filters, () => {
@@ -131,9 +129,9 @@ watch(
   }
 );
 
-const fetchProducts = async () => {
-  try {
-    const { data } = await axios.get(
+const fetchProducts = () => {
+  axios
+    .get(
       `${process.env.VUE_APP_API_BASE_URL}/api/products?shop_id=${
         auth.shopId
       }&page=${table.page.current}${
@@ -145,35 +143,31 @@ const fetchProducts = async () => {
         },
         withCredentials: true,
       }
-    );
+    )
+    .then(({ data }) => {
+      table.items = data.data.map((item) => {
+        return {
+          sku: item.sku,
+          name: item.name,
+          capitalPrice: item.capital_price,
+          sellingRetailPrice: item.selling_retail_price,
+          sellingPrice: item.selling_price,
+          discountPrice: item.discount_price,
+          stock: item.stock,
+          imageUrl: item.image_url,
+          type: item.type,
+          category: item.category,
+          ingredients: item.ingredients,
+          barcode: item.barcode,
+          isActive: item.is_active,
+        };
+      });
 
-    table.items = data.data.map((item) => {
-      return {
-        sku: item.sku,
-        name: item.name,
-        capitalPrice: item.capital_price,
-        sellingRetailPrice: item.selling_retail_price,
-        sellingPrice: item.selling_price,
-        discountPrice: item.discount_price,
-        stock: item.stock,
-        imageUrl: item.image_url,
-        type: item.type,
-        category: item.category,
-        ingredients: item.ingredients,
-        barcode: item.barcode,
-        isActive: item.is_active,
-      };
+      table.page.current = data.meta.current_page;
+      table.page.last = data.meta.last_page;
+      table.page.per = data.meta.per_page;
+      table.page.total = data.meta.total;
     });
-
-    table.page.current = data.meta.current_page;
-    table.page.last = data.meta.last_page;
-    table.page.per = data.meta.per_page;
-    table.page.total = data.meta.total;
-  } catch (response) {
-    auth.handleAxiosError(response);
-  } finally {
-    page.loading = false;
-  }
 };
 
 const editProduct = (item) => {
@@ -195,28 +189,30 @@ const editProduct = (item) => {
   };
 };
 
-const deleteProduct = async (sku) => {
-  const { data } = await axios.delete(
-    `${process.env.VUE_APP_API_BASE_URL}/api/products/delete?shop_id=${auth.shopId}&sku=${sku}`,
-    {
-      headers: {
-        Authorization: `Bearer ${auth.authToken}`,
-      },
-      withCredentials: true,
-    }
-  );
-
-  if (data["error_type"]) {
-    toast.message = "Gagal";
-    toast.description = data.message;
-    toast.type = "FAILED";
-    toast.trigger();
-  } else {
-    toast.message = "Sukses";
-    toast.description = data.message;
-    toast.type = "SUCCESS";
-    toast.trigger();
-  }
+const deleteProduct = (sku) => {
+  axios
+    .delete(
+      `${process.env.VUE_APP_API_BASE_URL}/api/products/delete?shop_id=${auth.shopId}&sku=${sku}`,
+      {
+        headers: {
+          Authorization: `Bearer ${auth.authToken}`,
+        },
+        withCredentials: true,
+      }
+    )
+    .then(({ data }) => {
+      if (data["error_type"]) {
+        toast.message = "Gagal";
+        toast.description = data.message;
+        toast.type = "FAILED";
+        toast.trigger();
+      } else {
+        toast.message = "Sukses";
+        toast.description = data.message;
+        toast.type = "SUCCESS";
+        toast.trigger();
+      }
+    });
 };
 
 const resetForm = () => {

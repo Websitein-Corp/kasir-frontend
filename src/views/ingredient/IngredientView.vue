@@ -7,7 +7,7 @@
       @submit-success="resetForm"
     />
   </div>
-  <div v-else-if="auth.isAuthenticated && !page.loading">
+  <div v-else-if="!page.loading">
     <PageContainer title="Bahan Baku" subtitle="Daftar bahan baku produk...">
       <DataTable :column-count="5">
         <template v-slot:action-2>
@@ -70,7 +70,7 @@ import { onMounted, ref, watch } from "vue";
 import DataTable from "@/components/Table/DataTable.vue";
 import PageContainer from "@/views/PageContainer.vue";
 import SearchInput from "@/components/Input/SearchInput.vue";
-import axios from "axios";
+import { axios } from "@/sdk/axios";
 import useTable from "@/stores/useTable";
 import CustomButton from "@/components/Button/CustomButton.vue";
 import { Trash2, Pencil } from "lucide-vue-next";
@@ -92,13 +92,11 @@ let debounce;
 const isShowingForm = ref(false);
 const selectedIngredient = ref(null);
 
-onMounted(async () => {
+onMounted(() => {
   page.loading = true;
   table.resetPage();
 
-  if (await auth.checkLoginSession(route)) {
-    await fetchIngredients();
-  }
+  fetchIngredients();
 });
 
 watch(table.filters, () => {
@@ -117,9 +115,9 @@ watch(
   }
 );
 
-const fetchIngredients = async () => {
-  try {
-    const { data } = await axios.get(
+const fetchIngredients = () => {
+  axios
+    .get(
       `${process.env.VUE_APP_API_BASE_URL}/api/ingredients?shop_id=${auth.shopId}&keyword=${table.filters.keyword}&page=${table.page.current}`,
       {
         headers: {
@@ -127,27 +125,23 @@ const fetchIngredients = async () => {
         },
         withCredentials: true,
       }
-    );
+    )
+    .then(({ data }) => {
+      table.items = data.data.map((item) => {
+        return {
+          id: item.id,
+          name: item.name,
+          stock: item.stock,
+          unitName: item.unit_name,
+          price: item.price,
+        };
+      });
 
-    table.items = data.data.map((item) => {
-      return {
-        id: item.id,
-        name: item.name,
-        stock: item.stock,
-        unitName: item.unit_name,
-        price: item.price,
-      };
+      table.page.current = data.meta.current_page;
+      table.page.last = data.meta.last_page;
+      table.page.per = data.meta.per_page;
+      table.page.total = data.meta.total;
     });
-
-    table.page.current = data.meta.current_page;
-    table.page.last = data.meta.last_page;
-    table.page.per = data.meta.per_page;
-    table.page.total = data.meta.total;
-  } catch (response) {
-    auth.handleAxiosError(response);
-  } finally {
-    page.loading = false;
-  }
 };
 
 const editIngredient = (item) => {
@@ -155,30 +149,32 @@ const editIngredient = (item) => {
   selectedIngredient.value = item;
 };
 
-const deleteIngredient = async (name) => {
-  const { data } = await axios.delete(
-    `${process.env.VUE_APP_API_BASE_URL}/api/ingredients?shop_id=${auth.shopId}&name=${name}`,
-    {
-      headers: {
-        Authorization: `Bearer ${auth.authToken}`,
-      },
-      withCredentials: true,
-    }
-  );
+const deleteIngredient = (name) => {
+  axios
+    .delete(
+      `${process.env.VUE_APP_API_BASE_URL}/api/ingredients?shop_id=${auth.shopId}&name=${name}`,
+      {
+        headers: {
+          Authorization: `Bearer ${auth.authToken}`,
+        },
+        withCredentials: true,
+      }
+    )
+    .then(({ data }) => {
+      if (data["error_type"]) {
+        toast.message = "Gagal";
+        toast.description = data.message;
+        toast.type = "FAILED";
+        toast.trigger();
+      } else {
+        toast.message = "Sukses";
+        toast.description = data.message;
+        toast.type = "SUCCESS";
+        toast.trigger();
 
-  if (data["error_type"]) {
-    toast.message = "Gagal";
-    toast.description = data.message;
-    toast.type = "FAILED";
-    toast.trigger();
-  } else {
-    toast.message = "Sukses";
-    toast.description = data.message;
-    toast.type = "SUCCESS";
-    toast.trigger();
-
-    await fetchIngredients();
-  }
+        fetchIngredients();
+      }
+    });
 };
 
 const resetForm = () => {

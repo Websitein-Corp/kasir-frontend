@@ -55,7 +55,7 @@
 <script setup>
 import { ref, computed, onMounted, watch } from "vue";
 import { DoughnutChart, LineChart } from "vue-chart-3";
-import axios from "axios";
+import { axios } from "@/sdk/axios";
 import StatsCard from "@/components/Dashboard/StatsCard.vue";
 import PageContainer from "@/views/PageContainer.vue";
 import useAuth from "@/stores/useAuth";
@@ -192,14 +192,13 @@ const doughnutChartData = ref({
   ],
 });
 
-onMounted(async () => {
-  await auth.checkLoginSession(route);
-  await showData("Daily");
+onMounted(() => {
+  showData("Daily");
 });
 
-const showData = async (frequency) => {
-  try {
-    const { response } = await axios.get(
+const showData = (frequency) => {
+  axios
+    .get(
       `${process.env.VUE_APP_API_BASE_URL}/api/dashboard?duration=${frequency}&shop_id=${auth.shopId}`,
       {
         headers: {
@@ -207,15 +206,13 @@ const showData = async (frequency) => {
         },
         withCredentials: true,
       }
-    );
+    )
+    .then(({ data }) => {
+      dashboardData.value = data.data;
 
-    dashboardData.value = response.data;
-
-    updateLineChart();
-    updateDoughnutChart();
-  } catch (error) {
-    console.error("Error fetching dashboard data:", error);
-  }
+      updateLineChart();
+      updateDoughnutChart();
+    });
 };
 
 const updateLineChart = () => {

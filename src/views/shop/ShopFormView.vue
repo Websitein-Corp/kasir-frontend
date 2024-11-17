@@ -74,7 +74,7 @@
 import { Plus, Pencil, ShoppingBag, Store } from "lucide-vue-next";
 import { defineAsyncComponent, reactive } from "vue";
 import PageContainer from "@/views/PageContainer.vue";
-import axios from "axios";
+import { axios } from "@/sdk/axios";
 import FormCard from "@/components/Card/FormCard.vue";
 import CustomButton from "@/components/Button/CustomButton.vue";
 import SwitchInput from "@/components/Input/SwitchInput.vue";
@@ -143,12 +143,6 @@ const submitShop = async () => {
 
             emit("submitSuccess");
           }
-        })
-        .catch((error) => {
-          toast.message = "Gagal";
-          toast.description = error.response.data.message;
-          toast.type = "FAILED";
-          toast.trigger();
         });
     } else {
       axios
@@ -181,12 +175,6 @@ const submitShop = async () => {
 
             emit("submitSuccess");
           }
-        })
-        .catch((error) => {
-          toast.message = "Gagal";
-          toast.description = error.response.data.message;
-          toast.type = "FAILED";
-          toast.trigger();
         });
     }
   }

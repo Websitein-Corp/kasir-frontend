@@ -13,7 +13,7 @@ export default defineStore("cart", {
         ? state.items.reduce(
             (sum, val) =>
               sum +
-              val.selling_price *
+              helpers.parseRupiah(val.selling_price) *
                 (val.amount ||
                   helpers.getHourDifference(
                     val.service_start,

@@ -15,7 +15,7 @@
           {{ name }}
         </div>
         <div class="text-slate-500 text-xs lg:text-base">
-          {{ $helpers.money(sellingPrice) }}
+          {{ sellingPrice }}
         </div>
       </div>
     </div>

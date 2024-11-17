@@ -7,7 +7,7 @@
       @save="fetchSupplier"
     />
   </div>
-  <div v-else-if="auth.isAuthenticated">
+  <div v-else-if="!page.loading">
     <PageContainer
       title="Supply"
       subtitle="Daftar supply dari supplier yang ada"
@@ -172,15 +172,17 @@ import CustomButton from "@/components/Button/CustomButton.vue";
 import DashboardButton from "@/components/Button/DashboardButton.vue";
 import SupplyFormView from "./SupplyFormView.vue";
 import PageContainer from "@/views/PageContainer.vue";
-import axios from "axios";
+import { axios } from "@/sdk/axios";
 import useTable from "@/stores/useTable";
 import useToast from "@/stores/useToast";
 import useAuth from "@/stores/useAuth";
 import { useRoute } from "vue-router";
 import DefaultSkeleton from "@/components/Skeleton/DefaultSkeleton.vue";
+import usePage from "@/stores/usePage";
 
 const auth = useAuth();
 const table = useTable();
+const page = usePage();
 const toast = useToast();
 const isShowingForm = ref(false);
 const selectedSupply = ref(null);
@@ -192,9 +194,7 @@ let debounce;
 onMounted(async () => {
   table.resetPage();
 
-  if (await auth.checkLoginSession(route)) {
-    await fetchSupplier();
-  }
+  await fetchSupplier();
 });
 
 watch(table.filters, () => {
@@ -261,30 +261,29 @@ const handleCancel = () => {
   isShowingForm.value = false;
 };
 
-const deleteItem = async (item, index) => {
-  try {
-    await axios.delete(
-      `${process.env.VUE_APP_API_BASE_URL}/api/ingredients/${item.id}`,
-      {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("auth_token")}`,
-        },
-        withCredentials: true,
-      }
-    );
+const deleteItem = (item, index) => {
+  axios
+    .delete(`${process.env.VUE_APP_API_BASE_URL}/api/ingredients/${item.id}`, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("auth_token")}`,
+      },
+      withCredentials: true,
+    })
+    .then(({ data }) => {
+      if (data["error_type"]) {
+        toast.message = "Gagal";
+        toast.description = data.message;
+        toast.type = "FAILED";
+        toast.trigger();
+      } else {
+        table.items.splice(index, 1);
 
-    table.items.splice(index, 1);
-    toast.message = "Sukses";
-    toast.description = "Berhasil Menghapus Item!";
-    toast.type = "SUCCESS";
-    toast.trigger();
-  } catch (error) {
-    toast.message = "Gagal";
-    toast.description =
-      error.response?.data?.message || "An error occurred while deleting.";
-    toast.type = "FAILED";
-    toast.trigger();
-  }
+        toast.message = "Sukses";
+        toast.description = data.message;
+        toast.type = "SUCCESS";
+        toast.trigger();
+      }
+    });
 };
 
 const setBasedOn = (value) => {

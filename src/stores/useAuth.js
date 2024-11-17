@@ -9,54 +9,15 @@ export default defineStore("auth", {
     shopName: localStorage.getItem("shop_name"),
     shopAddress: localStorage.getItem("shop_address"),
     permission: localStorage.getItem("permission"),
-    isAuthenticated: false,
   }),
 
   actions: {
-    async checkLoginSession(route) {
-      if (!this.authToken) {
-        await router.push("/login");
-        return;
-      } else if (!this.shopId) {
-        await router.push("/shop-list");
-        return;
-      }
-
-      axios
-        .get(`${process.env.VUE_APP_API_BASE_URL}/api/auth/check`, {
-          headers: {
-            Authorization: `Bearer ${this.authToken}`,
-          },
-          withCredentials: true,
-        })
-        .then((res) => {
-          this.isAuthenticated = res.data.data.is_logged_in;
-
-          if (this.isAuthenticated) {
-            if (
-              route.path === "/login" ||
-              (this.shopId && route.path === "/shop-list")
-            ) {
-              router.push("/");
-              return true;
-            }
-          } else {
-            this.handleUnauthenticated();
-            return false;
-          }
-        })
-        .catch(async () => {
-          await this.handleUnauthenticated();
-          return false;
-        });
-    },
-
-    async handleUnauthenticated() {
+    handleUnauthenticated() {
       const baseURL = process.env.VUE_APP_API_BASE_URL;
       const endpoint = `${baseURL}/api/auth/logout`;
 
-      try {
-        await axios.post(
+      axios
+        .post(
           endpoint,
           {},
           {
@@ -65,26 +26,28 @@ export default defineStore("auth", {
             },
             withCredentials: true,
           }
-        );
-      } catch (error) {}
-      this.clearLocalStorage();
+        )
+        .then(() => {
+          this.clearLocalStorage();
 
-      await router.push("/login");
+          router.push("/login");
+        })
+        .catch(() => {
+          this.clearLocalStorage();
+
+          router.push("/login");
+        });
     },
 
-    handleAxiosError(response) {
-      if (response.status === 401) {
-        router.push("/login");
-      } else {
-        if (this.authToken) {
-          if (this.shopId) {
-            router.push("/");
-          } else {
-            router.push("/shop-list");
-          }
+    handleAxiosError() {
+      if (this.authToken) {
+        if (this.shopId) {
+          router.push("/");
         } else {
-          router.push("/login");
+          router.push("/shop-list");
         }
+      } else {
+        router.push("/login");
       }
     },
 

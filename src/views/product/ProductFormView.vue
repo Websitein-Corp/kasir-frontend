@@ -53,9 +53,9 @@
             <TextInput
               v-model="form.sellingPrice"
               name="selling_price"
-              label="Harga"
+              label="Harga Jual"
               type="number"
-              placeholder="Masukkan harga..."
+              placeholder="Masukkan harga jual..."
               class="col-span-2 lg:col-span-1"
             />
             <TextInput
@@ -168,7 +168,7 @@ import {
 } from "lucide-vue-next";
 import { ref, onMounted, defineAsyncComponent, reactive } from "vue";
 import PageContainer from "@/views/PageContainer.vue";
-import axios from "axios";
+import { axios } from "@/sdk/axios";
 import FormCard from "@/components/Card/FormCard.vue";
 import CustomButton from "@/components/Button/CustomButton.vue";
 import SwitchInput from "@/components/Input/SwitchInput.vue";
@@ -299,12 +299,6 @@ const submitProduct = async () => {
 
             emit("submitSuccess");
           }
-        })
-        .catch((error) => {
-          toast.message = "Gagal";
-          toast.description = error.response.data.message;
-          toast.type = "FAILED";
-          toast.trigger();
         });
     } else {
       axios
@@ -346,12 +340,6 @@ const submitProduct = async () => {
 
             emit("submitSuccess");
           }
-        })
-        .catch((error) => {
-          toast.message = "Gagal";
-          toast.description = error.response.data.message;
-          toast.type = "FAILED";
-          toast.trigger();
         });
     }
   }
@@ -379,21 +367,23 @@ const validateForm = () => {
   return isValid;
 };
 
-const fetchCategories = async () => {
-  const { data } = await axios.get(
-    `${process.env.VUE_APP_API_BASE_URL}/api/products/categories?shop_id=${auth.shopId}`,
-    {
-      headers: {
-        Authorization: `Bearer ${auth.authToken}`,
-      },
-      withCredentials: true,
-    }
-  );
-
-  categoryList.value = data.data.map((category) => ({
-    code: category.code,
-    label: category.name,
-  }));
+const fetchCategories = () => {
+  axios
+    .get(
+      `${process.env.VUE_APP_API_BASE_URL}/api/products/categories?shop_id=${auth.shopId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${auth.authToken}`,
+        },
+        withCredentials: true,
+      }
+    )
+    .then(({ data }) => {
+      categoryList.value = data.data.map((category) => ({
+        code: category.code,
+        label: category.name,
+      }));
+    });
 };
 </script>
 

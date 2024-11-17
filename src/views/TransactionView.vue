@@ -1,5 +1,5 @@
 <template>
-  <div v-if="auth.isAuthenticated && !page.loading">
+  <div v-if="!page.loading">
     <PageContainer title="Transaksi" subtitle="Daftar transaksi masuk...">
       <DataTable :column-count="4">
         <template v-slot:action-2>
@@ -62,7 +62,7 @@ import DataTable from "@/components/Table/DataTable.vue";
 import PageContainer from "@/views/PageContainer.vue";
 import DatetimeInput from "@/components/Input/DatetimeInput.vue";
 import SearchInput from "@/components/Input/SearchInput.vue";
-import axios from "axios";
+import { axios } from "@/sdk/axios";
 import useTable from "@/stores/useTable";
 import CustomButton from "@/components/Button/CustomButton.vue";
 import router from "@/router";
@@ -82,9 +82,7 @@ onMounted(async () => {
   page.loading = true;
   table.resetPage();
 
-  if (await auth.checkLoginSession(route)) {
-    await fetchTransactions();
-  }
+  fetchTransactions();
 });
 
 watch(table.filters, () => {
@@ -103,13 +101,13 @@ watch(
   }
 );
 
-const fetchTransactions = async () => {
+const fetchTransactions = () => {
   const formattedDate = table.filters.date.map((rawDate) =>
     new Date(rawDate).toISOString().slice(0, 10)
   );
 
-  try {
-    const { data } = await axios.get(
+  axios
+    .get(
       `${process.env.VUE_APP_API_BASE_URL}/api/transactions?shop_id=${auth.shopId}&date_start=${formattedDate[0]}&date_end=${formattedDate[1]}&keyword=${table.filters.keyword}&page=${table.page.current}`,
       {
         headers: {
@@ -117,26 +115,22 @@ const fetchTransactions = async () => {
         },
         withCredentials: true,
       }
-    );
+    )
+    .then(({ data }) => {
+      table.items = data.data.map((item) => {
+        return {
+          invoiceNumber: item.invoice_number,
+          trDatetime: item.tr_datetime,
+          paymentMethod: item.payment_method.name,
+          totalPrice: item.total_price,
+        };
+      });
 
-    table.items = data.data.map((item) => {
-      return {
-        invoiceNumber: item.invoice_number,
-        trDatetime: item.tr_datetime,
-        paymentMethod: item.payment_method.name,
-        totalPrice: item.total_price,
-      };
+      table.page.current = data.meta.current_page;
+      table.page.last = data.meta.last_page;
+      table.page.per = data.meta.per_page;
+      table.page.total = data.meta.total;
     });
-
-    table.page.current = data.meta.current_page;
-    table.page.last = data.meta.last_page;
-    table.page.per = data.meta.per_page;
-    table.page.total = data.meta.total;
-  } catch (response) {
-    auth.handleAxiosError(response);
-  } finally {
-    page.loading = false;
-  }
 };
 
 const exportTransactions = async () => {

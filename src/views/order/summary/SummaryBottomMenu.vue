@@ -37,7 +37,7 @@ import useModal from "@/stores/useModal";
 import { ref, watch } from "vue";
 import CashBody from "@/components/Modal/Body/CashBody.vue";
 import useCart from "@/stores/useCart";
-import axios from "axios";
+import { axios } from "@/sdk/axios";
 import useAuth from "@/stores/useAuth";
 import QrisBody from "@/components/Modal/Body/QrisBody.vue";
 
@@ -63,27 +63,26 @@ const paymentMethods = ref([
 
 watch(
   () => page.order.step,
-  async () => {
+  () => {
     if (page.order.step === 2) {
       modal.icon = Receipt;
 
-      await fetchPaymentMethods();
+      fetchPaymentMethods();
     }
   }
 );
 
-const fetchPaymentMethods = async () => {
-  const response = await axios.get(
-    `${process.env.VUE_APP_API_BASE_URL}/api/checkout/methods`,
-    {
+const fetchPaymentMethods = () => {
+  axios
+    .get(`${process.env.VUE_APP_API_BASE_URL}/api/checkout/methods`, {
       headers: {
         Authorization: `Bearer ${auth.authToken}`,
       },
       withCredentials: true,
-    }
-  );
-
-  paymentMethods.value = response.data.data;
+    })
+    .then(({ data }) => {
+      paymentMethods.value = data.data;
+    });
 };
 
 const handleModal = (method) => {
