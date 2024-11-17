@@ -41,9 +41,7 @@ export default defineStore("auth", {
 
     handleAxiosError() {
       if (this.authToken) {
-        if (this.shopId) {
-          router.push("/");
-        } else {
+        if (!this.shopId) {
           router.push("/shop-list");
         }
       } else {
