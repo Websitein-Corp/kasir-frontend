@@ -261,30 +261,29 @@ const handleCancel = () => {
   isShowingForm.value = false;
 };
 
-const deleteItem = async (item, index) => {
-  try {
-    await axios.delete(
-      `${process.env.VUE_APP_API_BASE_URL}/api/ingredients/${item.id}`,
-      {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("auth_token")}`,
-        },
-        withCredentials: true,
-      }
-    );
+const deleteItem = (item, index) => {
+  axios
+    .delete(`${process.env.VUE_APP_API_BASE_URL}/api/ingredients/${item.id}`, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("auth_token")}`,
+      },
+      withCredentials: true,
+    })
+    .then(({ data }) => {
+      if (data["error_type"]) {
+        toast.message = "Gagal";
+        toast.description = data.message;
+        toast.type = "FAILED";
+        toast.trigger();
+      } else {
+        table.items.splice(index, 1);
 
-    table.items.splice(index, 1);
-    toast.message = "Sukses";
-    toast.description = "Berhasil Menghapus Item!";
-    toast.type = "SUCCESS";
-    toast.trigger();
-  } catch (error) {
-    toast.message = "Gagal";
-    toast.description =
-      error.response?.data?.message || "An error occurred while deleting.";
-    toast.type = "FAILED";
-    toast.trigger();
-  }
+        toast.message = "Sukses";
+        toast.description = data.message;
+        toast.type = "SUCCESS";
+        toast.trigger();
+      }
+    });
 };
 
 const setBasedOn = (value) => {

@@ -192,13 +192,13 @@ const doughnutChartData = ref({
   ],
 });
 
-onMounted(async () => {
-  await showData("Daily");
+onMounted(() => {
+  showData("Daily");
 });
 
-const showData = async (frequency) => {
-  try {
-    const { response } = await axios.get(
+const showData = (frequency) => {
+  axios
+    .get(
       `${process.env.VUE_APP_API_BASE_URL}/api/dashboard?duration=${frequency}&shop_id=${auth.shopId}`,
       {
         headers: {
@@ -206,15 +206,13 @@ const showData = async (frequency) => {
         },
         withCredentials: true,
       }
-    );
+    )
+    .then(({ data }) => {
+      dashboardData.value = data.data;
 
-    dashboardData.value = response.data;
-
-    updateLineChart();
-    updateDoughnutChart();
-  } catch (error) {
-    console.error("Error fetching dashboard data:", error);
-  }
+      updateLineChart();
+      updateDoughnutChart();
+    });
 };
 
 const updateLineChart = () => {

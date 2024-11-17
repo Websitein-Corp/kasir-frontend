@@ -124,8 +124,8 @@ const fetchRecon = async () => {
 };
 
 const saveStock = async (item) => {
-  try {
-    await axios.put(
+  axios
+    .put(
       `${process.env.VUE_APP_API_BASE_URL}/api/ingredients/recon`,
       {
         id: String(item.id),
@@ -138,16 +138,19 @@ const saveStock = async (item) => {
         },
         withCredentials: true,
       }
-    );
-    toast.message = "Sukses";
-    toast.description = "Berhasil Update Stock!";
-    toast.type = "SUCCESS";
-    toast.trigger();
-  } catch (error) {
-    toast.message = "Gagal";
-    toast.description = error.response.data.message;
-    toast.type = "FAILED";
-    toast.trigger();
-  }
+    )
+    .then((response) => {
+      if (response.data["error_type"]) {
+        toast.message = "Gagal";
+        toast.description = response.data.message;
+        toast.type = "FAILED";
+        toast.trigger();
+      } else {
+        toast.message = "Sukses";
+        toast.description = response.data.message;
+        toast.type = "SUCCESS";
+        toast.trigger();
+      }
+    });
 };
 </script>
