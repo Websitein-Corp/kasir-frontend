@@ -24,6 +24,13 @@
               class="col-span-2 lg:col-span-1"
             />
             <TextInput
+              v-model="form.name"
+              name="name"
+              label="Nama"
+              placeholder="Masukkan nama..."
+              class="col-span-2 lg:col-span-1"
+            />
+            <TextInput
               v-if="!isEdit"
               v-model="form.password"
               type="password"
@@ -33,10 +40,12 @@
               class="col-span-2 lg:col-span-1"
             />
             <TextInput
-              v-model="form.name"
-              name="name"
-              label="Nama"
-              placeholder="Masukkan nama..."
+              v-if="!isEdit"
+              v-model="form.passwordConfirmation"
+              type="password"
+              name="confirm_password"
+              label="Konfirmasi Password"
+              placeholder="Konfirmasi password..."
               class="col-span-2 lg:col-span-1"
             />
           </div>
@@ -123,7 +132,8 @@ const form = reactive({
   id: props.subuserData ? props.subuserData.id : "",
   name: props.subuserData ? props.subuserData.name : "",
   email: props.subuserData ? props.subuserData.email : "",
-  password: props.subuserData ? props.subuserData.password : "",
+  password: "",
+  passwordConfirmation: "",
   permission: props.subuserData ? props.subuserData.permission : "",
 });
 
@@ -166,38 +176,45 @@ const submitSubuser = async () => {
           }
         });
     } else {
-      axios
-        .post(
-          `${process.env.VUE_APP_API_BASE_URL}/api/subusers`,
-          {
-            shop_id: auth.shopId,
-            email: form.email,
-            password: form.password,
-            name: form.name,
-            permission: form.permission,
-          },
-          {
-            headers: {
-              Authorization: `Bearer ${auth.authToken}`,
+      if (form.password !== form.passwordConfirmation) {
+        toast.message = "Gagal";
+        toast.description = "Konfirmasi password salah";
+        toast.type = "FAILED";
+        toast.trigger();
+      } else {
+        axios
+          .post(
+            `${process.env.VUE_APP_API_BASE_URL}/api/subusers`,
+            {
+              shop_id: auth.shopId,
+              email: form.email,
+              password: form.password,
+              name: form.name,
+              permission: form.permission,
             },
-            withCredentials: true,
-          }
-        )
-        .then((response) => {
-          if (response.data["error_type"]) {
-            toast.message = "Gagal";
-            toast.description = response.data.message;
-            toast.type = "FAILED";
-            toast.trigger();
-          } else {
-            toast.message = "Sukses";
-            toast.description = response.data.message;
-            toast.type = "SUCCESS";
-            toast.trigger();
+            {
+              headers: {
+                Authorization: `Bearer ${auth.authToken}`,
+              },
+              withCredentials: true,
+            }
+          )
+          .then((response) => {
+            if (response.data["error_type"]) {
+              toast.message = "Gagal";
+              toast.description = response.data.message;
+              toast.type = "FAILED";
+              toast.trigger();
+            } else {
+              toast.message = "Sukses";
+              toast.description = response.data.message;
+              toast.type = "SUCCESS";
+              toast.trigger();
 
-            emit("submitSuccess");
-          }
-        });
+              emit("submitSuccess");
+            }
+          });
+      }
     }
   }
 };

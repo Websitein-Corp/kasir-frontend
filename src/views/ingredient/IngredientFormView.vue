@@ -16,7 +16,6 @@
         <div class="space-y-8">
           <div class="grid grid-cols-2 gap-4">
             <TextInput
-              v-if="!isEdit"
               v-model="form.name"
               name="name"
               label="Nama"
