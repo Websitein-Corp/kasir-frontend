@@ -25,12 +25,12 @@ export default defineStore("auth", {
             withCredentials: true,
           }
         )
-        .then((res) => {
+        .then(() => {
           this.clearLocalStorage();
 
           router.push("/login");
         })
-        .catch((err) => {
+        .catch(() => {
           this.clearLocalStorage();
 
           router.push("/login");
