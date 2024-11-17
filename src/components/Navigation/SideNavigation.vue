@@ -47,10 +47,13 @@
     }"
   >
     <nav
-      class="w-[100px] lg:w-[200px] h-screen bg-primary-50 flex flex-col pt-4 overflow-y-auto no-scrollbar"
+      class="w-[300px] lg:w-[200px] h-dvh pt-4 flex flex-col overflow-x-visible"
     >
       <div
-        class="w-20 h-20 p-2 mx-auto mt-20 relative top-0 left-0 block lg:hidden"
+        class="w-[100px] lg:w-[200px] absolute top-0 left-0 h-full bg-primary-50"
+      ></div>
+      <div
+        class="w-[100px] lg:w-[200px] p-2 mt-20 relative top-0 left-0 flex justify-center lg:hidden"
       >
         <img
           src="@/assets/images/websiteinLogo.svg"
@@ -59,12 +62,13 @@
         />
       </div>
       <div
-        class="flex flex-col lg:mt-24"
+        class="flex flex-col grow lg:mt-24 h-[70%] overflow-y-scroll overflow-x-visible no-scrollbar"
         :class="{
           'pointer-events-none lg:pointer-events-auto': !page.navIsOpened,
         }"
       >
         <NavigationMenu
+          class="w-[100px] lg:w-[200px]"
           v-for="(menu, index) in filteredMenus"
           :key="index"
           :label="menu.label"
@@ -78,7 +82,9 @@
           @submenu-click="setCurrent(menu.label, false)"
         />
       </div>
-      <div class="h-full flex flex-col justify-end text-red-500 mb-4 lg:mb-0">
+      <div
+        class="w-[100px] lg:w-[200px] h-20 flex flex-col justify-end text-red-500 mb-4 lg:mb-0"
+      >
         <div class="hidden lg:block">
           <NavigationMenu
             :icon="LogOut"
@@ -124,7 +130,7 @@ import {
 } from "lucide-vue-next";
 import NavigationMenu from "@/components/Navigation/NavigationMenu.vue";
 import usePage from "@/stores/usePage";
-import axios from "axios";
+import { axios } from "@/sdk/axios";
 import router from "@/router";
 import useToast from "@/stores/useToast";
 import useAuth from "@/stores/useAuth";
@@ -282,12 +288,12 @@ function filterMenuByRole(menus, role) {
 
 const filteredMenus = filterMenuByRole(menus.value, auth.permission);
 
-const logout = async () => {
-  try {
-    const baseURL = process.env.VUE_APP_API_BASE_URL;
-    const endpoint = `${baseURL}/api/auth/logout`;
+const logout = () => {
+  const baseURL = process.env.VUE_APP_API_BASE_URL;
+  const endpoint = `${baseURL}/api/auth/logout`;
 
-    const { data } = await axios.post(
+  axios
+    .post(
       endpoint,
       {},
       {
@@ -296,27 +302,22 @@ const logout = async () => {
         },
         withCredentials: true,
       }
-    );
+    )
+    .then(({ data }) => {
+      if (!data.error_type) {
+        toast.message = "Sukses";
+        toast.description = "Logout berhasil!";
+        toast.type = "SUCCESS";
+        toast.trigger();
 
-    if (!data.error_type) {
-      toast.message = "Sukses";
-      toast.description = "Logout berhasil!";
-      toast.type = "SUCCESS";
-      toast.trigger();
-
-      await router.push("/login");
-    } else {
-      toast.message = "Gagal";
-      toast.description = "Logout gagal!";
-      toast.type = "FAILED";
-      toast.trigger();
-    }
-  } catch (error) {
-    toast.message = "Gagal";
-    toast.description = error.response?.data || error.message;
-    toast.type = "FAILED";
-    toast.trigger();
-  }
+        router.push("/login");
+      } else {
+        toast.message = "Gagal";
+        toast.description = "Logout gagal!";
+        toast.type = "FAILED";
+        toast.trigger();
+      }
+    });
 
   auth.clearLocalStorage();
 };

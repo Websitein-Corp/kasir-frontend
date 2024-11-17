@@ -125,7 +125,7 @@
 </template>
 
 <script setup>
-import { defineAsyncComponent, onMounted, ref } from "vue";
+import { defineAsyncComponent, ref } from "vue";
 import { axios } from "@/sdk/axios";
 import router from "@/router";
 import useToast from "@/stores/useToast";
