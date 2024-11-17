@@ -64,7 +64,7 @@ import {
   defineAsyncComponent,
   defineEmits,
 } from "vue";
-import axios from "axios";
+import { axios } from "@/sdk/axios";
 import CustomButton from "@/components/Button/CustomButton.vue";
 import DashboardCard from "@/components/Card/DashboardCard.vue";
 import useAuth from "@/stores/useAuth";

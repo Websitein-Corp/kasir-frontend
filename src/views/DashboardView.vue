@@ -55,7 +55,7 @@
 <script setup>
 import { ref, computed, onMounted, watch } from "vue";
 import { DoughnutChart, LineChart } from "vue-chart-3";
-import axios from "axios";
+import { axios } from "@/sdk/axios";
 import StatsCard from "@/components/Dashboard/StatsCard.vue";
 import PageContainer from "@/views/PageContainer.vue";
 import useAuth from "@/stores/useAuth";
@@ -193,7 +193,6 @@ const doughnutChartData = ref({
 });
 
 onMounted(async () => {
-  await auth.checkLoginSession(route);
   await showData();
 });
 

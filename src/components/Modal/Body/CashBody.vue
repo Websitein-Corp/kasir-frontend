@@ -9,7 +9,12 @@
     />
   </div>
   <div class="flex justify-center mt-8">
-    <CustomButton size="md" label="Lanjut" @click="onSubmit" />
+    <CustomButton
+      size="md"
+      label="Lanjut"
+      @click="onSubmit"
+      class="bg-primary-700 hover:bg-primary-800"
+    />
   </div>
 </template>
 
@@ -20,7 +25,7 @@ import { ref } from "vue";
 import CustomButton from "@/components/Button/CustomButton.vue";
 import useModal from "@/stores/useModal";
 import useToast from "@/stores/useToast";
-import axios from "axios";
+import { axios } from "@/sdk/axios";
 import router from "@/router";
 import usePage from "@/stores/usePage";
 import useAuth from "@/stores/useAuth";
@@ -47,57 +52,59 @@ const onSubmit = () => {
   }
 };
 
-const checkOut = async () => {
-  const { data } = await axios.post(
-    `${process.env.VUE_APP_API_BASE_URL}/api/checkout`,
-    {
-      shop_id: auth.shopId,
-      cart: cart.items.map((item) => {
-        if (item.amount) {
-          return {
-            sku: item.sku,
-            amount: item.amount,
-          };
-        } else {
-          return {
-            sku: item.sku,
-            service_start: item.service_start,
-            service_end: item.service_end,
-          };
-        }
-      }),
-      payment_method: "cash",
-      customer_pay: Number(totalPaid.value),
-      discount: Number(cart.discount),
-    },
-    {
-      headers: {
-        Authorization: `Bearer ${auth.authToken}`,
+const checkOut = () => {
+  axios
+    .post(
+      `${process.env.VUE_APP_API_BASE_URL}/api/checkout`,
+      {
+        shop_id: auth.shopId,
+        cart: cart.items.map((item) => {
+          if (item.amount) {
+            return {
+              sku: item.sku,
+              amount: item.amount,
+            };
+          } else {
+            return {
+              sku: item.sku,
+              service_start: item.service_start,
+              service_end: item.service_end,
+            };
+          }
+        }),
+        payment_method: "cash",
+        customer_pay: Number(totalPaid.value),
+        discount: Number(cart.discount),
       },
-      withCredentials: true,
-    }
-  );
+      {
+        headers: {
+          Authorization: `Bearer ${auth.authToken}`,
+        },
+        withCredentials: true,
+      }
+    )
+    .then(({ data }) => {
+      if (data["error_type"]) {
+        toast.message = "Gagal";
+        toast.description = data.message;
+        toast.type = "FAILED";
+        toast.trigger();
+      } else {
+        toast.message = "Sukses";
+        toast.description = data.message;
+        toast.type = "SUCCESS";
+        toast.trigger();
 
-  if (data["error_type"]) {
-    toast.message = "Gagal";
-    toast.description = data.message;
-    toast.type = "FAILED";
-    toast.trigger();
-  } else {
-    toast.message = "Sukses";
-    toast.description = data.message;
-    toast.type = "SUCCESS";
-    toast.trigger();
-
-    setTimeout(() => showBill(data.data["ref_id"]), 3000);
-  }
+        setTimeout(() => showBill(data.data["ref_id"]), 3000);
+      }
+    });
 };
 
-const showBill = async (refId) => {
+const showBill = (refId) => {
   cart.clearAll();
   page.order.step = 0;
 
-  await router.push({
+  router.push({
     path: `/bill/${refId}`,
   });
 };

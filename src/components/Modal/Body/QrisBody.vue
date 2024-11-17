@@ -108,7 +108,7 @@ import useCart from "@/stores/useCart";
 import { onMounted, ref } from "vue";
 import useModal from "@/stores/useModal";
 import useToast from "@/stores/useToast";
-import axios from "axios";
+import { axios } from "@/sdk/axios";
 import usePage from "@/stores/usePage";
 import useAuth from "@/stores/useAuth";
 import { CircleEllipsis } from "lucide-vue-next";
@@ -231,9 +231,6 @@ const checkOut = () => {
         paymentUrl.value = data.data.payment_url;
         fetchBill(data.data.ref_id);
       }
-    })
-    .catch((error) => {
-      auth.handleAxiosError(error);
     });
 };
 
@@ -258,9 +255,6 @@ const fetchBill = (refId) => {
         bill.value = data.data;
         bill.value["type"] = "PENDING";
       }
-    })
-    .catch((error) => {
-      auth.handleAxiosError(error);
     });
 };
 </script>

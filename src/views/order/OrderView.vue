@@ -1,5 +1,5 @@
 <template>
-  <div v-if="auth.isAuthenticated" class="flex">
+  <div v-if="!page.loading" class="flex">
     <div
       class="w-full lg:w-full h-screen pb-20 px-2 xl:px-8 overflow-x-hidden overflow-y-scroll no-scrollbar"
     >
@@ -70,25 +70,19 @@
 <script setup>
 import { ShoppingCart, ArrowLeft } from "lucide-vue-next";
 import OrderProgressBar from "@/components/ProgressBar/OrderProgressBar.vue";
-import usePage from "@/stores/usePage";
 import OrderSidebar from "@/views/order/order/OrderSidebar.vue";
 import OrderBottomMenu from "@/views/order/order/OrderBottomMenu.vue";
 import OrderBody from "@/views/order/order/OrderBody.vue";
 import SummaryBody from "@/views/order/summary/SummaryBody.vue";
 import SummarySidebar from "@/views/order/summary/SummarySidebar.vue";
 import SummaryBottomMenu from "@/views/order/summary/SummaryBottomMenu.vue";
-import useAuth from "@/stores/useAuth";
-import { onMounted } from "vue";
 import DefaultSkeleton from "@/components/Skeleton/DefaultSkeleton.vue";
-import { useRoute } from "vue-router";
+import usePage from "@/stores/usePage";
+import { onMounted } from "vue";
 
-const auth = useAuth();
 const page = usePage();
-const route = useRoute();
 
-onMounted(async () => {
+onMounted(() => {
   page.loading = true;
-
-  await auth.checkLoginSession(route);
 });
 </script>

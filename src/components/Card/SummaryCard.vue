@@ -12,7 +12,7 @@
         {{ name }}
       </div>
       <div class="text-slate-500 text-sm lg:text-base">
-        {{ $helpers.money(sellingPrice) }}
+        {{ sellingPrice }}
       </div>
       <div class="pt-2">
         <DatetimeInput

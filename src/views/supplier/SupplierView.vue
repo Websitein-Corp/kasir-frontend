@@ -7,7 +7,7 @@
       @save="fetchSupplier"
     />
   </div>
-  <div v-else-if="auth.isAuthenticated">
+  <div v-else-if="!page.loading">
     <PageContainer title="Supplier" subtitle="Daftar supplier yang ada">
       <DataTable :column-count="6">
         <template v-slot:action-2>
@@ -85,15 +85,17 @@ import CustomButton from "@/components/Button/CustomButton.vue";
 import DashboardButton from "@/components/Button/DashboardButton.vue";
 import SupplierFormView from "./SupplierFormView.vue";
 import PageContainer from "@/views/PageContainer.vue";
-import axios from "axios";
+import { axios } from "@/sdk/axios";
 import useTable from "@/stores/useTable";
 import useToast from "@/stores/useToast";
 import useAuth from "@/stores/useAuth";
 import DefaultSkeleton from "@/components/Skeleton/DefaultSkeleton.vue";
 import { useRoute } from "vue-router";
+import usePage from "@/stores/usePage";
 
 const auth = useAuth();
 const table = useTable();
+const page = usePage();
 const toast = useToast();
 const isShowingForm = ref(false);
 const selectedSupplier = ref(null);
@@ -105,9 +107,7 @@ let debounce;
 onMounted(async () => {
   table.resetPage();
 
-  if (await auth.checkLoginSession(route)) {
-    await fetchSupplier();
-  }
+  await fetchSupplier();
 });
 
 watch(table.filters, () => {

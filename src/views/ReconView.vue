@@ -1,5 +1,5 @@
 <template>
-  <div v-if="auth.isAuthenticated">
+  <div v-if="!page.loading">
     <PageContainer
       title="Recon"
       subtitle="Daftar stok barang pada akhir hari..."
@@ -56,16 +56,18 @@ import DataTable from "@/components/Table/DataTable.vue";
 import PageContainer from "@/views/PageContainer.vue";
 import SearchInput from "@/components/Input/SearchInput.vue";
 import CustomButton from "@/components/Button/CustomButton.vue";
-import axios from "axios";
+import { axios } from "@/sdk/axios";
 import useTable from "@/stores/useTable";
 import useToast from "@/stores/useToast";
 import useAuth from "@/stores/useAuth";
 import DefaultSkeleton from "@/components/Skeleton/DefaultSkeleton.vue";
 import { useRoute } from "vue-router";
+import usePage from "@/stores/usePage";
 
 const auth = useAuth();
 const table = useTable();
 const toast = useToast();
+const page = usePage();
 const route = useRoute();
 
 let debounce;
@@ -73,9 +75,7 @@ let debounce;
 onMounted(async () => {
   table.resetPage();
 
-  if (await auth.checkLoginSession(route)) {
-    await fetchRecon();
-  }
+  await fetchRecon();
 });
 
 watch(table.filters, () => {

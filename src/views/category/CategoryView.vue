@@ -7,7 +7,7 @@
       @submit-success="resetForm"
     />
   </div>
-  <div v-else-if="auth.isAuthenticated && !page.loading">
+  <div v-else-if="!page.loading">
     <PageContainer title="Produk Kategori" subtitle="Daftar kategori produk...">
       <DataTable :column-count="3">
         <template v-slot:action-2>
@@ -68,7 +68,7 @@ import { onMounted, ref, watch } from "vue";
 import DataTable from "@/components/Table/DataTable.vue";
 import PageContainer from "@/views/PageContainer.vue";
 import SearchInput from "@/components/Input/SearchInput.vue";
-import axios from "axios";
+import { axios } from "@/sdk/axios";
 import useTable from "@/stores/useTable";
 import CustomButton from "@/components/Button/CustomButton.vue";
 import { Trash2, Pencil } from "lucide-vue-next";
@@ -94,9 +94,7 @@ onMounted(async () => {
   page.loading = true;
   table.resetPage();
 
-  if (await auth.checkLoginSession(route)) {
-    await fetchCategories();
-  }
+  await fetchCategories();
 });
 
 watch(table.filters, () => {
@@ -115,9 +113,9 @@ watch(
   }
 );
 
-const fetchCategories = async () => {
-  try {
-    const { data } = await axios.get(
+const fetchCategories = () => {
+  axios
+    .get(
       `${process.env.VUE_APP_API_BASE_URL}/api/categories?shop_id=${auth.shopId}&keyword=${table.filters.keyword}&page=${table.page.current}`,
       {
         headers: {
@@ -125,19 +123,15 @@ const fetchCategories = async () => {
         },
         withCredentials: true,
       }
-    );
+    )
+    .then(({ data }) => {
+      table.items = data.data;
 
-    table.items = data.data;
-
-    table.page.current = data.meta.current_page;
-    table.page.last = data.meta.last_page;
-    table.page.per = data.meta.per_page;
-    table.page.total = data.meta.total;
-  } catch (response) {
-    auth.handleAxiosError(response);
-  } finally {
-    page.loading = false;
-  }
+      table.page.current = data.meta.current_page;
+      table.page.last = data.meta.last_page;
+      table.page.per = data.meta.per_page;
+      table.page.total = data.meta.total;
+    });
 };
 
 const editCategory = (item) => {
@@ -167,7 +161,7 @@ const deleteCategory = async (id) => {
     toast.type = "SUCCESS";
     toast.trigger();
 
-    await fetchCategories();
+    fetchCategories();
   }
 };
 

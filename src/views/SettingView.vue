@@ -1,5 +1,5 @@
 <template>
-  <div v-if="auth.isAuthenticated && !page.loading">
+  <div v-if="!page.loading">
     <PageContainer
       title="Konfigurasi"
       subtitle="Mengatur konfigurasi website..."
@@ -42,7 +42,7 @@
 import { Users } from "lucide-vue-next";
 import { ref, onMounted } from "vue";
 import PageContainer from "@/views/PageContainer.vue";
-import axios from "axios";
+import { axios } from "@/sdk/axios";
 import FormCard from "@/components/Card/FormCard.vue";
 import SwitchInput from "@/components/Input/SwitchInput.vue";
 import useToast from "@/stores/useToast";
@@ -58,15 +58,13 @@ const toast = useToast();
 const page = usePage();
 const route = useRoute();
 
-onMounted(async () => {
+onMounted(() => {
   page.loading = true;
 
-  if (await auth.checkLoginSession(route)) {
-    // await fetchSettings();
-  }
+  // await fetchSettings();
 });
 
-const handleSettingChange = async (name, value) => {
+const handleSettingChange = (name, value) => {
   axios
     .put(
       `${process.env.VUE_APP_API_BASE_URL}/api/settings`,
@@ -94,18 +92,12 @@ const handleSettingChange = async (name, value) => {
         toast.type = "SUCCESS";
         toast.trigger();
       }
-    })
-    .catch((error) => {
-      toast.message = "Gagal";
-      toast.description = error.response.data.message;
-      toast.type = "FAILED";
-      toast.trigger();
     });
 };
 
-const fetchSettings = async () => {
-  try {
-    const { data } = await axios.get(
+const fetchSettings = () => {
+  axios
+    .get(
       `${process.env.VUE_APP_API_BASE_URL}/api/settings?shop_id=${auth.shopId}`,
       {
         headers: {
@@ -113,29 +105,25 @@ const fetchSettings = async () => {
         },
         withCredentials: true,
       }
-    );
-
-    settingsData.value = data.data.map((item) => {
-      switch (item.name) {
-        case "enable-tax":
-          settingsData.value.enableTax = true;
-          break;
-        case "enable-open-bill":
-          settingsData.value.enableOpenBill = false;
-          break;
-        case "enable-input-customer":
-          settingsData.value.enableInputCustomer = true;
-          break;
-        case "enable-input-table-number":
-          settingsData.value.enableInputTableNumber = true;
-          break;
-      }
+    )
+    .then(({ data }) => {
+      settingsData.value = data.data.map((item) => {
+        switch (item.name) {
+          case "enable-tax":
+            settingsData.value.enableTax = true;
+            break;
+          case "enable-open-bill":
+            settingsData.value.enableOpenBill = false;
+            break;
+          case "enable-input-customer":
+            settingsData.value.enableInputCustomer = true;
+            break;
+          case "enable-input-table-number":
+            settingsData.value.enableInputTableNumber = true;
+            break;
+        }
+      });
     });
-  } catch (response) {
-    auth.handleAxiosError(response);
-  } finally {
-    page.loading = false;
-  }
 };
 
 const parseSettingMessage = (name) => {

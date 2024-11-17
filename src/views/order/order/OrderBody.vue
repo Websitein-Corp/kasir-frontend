@@ -47,7 +47,7 @@ import CustomButton from "@/components/Button/CustomButton.vue";
 import usePage from "@/stores/usePage";
 import CategoryTab from "@/components/Tab/CategoryTab.vue";
 import { onMounted, ref, watch } from "vue";
-import axios from "axios";
+import { axios } from "@/sdk/axios";
 import useAuth from "@/stores/useAuth";
 import { useRoute } from "vue-router";
 
@@ -60,20 +60,17 @@ const categories = ref([]);
 const products = ref([]);
 const currentCategory = ref("");
 
-onMounted(async () => {
-  page.loading = true;
-
-  await fetchCategories();
-  await fetchProducts();
+onMounted(() => {
+  Promise.all([fetchCategories(), fetchProducts()]);
 });
 
-watch(currentCategory, async () => {
-  await fetchProducts();
+watch(currentCategory, () => {
+  fetchProducts();
 });
 
-const fetchCategories = async () => {
-  try {
-    const response = await axios.get(
+const fetchCategories = () => {
+  axios
+    .get(
       `${process.env.VUE_APP_API_BASE_URL}/api/products/categories?shop_id=${auth.shopId}`,
       {
         headers: {
@@ -81,21 +78,19 @@ const fetchCategories = async () => {
         },
         withCredentials: true,
       }
-    );
-
-    categories.value = response.data.data;
-    categories.value.unshift({
-      name: "All",
-      code: "",
+    )
+    .then(({ data }) => {
+      categories.value = data.data;
+      categories.value.unshift({
+        name: "All",
+        code: "",
+      });
     });
-  } catch (response) {
-    auth.handleAxiosError(response);
-  }
 };
 
-const fetchProducts = async () => {
-  try {
-    const response = await axios.get(
+const fetchProducts = () => {
+  axios
+    .get(
       `${process.env.VUE_APP_API_BASE_URL}/api/products?category=${currentCategory.value}&shop_id=${auth.shopId}`,
       {
         headers: {
@@ -103,13 +98,9 @@ const fetchProducts = async () => {
         },
         withCredentials: true,
       }
-    );
-
-    products.value = response.data.data;
-  } catch (response) {
-    auth.handleAxiosError(response);
-  } finally {
-    page.loading = false;
-  }
+    )
+    .then(({ data }) => {
+      products.value = data.data;
+    });
 };
 </script>

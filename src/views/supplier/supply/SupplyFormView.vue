@@ -261,7 +261,7 @@ import {
   computed,
   watch,
 } from "vue";
-import axios from "axios";
+import { axios } from "@/sdk/axios";
 import CustomButton from "@/components/Button/CustomButton.vue";
 import DashboardCard from "@/components/Card/DashboardCard.vue";
 import useAuth from "@/stores/useAuth";
@@ -323,25 +323,25 @@ const addProduct = () => {
   });
 };
 
-const handleSubmit = async () => {
+const handleSubmit = () => {
   if (props.isEdit) {
     updateStatus();
   } else {
-    try {
-      const requestBody = {
-        shop_id: auth.shopId,
-        supplier: supplierDetail.value.id,
-        supply_id: supplierDetail.value.supply_id,
-        due_date: supplierDetail.value.due_date,
-        data: productDetails.value.map((product) => ({
-          type: product.type,
-          sku: product.sku,
-          capital_price: Number(product.capital_price),
-          amount: Number(product.amount),
-        })),
-      };
+    const requestBody = {
+      shop_id: auth.shopId,
+      supplier: supplierDetail.value.id,
+      supply_id: supplierDetail.value.supply_id,
+      due_date: supplierDetail.value.due_date,
+      data: productDetails.value.map((product) => ({
+        type: product.type,
+        sku: product.sku,
+        capital_price: Number(product.capital_price),
+        amount: Number(product.amount),
+      })),
+    };
 
-      const response = await axios.post(
+    axios
+      .post(
         `${process.env.VUE_APP_API_BASE_URL}/api/supplier/supply`,
         requestBody,
         {
@@ -349,30 +349,25 @@ const handleSubmit = async () => {
             Authorization: `Bearer ${auth.authToken}`,
           },
         }
-      );
-
-      toast.message = "Sukses";
-      toast.description = response?.message;
-      toast.type = "SUCCESS";
-      toast.trigger();
-      emit("save");
-    } catch (error) {
-      toast.message = "Gagal";
-      toast.description = error.response?.data.message || error.message;
-      toast.type = "FAILED";
-      toast.trigger();
-    }
+      )
+      .then((response) => {
+        toast.message = "Sukses";
+        toast.description = response?.message;
+        toast.type = "SUCCESS";
+        toast.trigger();
+        emit("save");
+      });
   }
 };
 
-const updateStatus = async () => {
-  try {
-    const requestBody = {
-      shop_id: auth.shopId,
-      id: supplierDetail.value.id,
-    };
+const updateStatus = () => {
+  const requestBody = {
+    shop_id: auth.shopId,
+    id: supplierDetail.value.id,
+  };
 
-    const response = await axios.put(
+  axios
+    .put(
       `${process.env.VUE_APP_API_BASE_URL}/api/supplier/supply/pay`,
       requestBody,
       {
@@ -380,45 +375,42 @@ const updateStatus = async () => {
           Authorization: `Bearer ${auth.authToken}`,
         },
       }
-    );
-
-    toast.message = "Sukses";
-    toast.description = response?.message;
-    toast.type = "SUCCESS";
-    toast.trigger();
-    emit("save");
-  } catch (error) {
-    toast.message = "Gagal";
-    toast.description = error.response?.data.message || error.message;
-    toast.type = "FAILED";
-    toast.trigger();
-  }
+    )
+    .then((response) => {
+      toast.message = "Sukses";
+      toast.description = response?.message;
+      toast.type = "SUCCESS";
+      toast.trigger();
+      emit("save");
+    });
 };
 
-const fetchSupplier = async () => {
-  const { data } = await axios.get(
-    `${process.env.VUE_APP_API_BASE_URL}/api/supplier?shop_id=${auth.shopId}`,
-    {
-      headers: {
-        Authorization: `Bearer ${auth.authToken}`,
-      },
-      withCredentials: true,
-    }
-  );
-
-  supplierList.value = data.data.map((item) => {
-    return {
-      id: item.id,
-      name: item.name,
-      phone_number: item.phone_number,
-      address: item.address,
-    };
-  });
+const fetchSupplier = () => {
+  axios
+    .get(
+      `${process.env.VUE_APP_API_BASE_URL}/api/supplier?shop_id=${auth.shopId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${auth.authToken}`,
+        },
+        withCredentials: true,
+      }
+    )
+    .then(({ data }) => {
+      supplierList.value = data.data.map((item) => {
+        return {
+          id: item.id,
+          name: item.name,
+          phone_number: item.phone_number,
+          address: item.address,
+        };
+      });
+    });
 };
 
-const fetchIngredients = async () => {
-  try {
-    const { data } = await axios.get(
+const fetchIngredients = () => {
+  axios
+    .get(
       `${process.env.VUE_APP_API_BASE_URL}/api/ingredients?shop_id=${auth.shopId}`,
       {
         headers: {
@@ -426,25 +418,23 @@ const fetchIngredients = async () => {
         },
         withCredentials: true,
       }
-    );
-
-    ingredientsList.value = data.data.map((item) => {
-      return {
-        id: item.id,
-        name: item.name,
-        stock: item.stock,
-        unitName: item.unit_name,
-        price: item.price,
-      };
+    )
+    .then(({ data }) => {
+      ingredientsList.value = data.data.map((item) => {
+        return {
+          id: item.id,
+          name: item.name,
+          stock: item.stock,
+          unitName: item.unit_name,
+          price: item.price,
+        };
+      });
     });
-  } catch (response) {
-    auth.handleAxiosError(response);
-  }
 };
 
-const fetchSupplierDetails = async () => {
-  try {
-    const { data } = await axios.get(
+const fetchSupplierDetails = () => {
+  axios
+    .get(
       `${process.env.VUE_APP_API_BASE_URL}/api/supplier/supply/detail?shop_id=${auth.shopId}&id=${supplierDetail.value.id}`,
       {
         headers: {
@@ -452,23 +442,17 @@ const fetchSupplierDetails = async () => {
         },
         withCredentials: true,
       }
-    );
-
-    productDetails.value = data.data.map((item) => ({
-      type: item.product.type,
-      sku: item.product.sku,
-      name: item.product.name,
-      amount: item.amount,
-      capital_price: item.capital_price,
-      total_price: item.total_price,
-    }));
-  } catch (error) {
-    console.error("Failed to fetch supplier details:", error);
-    toast.message = "Gagal";
-    toast.description = error.response?.data || error.message;
-    toast.type = "FAILED";
-    toast.trigger();
-  }
+    )
+    .then(({ data }) => {
+      productDetails.value = data.data.map((item) => ({
+        type: item.product.type,
+        sku: item.product.sku,
+        name: item.product.name,
+        amount: item.amount,
+        capital_price: item.capital_price,
+        total_price: item.total_price,
+      }));
+    });
 };
 
 const cancelForm = () => {

@@ -24,7 +24,7 @@
 import { Store } from "lucide-vue-next";
 import { ref, onMounted } from "vue";
 import PageContainer from "@/views/PageContainer.vue";
-import axios from "axios";
+import { axios } from "@/sdk/axios";
 import FormCard from "@/components/Card/FormCard.vue";
 import useToast from "@/stores/useToast";
 import router from "@/router";
@@ -49,7 +49,6 @@ const route = useRoute();
 const shopList = ref([]);
 
 onMounted(() => {
-  auth.checkLoginSession(route);
   fetchShopList();
 });
 

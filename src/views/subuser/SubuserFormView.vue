@@ -90,7 +90,7 @@
 import { Users, Plus, Pencil } from "lucide-vue-next";
 import { ref, onMounted, defineAsyncComponent, reactive } from "vue";
 import PageContainer from "@/views/PageContainer.vue";
-import axios from "axios";
+import { axios } from "@/sdk/axios";
 import FormCard from "@/components/Card/FormCard.vue";
 import CustomButton from "@/components/Button/CustomButton.vue";
 import SwitchInput from "@/components/Input/SwitchInput.vue";
@@ -164,12 +164,6 @@ const submitSubuser = async () => {
 
             emit("submitSuccess");
           }
-        })
-        .catch((error) => {
-          toast.message = "Gagal";
-          toast.description = error.response.data.message;
-          toast.type = "FAILED";
-          toast.trigger();
         });
     } else {
       axios
@@ -203,12 +197,6 @@ const submitSubuser = async () => {
 
             emit("submitSuccess");
           }
-        })
-        .catch((error) => {
-          toast.message = "Gagal";
-          toast.description = error.response.data.message;
-          toast.type = "FAILED";
-          toast.trigger();
         });
     }
   }
@@ -233,9 +221,9 @@ const validateForm = () => {
   return isValid;
 };
 
-const fetchPermissions = async () => {
-  try {
-    const { data } = await axios.get(
+const fetchPermissions = () => {
+  axios
+    .get(
       `${process.env.VUE_APP_API_BASE_URL}/api/permissions?shop_id=${auth.shopId}`,
       {
         headers: {
@@ -243,12 +231,10 @@ const fetchPermissions = async () => {
         },
         withCredentials: true,
       }
-    );
-
-    permissionList.value = data.data;
-  } catch (response) {
-    auth.handleAxiosError(response);
-  }
+    )
+    .then(({ data }) => {
+      permissionList.value = data.data;
+    });
 };
 
 const changeRole = (newVal, permission) => {
