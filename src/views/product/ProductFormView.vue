@@ -124,8 +124,8 @@
             <div class="flex space-x-4 mt-4">
               <div class="h-7">
                 <SwitchInput
-                  :is-active="form.isActive"
-                  @switch="(newVal) => (form.isActive = newVal)"
+                  :is-active="form.isActive === 1"
+                  @switch="(newVal) => (form.isActive = newVal ? 1 : 0)"
                 />
               </div>
             </div>
@@ -243,7 +243,7 @@ const form = reactive({
   type: props.productData ? props.productData.type : "",
   category: props.productData ? props.productData.category.code : "",
   barcode: props.productData ? props.productData.barcode : "",
-  isActive: props.productData ? props.productData.isActive : false,
+  isActive: props.productData ? props.productData.isActive : 0,
   image: props.productData ? props.productData.image : null,
 });
 
@@ -394,5 +394,9 @@ const fetchCategories = () => {
 
 .dropzone-message::after {
   content: " or click (.png, .jpg, .jpeg)";
+}
+
+.dropzone__progress {
+  display: none;
 }
 </style>

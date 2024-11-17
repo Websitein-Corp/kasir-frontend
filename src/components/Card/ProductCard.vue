@@ -6,7 +6,11 @@
     <div>
       <div class="h-40 lg:h-64 !mt-0">
         <img
-          v-lazy="{ src: imageUrl, loading: './img/imageLoading.svg' }"
+          v-lazy="{
+            src: imageUrl,
+            loading: './img/imageLoading.svg',
+            error: './img/imageLoading.svg',
+          }"
           class="w-full h-full object-cover rounded-lg"
         />
       </div>
