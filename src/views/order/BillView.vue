@@ -55,6 +55,7 @@
         <div class="flex justify-between w-5/12 lg:w-1/4">
           <div>Jumlah</div>
           <div>Harga</div>
+          <div>Total</div>
         </div>
       </div>
       <div
@@ -66,6 +67,7 @@
         <div class="flex justify-between w-5/12 lg:w-1/4">
           <div>{{ item.quantity }}</div>
           <div>{{ $helpers.money(item.price) }}</div>
+          <div>{{ $helpers.money(item.total_price) }}</div>
         </div>
       </div>
       <hr class="my-2" />
@@ -109,18 +111,12 @@
         <div>{{ $helpers.money(bill.change) }}</div>
       </div>
     </div>
-    <div class="flex">
+    <div class="flex flex-col justify-center mb-8">
       <CustomButton
-        label="Print"
+        label="Print Receipt"
         size="fit"
-        class="bg-primary-400 text-black"
-        @click="handleConnectButtonClick"
-      />
-      <CustomButton
-        label="Disconnect"
-        size="fit"
-        class="bg-red-400 text-white"
-        @click="handleDisconnect"
+        class="bg-primary-400 text-black mx-auto"
+        @click="bluetoothReceipt.printReceipt(bill)"
       />
     </div>
   </div>
@@ -132,24 +128,30 @@
 </template>
 
 <script setup>
-import { CircleCheckBig, CircleX, CircleEllipsis } from "lucide-vue-next";
+import {
+  CircleCheckBig,
+  CircleX,
+  CircleEllipsis,
+  Bluetooth,
+} from "lucide-vue-next";
 import { onMounted, ref } from "vue";
 import { axios } from "@/sdk/axios";
 import useToast from "@/stores/useToast";
 import useAuth from "@/stores/useAuth";
+import useModal from "@/stores/useModal";
+import useBluetoothReceipt from "@/stores/useBluetoothReceipt";
 import { useRoute } from "vue-router";
 import DefaultSkeleton from "@/components/Skeleton/DefaultSkeleton.vue";
 import CustomButton from "@/components/Button/CustomButton.vue";
-import BluetoothPrinterService from "@/assets/lib/BluetoothPrinterService";
+import BluetoothBody from "@/components/Modal/Body/BluetoothBody.vue";
 import usePage from "@/stores/usePage";
 
 const auth = useAuth();
 const page = usePage();
 const toast = useToast();
+const modal = useModal();
+const bluetoothReceipt = useBluetoothReceipt();
 const route = useRoute();
-const receiptPrinter = ref(null);
-const lastUsedDevice = ref(null);
-const error = ref("");
 
 const props = defineProps({
   invoiceNumber: {
@@ -167,11 +169,13 @@ const bill = ref({
       item_name: "Bur",
       quantity: 2,
       price: 10000,
+      total_price: 20000,
     },
     {
       item_name: "Ger",
       quantity: 1,
       price: 15000,
+      total_price: 15000,
     },
   ],
   total_item: 0,
@@ -186,78 +190,16 @@ const bill = ref({
 
 onMounted(async () => {
   page.loading = true;
-
   showBill();
+  const bluetooth = await getBluetoothId();
 
-  try {
-    if (!receiptPrinter.value) {
-      receiptPrinter.value = new BluetoothPrinterService();
-    }
+  modal.title = "Bluetooth Receipt Connect";
+  modal.icon = Bluetooth;
+  modal.body = BluetoothBody;
 
-    // Attempt to reconnect to the last used device
-    await receiptPrinter.value.reconnect(lastUsedDevice.value);
-
-    receiptPrinter.value.addEventListener("connected", (device) => {
-      console.log(`Connected to ${device.name} (#${device.id})`);
-
-      lastUsedDevice.value = device; // Store device for reconnecting
-    });
-  } catch (err) {
-    console.error("Error connecting to the printer:", err);
-    error.value = err.toString();
-  }
+  bluetoothReceipt.printerStatus = "WAITING...";
+  await bluetoothReceipt.reconnect(bluetooth);
 });
-
-function handleConnectButtonClick() {
-  if (!receiptPrinter.value) {
-    try {
-      receiptPrinter.value = new BluetoothPrinterService();
-    } catch (error) {
-      console.error("Error initializing BluetoothPrinterService:", error);
-      error.value = error.toString(); // Assuming `error` is a Vue ref to display error messages
-    }
-  }
-
-  receiptPrinter.value
-    .connect()
-    .then((device) => {
-      console.log("Connected to printer:", device);
-      lastUsedDevice.value = device; // Store for future reconnection
-
-      device.addEventListener("gattserverdisconnected", handleDisconnect);
-    })
-    .catch((err) => {
-      console.error("Error connecting to printer:", err);
-      error.value = err.toString();
-    });
-}
-
-function handleDisconnect() {
-  console.log("Printer disconnected");
-  receiptPrinter.value.disconnect();
-}
-
-function printReceipt() {
-  try {
-    if (!receiptPrinter.value) {
-      throw new Error("Printer is not connected");
-    }
-
-    const encoder = new ReceiptPrinterEncoder({ language: "esc-pos" });
-    const data = encoder
-      .initialize()
-      .text("The quick brown fox jumps over the lazy dog")
-      .newline()
-      .qrcode("https://nielsleenheer.com")
-      .encode();
-
-    receiptPrinter.value.print(data);
-  } catch (exception) {
-    console.log("Error printing receipt:", exception);
-    error.value = exception.toString();
-  }
-}
-
 const showBill = () => {
   axios
     .get(
@@ -280,6 +222,30 @@ const showBill = () => {
       bill.value = data.data;
       bill.value["type"] = "SUCCESS";
     });
+};
+
+const getBluetoothId = async () => {
+  const { data } = await axios.get(
+    `${process.env.VUE_APP_API_BASE_URL}/api/bluetooth`,
+    {
+      headers: {
+        Authorization: `Bearer ${auth.authToken}`,
+      },
+      withCredentials: true,
+    }
+  );
+
+  if (data["error_type"]) {
+    toast.message = "Gagal";
+    toast.description = data.message;
+    toast.type = "FAILED";
+    toast.trigger();
+  }
+
+  return {
+    status: data.data.status,
+    device_id: data.data.bluetooth ? data.data.bluetooth.device_id : null,
+  };
 };
 
 const getBillMessage = () => {

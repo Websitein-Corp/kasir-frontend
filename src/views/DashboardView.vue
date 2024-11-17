@@ -5,7 +5,7 @@
         <button
           v-for="frequency in frequencies"
           :key="frequency"
-          :class="['px-4 py-2 rounded-md']"
+          :class="['px-2 md:px-4 py-2 rounded-md']"
           @click="selectFrequency(frequency)"
         >
           <span
@@ -17,7 +17,7 @@
           >
             {{ frequency }}
           </span>
-          <span v-if="frequency !== 'Yearly'" class="ps-8">|</span>
+          <span v-if="frequency !== 'Yearly'" class="ps-2 md:ps-8">|</span>
         </button>
       </div>
     </div>
@@ -193,13 +193,13 @@ const doughnutChartData = ref({
 });
 
 onMounted(async () => {
-  await showData();
+  await showData("Daily");
 });
 
-const showData = async () => {
+const showData = async (frequency) => {
   try {
     const { response } = await axios.get(
-      `${process.env.VUE_APP_API_BASE_URL}/api/dashboard?duration=daily&shop_id=${auth.shopId}`,
+      `${process.env.VUE_APP_API_BASE_URL}/api/dashboard?duration=${frequency}&shop_id=${auth.shopId}`,
       {
         headers: {
           Authorization: `Bearer ${auth.authToken}`,
@@ -239,7 +239,7 @@ const updateDoughnutChart = () => {
 
 const selectFrequency = (frequency) => {
   selectedFrequency.value = frequency;
-  showData();
+  showData(frequency);
 };
 
 watch([doughnutRef, lineRef], () => {

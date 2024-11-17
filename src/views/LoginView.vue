@@ -169,6 +169,8 @@ const login = () => {
     .then(({ data }) => {
       const token = data.data.token;
       const shopId = data.data.shop_id;
+      const shopName = data.data.shop.name;
+      const shopAddress = data.data.shop.address;
       const permission = data.data.permission;
       const userType = data.data.is_user;
 
@@ -185,7 +187,7 @@ const login = () => {
         if (userType === "USER") {
           router.push("/shop-list");
         } else {
-          auth.setShopId(shopId);
+          auth.setShopId(shopId, shopName, shopAddress);
           router.push("/");
         }
       } else {
