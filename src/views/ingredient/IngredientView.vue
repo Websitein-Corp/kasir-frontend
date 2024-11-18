@@ -43,7 +43,7 @@
                 size="fit"
                 :icon="Trash2"
                 class="bg-red-700 hover:bg-red-800"
-                @click="deleteIngredient(item.name)"
+                @click="deleteIngredient(item.id)"
               />
               <CustomButton
                 size="fit"
@@ -149,10 +149,10 @@ const editIngredient = (item) => {
   selectedIngredient.value = item;
 };
 
-const deleteIngredient = (name) => {
+const deleteIngredient = (id) => {
   axios
     .delete(
-      `${process.env.VUE_APP_API_BASE_URL}/api/ingredients?shop_id=${auth.shopId}&name=${name}`,
+      `${process.env.VUE_APP_API_BASE_URL}/api/ingredients?shop_id=${auth.shopId}&id=${id}`,
       {
         headers: {
           Authorization: `Bearer ${auth.authToken}`,

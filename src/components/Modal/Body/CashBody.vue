@@ -4,6 +4,7 @@
       name="totalPaid"
       type="text"
       label="Harga yang dibayar"
+      currency
       placeholder="Total harga yang dibayar..."
       v-model="totalPaid"
     />

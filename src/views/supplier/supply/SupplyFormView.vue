@@ -44,6 +44,7 @@
               :value="totalPrice"
               v-model="supplierDetail.total_price"
               name="total_price"
+              currency
               label="Total Harga"
               placeholder="Enter total price"
               readonly
@@ -86,6 +87,7 @@
               name="total_price"
               label="Total Harga"
               type="text"
+              currency
               readonly
               class="w-1/2"
             />
@@ -132,7 +134,7 @@
             <TextInput
               v-model="product.amount"
               name="amount"
-              type="text"
+              type="number"
               label="Amount"
               readonly
               class="w-1/2"
@@ -142,6 +144,7 @@
               name="capital_price"
               label="Capital Price"
               type="text"
+              currency
               readonly
               class="w-1/2"
             />
@@ -151,6 +154,7 @@
             name="total_price"
             label="Total Harga"
             type="text"
+            currency
             readonly
             class="w-1/2"
           />
@@ -221,8 +225,9 @@
               v-model="product.capital_price"
               name="capital_price"
               label="Capital Price"
-              type="number"
+              type="text"
               placeholder="Enter capital price"
+              currency
               required
               class="w-1/2"
             />

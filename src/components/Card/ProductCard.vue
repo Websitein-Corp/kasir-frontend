@@ -11,7 +11,7 @@
             loading: './img/imageLoading.svg',
             error: './img/imageLoading.svg',
           }"
-          class="w-full h-full object-cover rounded-lg"
+          class="w-full h-full object-cover object-center rounded-lg"
         />
       </div>
       <div class="space-y-2 mt-2 lg:mt-6">

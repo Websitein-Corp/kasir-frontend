@@ -5,7 +5,9 @@
       @tab-change="(category) => (currentCategory = category)"
     />
   </div>
-  <div class="w-full grid grid-cols-2 xl:grid-cols-3 gap-2 lg:gap-4">
+  <div
+    class="w-full grid grid-cols-2 md:grid-cols-3 lg:grid-cols-2 xl:grid-cols-3 gap-2 md:gap-4 mb-16 lg:mb-0"
+  >
     <div v-for="product in products" :key="product.sku" class="col-span-1">
       <ProductCard
         :sku="product.sku"

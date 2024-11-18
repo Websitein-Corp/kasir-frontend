@@ -2,9 +2,10 @@
   <div>
     <TextInput
       name="discount"
-      type="number"
+      type="text"
       label="Diskon (opsional)"
       placeholder="Tambah diskon..."
+      currency
       v-model="discount"
     />
   </div>
@@ -26,7 +27,7 @@ import CustomButton from "@/components/Button/CustomButton.vue";
 import useModal from "@/stores/useModal";
 import useToast from "@/stores/useToast";
 
-const discount = ref(0);
+const discount = ref(null);
 
 const cart = useCart();
 const modal = useModal();
