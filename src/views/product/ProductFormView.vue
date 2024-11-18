@@ -38,7 +38,8 @@
               v-model="form.capitalPrice"
               name="capital_price"
               label="Harga Modal"
-              type="number"
+              type="text"
+              currency
               placeholder="Masukkan harga modal..."
               class="col-span-2 lg:col-span-1"
             />
@@ -46,7 +47,8 @@
               v-model="form.sellingRetailPrice"
               name="selling_retail_price"
               label="Harga Retail"
-              type="number"
+              type="text"
+              currency
               placeholder="Masukkan harga retail..."
               class="col-span-2 lg:col-span-1"
             />
@@ -54,7 +56,8 @@
               v-model="form.sellingPrice"
               name="selling_price"
               label="Harga Jual"
-              type="number"
+              type="text"
+              currency
               placeholder="Masukkan harga jual..."
               class="col-span-2 lg:col-span-1"
             />
@@ -62,13 +65,13 @@
               v-model="form.discountPrice"
               name="discount_price"
               label="Diskon"
-              type="number"
+              type="text"
+              currency
               placeholder="Masukkan diskon..."
               class="col-span-2 lg:col-span-1"
             />
             <TextInput
               v-model="form.stock"
-              disabled
               name="stock"
               label="Stok"
               type="number"
@@ -109,6 +112,7 @@
               :label="isEdit ? 'Edit' : 'Add'"
               :icon="isEdit ? Pencil : Plus"
               class="bg-primary-700 hover:bg-primary-800"
+              :disabled="loading"
               @click="submitProduct"
             />
           </div>
@@ -126,6 +130,26 @@
                 <SwitchInput
                   :is-active="form.isActive === 1"
                   @switch="(newVal) => (form.isActive = newVal ? 1 : 0)"
+                />
+              </div>
+            </div>
+          </div>
+        </FormCard>
+        <FormCard
+          title="Gambar Produk"
+          :icon="PackageCheck"
+          class="col-span-3 lg:col-span-1"
+        >
+          <div class="space-y-8">
+            <div class="flex space-x-4">
+              <div class="w-40 h-40 lg:w-64 lg:h-64 border-2 rounded-xl">
+                <img
+                  class="w-full h-full"
+                  v-lazy="{
+                    src: props.productData.imageUrl,
+                    loading: './img/imageLoading.svg',
+                    error: './img/imageLoading.svg',
+                  }"
                 />
               </div>
             </div>
@@ -222,6 +246,7 @@ const typeList = [
   },
 ];
 
+const loading = ref(false);
 const categoryList = ref([]);
 
 const form = reactive({
@@ -243,7 +268,7 @@ const form = reactive({
   type: props.productData ? props.productData.type : "",
   category: props.productData ? props.productData.category.code : "",
   barcode: props.productData ? props.productData.barcode : "",
-  isActive: props.productData ? props.productData.isActive : 0,
+  isActive: props.productData ? (props.productData.isActive ? 1 : 0) : 0,
   image: props.productData ? props.productData.image : null,
 });
 
@@ -260,6 +285,8 @@ onMounted(() => {
 
 const submitProduct = async () => {
   if (validateForm()) {
+    loading.value = true;
+
     if (props.isEdit) {
       axios
         .put(
@@ -272,6 +299,7 @@ const submitProduct = async () => {
             selling_price: form.sellingPrice,
             capital_price: form.capitalPrice,
             type: form.type,
+            stock: form.stock,
             category: form.category,
             barcode: form.barcode,
             status: form.isActive,
@@ -299,6 +327,9 @@ const submitProduct = async () => {
 
             emit("submitSuccess");
           }
+        })
+        .finally(() => {
+          loading.value = false;
         });
     } else {
       axios
@@ -340,6 +371,9 @@ const submitProduct = async () => {
 
             emit("submitSuccess");
           }
+        })
+        .finally(() => {
+          loading.value = false;
         });
     }
   }

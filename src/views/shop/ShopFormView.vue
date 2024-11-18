@@ -29,9 +29,10 @@
             />
             <TextInput
               v-model="form.balance"
-              type="number"
+              type="text"
               name="balance"
               label="Saldo"
+              currency
               placeholder="Masukkan saldo..."
               class="col-span-2 lg:col-span-1"
             />

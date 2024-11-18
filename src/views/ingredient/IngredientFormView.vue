@@ -42,7 +42,8 @@
               v-model="form.price"
               name="price"
               label="Harga"
-              type="number"
+              type="text"
+              currency
               placeholder="Masukkan harga..."
               class="col-span-2 lg:col-span-1"
             />
@@ -93,6 +94,7 @@ const auth = useAuth();
 const toast = useToast();
 
 const form = reactive({
+  id: props.ingredientData ? props.ingredientData.id : null,
   name: props.ingredientData ? props.ingredientData.name : "",
   stock: props.ingredientData ? props.ingredientData.stock : "",
   unit_name: props.ingredientData ? props.ingredientData.unitName : "",
@@ -106,7 +108,9 @@ const submitProduct = async () => {
         .put(
           `${process.env.VUE_APP_API_BASE_URL}/api/ingredients`,
           {
+            id: form.id,
             shop_id: auth.shopId,
+            name: form.name,
             unit_name: form.unit_name,
             price: form.price,
           },
@@ -173,7 +177,7 @@ const validateForm = () => {
   let isValid = true;
 
   Object.keys(form).forEach((field) => {
-    if (!form[field]) {
+    if (!form[field] && field !== "id") {
       toast.message = "Gagal";
       toast.description = `Kolom ${field} harus diisi!`;
       toast.type = "FAILED";
