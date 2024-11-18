@@ -54,22 +54,21 @@
         <div>Barang</div>
         <div class="flex justify-between w-5/12 lg:w-1/4">
           <div>Jumlah</div>
-          <div>Harga</div>
           <div>Total</div>
         </div>
       </div>
-      <div
-        v-for="item in bill.details"
-        :key="item.name"
-        class="flex justify-between"
-      >
-        <div>{{ item.item_name }}</div>
-        <div class="flex justify-between w-5/12 lg:w-1/4">
-          <div>{{ item.quantity }}</div>
-          <div>{{ $helpers.money(item.price) }}</div>
-          <div>{{ $helpers.money(item.total_price) }}</div>
+      <template v-for="item in bill.details" :key="item.name">
+        <div class="flex justify-between">
+          <div>{{ item.item_name }}</div>
+          <div class="flex justify-between w-5/12 lg:w-1/4">
+            <div>{{ item.quantity }}</div>
+            <div>@ {{ $helpers.money(item.price) }}</div>
+          </div>
         </div>
-      </div>
+        <div class="flex justify-end leading-[0.2rem]">
+          {{ $helpers.money(item.total_price) }}
+        </div>
+      </template>
       <hr class="my-2" />
       <div class="flex justify-between">
         <div>Subtotal</div>
