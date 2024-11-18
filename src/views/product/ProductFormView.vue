@@ -72,7 +72,6 @@
             />
             <TextInput
               v-model="form.stock"
-              disabled
               name="stock"
               label="Stok"
               type="number"
@@ -300,6 +299,7 @@ const submitProduct = async () => {
             selling_price: form.sellingPrice,
             capital_price: form.capitalPrice,
             type: form.type,
+            stock: form.stock,
             category: form.category,
             barcode: form.barcode,
             status: form.isActive,
