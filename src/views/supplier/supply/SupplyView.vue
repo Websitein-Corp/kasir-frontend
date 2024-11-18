@@ -219,7 +219,7 @@ const fetchSupplier = async () => {
   );
 
   const { data } = await axios.get(
-    `${process.env.VUE_APP_API_BASE_URL}/api/supplier/supply/?shop_id=${auth.shopId}&date_start=${formattedDate[0]}&date_end=${formattedDate[1]}&keyword=${table.filters.keyword}&page=${table.page.current}&based_on=${basedOn.value}`,
+    `${process.env.VUE_APP_API_BASE_URL}/api/supplier/supply?shop_id=${auth.shopId}&date_start=${formattedDate[0]}&date_end=${formattedDate[1]}&keyword=${table.filters.keyword}&page=${table.page.current}&based_on=${basedOn.value}`,
     {
       headers: {
         Authorization: `Bearer ${auth.authToken}`,
