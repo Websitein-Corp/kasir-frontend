@@ -27,7 +27,7 @@ jobs:
         run:
           cp dist/index.html public/index.html
 
-      - name: 📂 Sync app files
+      - name: 📂 Sync src files
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
           server: ${{ secrets.SERVER }}
