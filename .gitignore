@@ -9,7 +9,6 @@ node_modules
 .env.development
 .env.*.development
 .env.staging
-.env.*.staging
 .env
 
 # Log files
