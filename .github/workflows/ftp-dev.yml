@@ -39,7 +39,7 @@ jobs:
             node_modules/**/*
             .git/**/*
             .github/**/*
-          server-dir: '../'
+          server-dir: './'
           local-dir: './'
           timeout: 9999999
 
