@@ -30,6 +30,7 @@ jobs:
           username: ${{ secrets.USERNAME }}
           password: ${{ secrets.PASSWORD }}
           exclude: |
+            node_modules/**/*
             public/**/*
             .git/**/*
             .github/**/*
