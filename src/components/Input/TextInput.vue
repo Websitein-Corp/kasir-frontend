@@ -14,11 +14,7 @@
         'pl-12': currency,
       }"
       :disabled="disabled"
-      @input="
-        currency
-          ? formatCurrency($event.target.value)
-          : $emit('update:modelValue', $event.target.value)
-      "
+      @input="handleInput($event.target.value)"
       v-bind="$attrs"
     />
     <div
@@ -37,7 +33,7 @@
 </template>
 
 <script setup>
-import { onMounted, toRef } from "vue";
+import { onMounted } from "vue";
 
 const props = defineProps({
   name: {
@@ -69,13 +65,19 @@ const props = defineProps({
 
 const emits = defineEmits(["update:modelValue"]);
 
-const modelValue = toRef(props.modelValue);
-
 onMounted(() => {
   if (props.currency && props.modelValue) {
     formatCurrency(props.modelValue.toString());
   }
 });
+
+const handleInput = (value) => {
+  if (props.currency) {
+    formatCurrency(value);
+  } else {
+    emits("update:modelValue", value);
+  }
+};
 
 const formatCurrencyString = (value) => {
   return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
@@ -84,10 +86,9 @@ const formatCurrencyString = (value) => {
 const formatCurrency = (value) => {
   const inputValue = value.replace(/\D/g, "");
   const parsedValue = parseFloat(inputValue) || 0;
-  emits("update:modelValue", parsedValue);
-  modelValue.value =
-    formatCurrencyString(parsedValue) === "0"
-      ? ""
-      : formatCurrencyString(parsedValue);
+  emits(
+    "update:modelValue",
+    parsedValue === 0 ? "" : formatCurrencyString(parsedValue)
+  );
 };
 </script>

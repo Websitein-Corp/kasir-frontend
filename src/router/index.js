@@ -87,6 +87,11 @@ const routes = [
     name: "shop",
     component: () => import("@/views/shop/ShopView.vue"),
   },
+  {
+    path: "/forgot-password",
+    name: "forgot-password",
+    component: () => import("@/views/ForgotPasswordView.vue"),
+  },
 ];
 
 const router = createRouter({

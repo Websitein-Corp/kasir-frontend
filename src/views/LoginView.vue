@@ -36,13 +36,15 @@
     </svg>
 
     <!-- Login Form -->
-    <div class="loginview absolute inset-0 flex items-center justify-center">
+    <div
+      class="loginview absolute inset-0 flex items-center justify-center overflow-y-auto"
+    >
       <div
-        class="flex flex-row min-w-fit w-10/12 md:w-4/12 h-[55vh] md:h-[45vh] border border-1 rounded-xl bg-white shadow-lg z-10"
+        class="flex flex-row min-w-fit w-10/12 md:w-4/12 h-[55vh] md:h-[45vh] min-h-fit border border-1 rounded-xl bg-white shadow-lg z-10 overflow-y-auto"
       >
         <!-- Image will be hidden on small screens and visible on medium (tablet) and larger screens -->
         <div
-          class="hidden md:flex flex-col items-center justify-center bg-gradient-to-br from-primary-700 via-primary-500 to-primary-300 w-1/2 px-8"
+          class="hidden md:flex flex-col items-center justify-center bg-gradient-to-br from-primary-700 via-primary-500 to-primary-300 w-1/2 px-8 overflow-y-auto"
         >
           <h2 class="text-2xl font-semibold text-gray-800 md:text-3xl">
             Cashier platform for your own
@@ -74,13 +76,13 @@
         </div>
 
         <div
-          class="flex flex-col items-center justify-center p-4 w-full md:w-1/2"
+          class="flex flex-col items-center justify-center p-4 w-full md:w-1/2 overflow-y-auto min-h-0"
         >
-          <div class="flex flex-row items-center justify-center">
+          <div class="flex flex-row items-center justify-center min-h-fit">
             <img
               src="../../public/img/logo.svg"
               alt="logo"
-              class="w-12 md:w-16"
+              class="w-12 md:w-16 flex-shrink-0"
             />
             <h1 class="pl-2 text-xl">
               {{ isForgotPassword ? "Forgot Password" : "Login" }}
@@ -151,7 +153,7 @@ const toggleForgotPassword = () => {
 
 const formAction = () => {
   if (isForgotPassword.value) {
-    //sendResetPasswordEmail();
+    sendResetPasswordEmail();
   } else {
     login();
   }
@@ -196,6 +198,33 @@ const login = () => {
         toast.type = "FAILED";
         toast.trigger();
       }
+    });
+};
+
+const sendResetPasswordEmail = () => {
+  const baseURL = process.env.VUE_APP_API_BASE_URL;
+  const endpoint = `${baseURL}/api/mail/forgot-password/send?email_to=${email.value}`;
+  console.log(email.value);
+  axios
+    .get(endpoint)
+    .then(({ data }) => {
+      if (data["error_type"]) {
+        toast.message = "Gagal";
+        toast.description = data.message;
+        toast.type = "FAILED";
+        toast.trigger();
+      } else {
+        toast.message = "Sukses";
+        toast.description = "Email reset password telah dikirim!";
+        toast.type = "SUCCESS";
+        toast.trigger();
+      }
+    })
+    .catch((error) => {
+      toast.message = "Gagal";
+      toast.description = error.response?.data?.message || "Terjadi kesalahan";
+      toast.type = "FAILED";
+      toast.trigger();
     });
 };
 </script>

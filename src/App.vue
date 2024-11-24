@@ -1,7 +1,11 @@
 <template>
   <div class="font-helvetica flex">
     <SideNavigation
-      v-if="route.path !== '/login' && route.path !== '/shop-list'"
+      v-if="
+        route.path !== '/login' &&
+        route.path !== '/shop-list' &&
+        route.path !== '/forgot-password'
+      "
     />
     <ModalPopup />
     <ToastAlert />
