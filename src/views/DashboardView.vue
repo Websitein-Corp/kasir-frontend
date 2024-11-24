@@ -6,18 +6,20 @@
           v-for="frequency in frequencies"
           :key="frequency"
           :class="['px-2 md:px-4 py-2 rounded-md']"
-          @click="selectFrequency(frequency)"
+          @click="selectFrequency(frequency.value)"
         >
           <span
             :class="[
-              selectedFrequency === frequency
+              selectedFrequency === frequency.value
                 ? 'text-primary-300'
                 : 'text-primary-700',
             ]"
           >
-            {{ frequency }}
+            {{ frequency.label }}
           </span>
-          <span v-if="frequency !== 'Yearly'" class="ps-2 md:ps-8">|</span>
+          <span v-if="frequency.value !== 'Yearly'" class="ps-2 md:ps-8"
+            >|</span
+          >
         </button>
       </div>
     </div>
@@ -89,7 +91,13 @@ Chart.register(
 
 const auth = useAuth();
 const route = useRoute();
-const frequencies = ref(["Daily", "Weekly", "Monthly", "Yearly"]);
+const frequencies = ref([
+  { label: "Harian", value: "Daily" },
+  { label: "Mingguan", value: "Weekly" },
+  { label: "Bulanan", value: "Monthly" },
+  { label: "Tahunan", value: "Yearly" },
+]);
+
 const selectedFrequency = ref("Daily");
 
 const doughnutRef = ref();
@@ -143,7 +151,7 @@ const lineChartData = ref({
   labels: [],
   datasets: [
     {
-      label: "Revenue Over Time",
+      label: "Keuntungan",
       backgroundColor: "rgba(153, 102, 255, 0.2)",
       borderColor: "rgba(153, 102, 255, 1)",
       data: [],
@@ -157,11 +165,11 @@ const lineChartOptions = ref({
     legend: { position: "top" },
     title: {
       display: true,
-      text: "Revenue Over Time",
+      text: "Keuntungan dari Waktu ke Waktu",
     },
   },
   scales: {
-    x: { title: { display: true, text: "Date" } },
+    x: { title: { display: true, text: "Tanggal" } },
     y: { beginAtZero: true },
   },
 });
@@ -174,7 +182,7 @@ const doughnutChartOptions = ref({
     },
     title: {
       display: true,
-      text: "Orders Over Time",
+      text: "Pesan Berdasarkan Kategori",
       font: {
         size: 16,
       },
