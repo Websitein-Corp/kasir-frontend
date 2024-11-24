@@ -4,51 +4,54 @@ on:
     branches: [ dev/feature/cicd ]
 
 jobs:
-  web-deploy:
-    name: 🎉 Deploy
-    runs-on: ubuntu-latest
+  build:
+    name: Build  # Defines the name of the build job.
+    runs-on: ubuntu-latest  # Specifies the operating system for the job.
+
     steps:
-      - uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
+      - name: Checkout Repo  # Checks out the repository.
+        uses: actions/checkout@v4
 
-      - uses: actions/setup-node@v2
+      - name: Create Node Environment  # Sets up Node.js environment.
+        uses: actions/setup-node@v4
         with:
-          node-version: '22'
+          node-version: 16.x
 
-      - name: npm install
+      - name: Install Packages and Build Application  # Installs npm packages and builds the Vue.js application.
         run: |
-          npm install
+          npm ci
+          npm run build
 
-      - name: npm build
-        run: npm run build --if-present
+      - name: Setup Pages  # Configures pages for deployment.
+        id: pages
+        uses: actions/configure-pages@v3
 
-      - name: 📂 Sync app files
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+      - name: Build with Jekyll  # Builds the application with Jekyll.
+        uses: actions/jekyll-build-pages@v1
         with:
-          server: ${{ secrets.SERVER }}
-          username: ${{ secrets.USERNAME }}
-          password: ${{ secrets.PASSWORD }}
-          exclude: |
-            node_modules/**/*
-            public/**/*
-            .git/**/*
-            .github/**/*
-          server-dir: '../'
-          local-dir: './'
-          timeout: 9999999
+          source: ./dist/
+          destination: ./_site
 
-      - name: 📂 Sync public files
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
-        with:
-          server: ${{ secrets.SERVER }}
-          username: ${{ secrets.USERNAME }}
-          password: ${{ secrets.PASSWORD }}
-          exclude: |
-            node_modules/**/*
-            vendor/**/*
-            .git/**/*
-            .github/**/*
-            .env
-          server-dir: './'
-          local-dir: './public/'
+      - name: Upload artifact  # Uploads the build artifact.
+        uses: actions/upload-pages-artifact@v2
+
+  deploy:
+    name: Deploy Application  # Defines the name of the deployment job.
+
+    # Add a dependency to the build job
+    needs: build  # Specifies that the deployment job depends on the successful completion of the build job.
+
+    # Grant GITHUB_TOKEN the permissions required to make a Pages deployment
+    permissions:
+      pages: write      # Grants write permission to deploy to Pages.
+      id-token: write   # Grants write permission to verify the deployment source.
+
+    environment:
+      name: github-pages  # Specifies the environment for deployment.
+      url: ${{ steps.deployment.outputs.page_url }}  # Retrieves the deployment URL from the previous deployment step.
+
+    runs-on: ubuntu-latest  # Specifies the operating system for the deployment job.
+    steps:
+      - name: Deploy to GitHub Pages  # Deploys the application to GitHub Pages.
+        id: deployment
+        uses: actions/deploy-pages@v2
