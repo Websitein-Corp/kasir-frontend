@@ -1,72 +1,36 @@
-name: Deploy on Development Push
+name: Deploy to Shared Hosting
+
 on:
   push:
-    branches: [ dev/feature/cicd ]
+    branches:
+      - dev/feature/cicd
 
 jobs:
-  web-deploy:
-    name: 🎉 Deploy
+  deploy:
     runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
 
-      - uses: actions/setup-node@v2
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
         with:
           node-version: '22'
 
-      - name: npm install
+      - name: Copy .env
+        run: cp .env.example.staging .env
+
+      - name: Install dependencies and build
         run: |
           npm install
+          npm run build
 
-      - name: npm build
-        run: npm run build --if-present
-
-      - name: copy index.html dist
-        run:
-          cp dist/index.html public/index.html
-
-      - name: 📂 Sync src files
+      - name: Deploy via FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
           server: ${{ secrets.SERVER }}
           username: ${{ secrets.USERNAME }}
           password: ${{ secrets.PASSWORD }}
-          exclude: |
-            node_modules/**/*
-            .git/**/*
-            .github/**/*
+          local-dir: './dist/'
           server-dir: './'
-          local-dir: './'
-          timeout: 9999999
-
-#      - name: 📂 Sync public files
-#        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
-#        with:
-#          server: ${{ secrets.SERVER }}
-#          username: ${{ secrets.USERNAME }}
-#          password: ${{ secrets.PASSWORD }}
-#          exclude: |
-#            node_modules/**/*
-#            vendor/**/*
-#            .git/**/*
-#            .github/**/*
-#            .env
-#          server-dir: './'
-#          local-dir: './public/'
-
-#      - name: 📂 Sync dist files
-#        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
-#        with:
-#          server: ${{ secrets.SERVER }}
-#          username: ${{ secrets.USERNAME }}
-#          password: ${{ secrets.PASSWORD }}
-#          exclude: |
-#            node_modules/**/*
-#            vendor/**/*
-#            .git/**/*
-#            .github/**/*
-#            .env
-#          server-dir: './'
-#          local-dir: './dist/'
