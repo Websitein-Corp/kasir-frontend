@@ -34,6 +34,7 @@ jobs:
           username: ${{ secrets.USERNAME }}
           password: ${{ secrets.PASSWORD }}
           exclude: |
+            dist/**
             public/**
             node_modules/**/*
             .git/**/*
@@ -56,3 +57,18 @@ jobs:
             .env
           server-dir: './'
           local-dir: './public/'
+
+      - name: 📂 Sync dist files
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.SERVER }}
+          username: ${{ secrets.USERNAME }}
+          password: ${{ secrets.PASSWORD }}
+          exclude: |
+            node_modules/**/*
+            vendor/**/*
+            .git/**/*
+            .github/**/*
+            .env
+          server-dir: './'
+          local-dir: './dist/'
