@@ -1,9 +1,9 @@
-name: Deploy to Shared Hosting
+name: Deploy to Staging
 
 on:
   push:
     branches:
-      - dev/feature/cicd
+      - development
 
 jobs:
   deploy:
