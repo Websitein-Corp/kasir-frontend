@@ -1,0 +1,54 @@
+name: Deploy on Development Push
+on:
+  push:
+    branches: [ dev/feature/cicd ]
+
+jobs:
+  web-deploy:
+    name: 🎉 Deploy
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '22'
+
+      - name: npm install
+        run: |
+          npm install
+
+      - name: npm build
+        run: npm build --if-present
+
+      - name: 📂 Sync application files
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.SERVER }}
+          username: ${{ secrets.USERNAME }}
+          password: ${{ secrets.PASSWORD }}
+          exclude: |
+            node_modules/**/*
+            public/**/*
+            .git/**/*
+            .github/**/*
+          server-dir: '../'
+          local-dir: './'
+          timeout: 9999999
+
+      - name: 📂 Sync public files
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.SERVER }}
+          username: ${{ secrets.USERNAME }}
+          password: ${{ secrets.PASSWORD }}
+          exclude: |
+            node_modules/**/*
+            vendor/**/*
+            .git/**/*
+            .github/**/*
+            .env
+          server-dir: './'
+          local-dir: './public/'
