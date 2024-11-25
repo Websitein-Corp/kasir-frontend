@@ -87,7 +87,7 @@ const toggle = () => {
   display: inline-block;
   border-radius: 9999px;
   height: 100%;
-  width: 100%;
+  width: 4rem;
   box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
   transition: background-color 0.2s ease;
 }
