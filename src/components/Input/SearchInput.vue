@@ -8,9 +8,9 @@
   >
     <Search />
     <input
-      class="ml-5 border-none outline-none focus:outline-none focus:text-primary-800 text-lg"
+      class="ml-5 border-none outline-none focus:outline-none focus:text-primary-800 text-lg mt-1"
       type="text"
-      placeholder="Cari barang..."
+      :placeholder="placeholder"
       v-model="model"
       v-bind="$attrs"
     />
@@ -24,6 +24,10 @@ defineProps({
   border: {
     type: String,
     default: "default",
+  },
+  placeholder: {
+    type: String,
+    default: "Cari kata kunci...",
   },
 });
 
