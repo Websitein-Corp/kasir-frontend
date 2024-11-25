@@ -14,6 +14,7 @@
       size="md"
       label="Lanjut"
       @click="onSubmit"
+      :loading="loading"
       class="bg-primary-700 hover:bg-primary-800"
     />
   </div>
@@ -30,8 +31,10 @@ import { axios } from "@/sdk/axios";
 import router from "@/router";
 import usePage from "@/stores/usePage";
 import useAuth from "@/stores/useAuth";
+import helpers from "@/helpers";
 
 const totalPaid = ref(0);
+const loading = ref(false);
 
 const auth = useAuth();
 const cart = useCart();
@@ -40,10 +43,10 @@ const toast = useToast();
 const page = usePage();
 
 const onSubmit = () => {
-  if (totalPaid.value >= cart.total) {
+  if (helpers.parseRupiah(totalPaid.value) >= cart.total) {
     cart.totalPaid = totalPaid.value;
+    loading.value = true;
 
-    modal.close();
     checkOut();
   } else {
     toast.message = "Gagal";
@@ -74,7 +77,7 @@ const checkOut = () => {
           }
         }),
         payment_method: "cash",
-        customer_pay: Number(totalPaid.value),
+        customer_pay: Number(helpers.parseRupiah(totalPaid.value)),
         discount: Number(cart.discount),
       },
       {
@@ -90,20 +93,28 @@ const checkOut = () => {
         toast.description = data.message;
         toast.type = "FAILED";
         toast.trigger();
+
+        loading.value = false;
       } else {
         toast.message = "Sukses";
         toast.description = data.message;
         toast.type = "SUCCESS";
         toast.trigger();
 
-        setTimeout(() => showBill(data.data["ref_id"]), 3000);
+        setTimeout(() => showBill(data.data["ref_id"]), 2000);
       }
+    })
+    .catch(() => {
+      loading.value = false;
     });
 };
 
 const showBill = (refId) => {
   cart.clearAll();
   page.order.step = 0;
+  loading.value = false;
+
+  modal.close();
 
   router.push({
     path: `/bill/${refId}`,

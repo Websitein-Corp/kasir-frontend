@@ -1,6 +1,6 @@
 <template>
   <button
-    class="h-12 p-2 px-4 rounded-lg text-white shadow-xl flex justify-center items-center gap-2 cursor-pointer transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+    class="h-10 lg:h-12 p-2 px-4 rounded-lg !text-base lg:!text-xl text-white shadow-xl flex justify-center items-center gap-2 cursor-pointer transition-all disabled:opacity-40 disabled:cursor-not-allowed"
     :class="{
       'w-[150px] lg:w-[200px]': size === 'sm',
       'w-[200px] lg:w-[300px]': size === 'md',
@@ -15,7 +15,7 @@
       '!justify-end': align === 'end',
       '!justify-between': align === 'between',
     }"
-    :disabled="disabled"
+    :disabled="disabled || loading"
     @click="$emit('click')"
     v-bind="$attrs"
   >
@@ -24,39 +24,52 @@
       <component :is="icon" :size="iconSize"></component>
     </template>
     <template v-else-if="buttonType === 'text'">
-      <div>{{ label }}</div>
+      <div>
+        <span v-if="loading"><LoadingAnim /></span>
+        {{ label }}
+      </div>
     </template>
     <template v-else>
       <div
         class="flex items-center space-x-2"
         :class="{ '!flex-col !space-y-2.5': orientation === 'vertical' }"
       >
-        <component
-          v-if="iconSide === 'left'"
-          :is="icon"
-          :size="iconSize"
-          class="mr-0.5"
-          :class="{ '!m-0': orientation === 'vertical' }"
-        ></component>
+        <span v-if="iconSide === 'left'">
+          <span v-if="loading"><LoadingAnim /></span>
+          <span v-else>
+            <component
+              :is="icon"
+              :size="iconSize"
+              class="mr-0.5"
+              :class="{ '!m-0': orientation === 'vertical' }"
+            ></component>
+          </span>
+        </span>
         <span
           v-if="label"
           class="mt-0.5"
           :class="{ '!m-0': orientation === 'vertical' }"
           >{{ label }}</span
         >
-        <component
-          v-if="iconSide === 'right'"
-          :is="icon"
-          :size="iconSize"
-          class="ml-0.5"
-          :class="{ '!m-0': orientation === 'vertical' }"
-        ></component>
+        <span v-if="iconSide === 'right'">
+          <span v-if="loading"><LoadingAnim /></span>
+          <span v-else>
+            <component
+              :is="icon"
+              :size="iconSize"
+              class="ml-0.5"
+              :class="{ '!m-0': orientation === 'vertical' }"
+            ></component>
+          </span>
+        </span>
       </div>
     </template>
   </button>
 </template>
 
 <script setup>
+import LoadingAnim from "@/assets/animations/LoadingAnim.vue";
+
 defineProps({
   buttonType: {
     type: String,
@@ -92,6 +105,10 @@ defineProps({
     default: "md", // "sm" / "md" / "lg" / "xl" / "fit" / "full"
   },
   disabled: {
+    type: Boolean,
+    default: false,
+  },
+  loading: {
     type: Boolean,
     default: false,
   },
