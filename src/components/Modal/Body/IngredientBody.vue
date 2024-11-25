@@ -2,7 +2,10 @@
   <DataTable>
     <template v-slot:action-2>
       <div class="flex space-x-2">
-        <SearchInput v-model="ingredient.filters.keyword"></SearchInput>
+        <SearchInput
+          v-model="ingredient.filters.keyword"
+          placeholder="Cari bahan baku..."
+        ></SearchInput>
       </div>
     </template>
     <template v-slot:thead>
