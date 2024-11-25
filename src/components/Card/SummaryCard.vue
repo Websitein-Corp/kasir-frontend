@@ -2,9 +2,12 @@
   <div class="rounded-lg p-4 lg:p-8 shadow-xl flex items-center">
     <div class="mr-8" v-if="imageUrl">
       <img
-        :src="imageUrl"
-        :alt="imageUrl"
-        class="w-40 md:w-64 h-28 md:h-40 object-cover rounded-lg"
+        v-lazy="{
+          src: imageUrl,
+          loading: './img/imageLoading.svg',
+          error: './img/imageLoading.svg',
+        }"
+        class="w-40 md:w-64 h-28 md:h-52 object-cover rounded-lg"
       />
     </div>
     <div class="space-y-2">
