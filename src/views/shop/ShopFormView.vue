@@ -33,7 +33,8 @@
               name="balance"
               label="Saldo"
               currency
-              placeholder="Masukkan saldo..."
+              disabled
+              placeholder="Rp 0,00"
               class="col-span-2 lg:col-span-1"
             />
           </div>
@@ -56,13 +57,13 @@
         <div class="space-y-8">
           <div class="flex space-x-4 mt-6">
             <div class="flex-col space-y-4">
-              <div class="h-7">
-                <SwitchInput
-                  label="Nyalakan Pajak"
-                  :is-active="form.active_tax_flag"
-                  @switch="(newVal) => (form.active_tax_flag = newVal)"
-                />
-              </div>
+              <SwitchInput
+                v-for="(setting, index) in form.settings"
+                v-bind:key="setting.name"
+                :label="setting.label"
+                :is-active="form.settings[index].value"
+                @switch="(newVal) => (form.settings[index].value = newVal)"
+              />
             </div>
           </div>
         </div>
@@ -107,7 +108,7 @@ const form = reactive({
   name: props.shopData ? props.shopData.name : "",
   address: props.shopData ? props.shopData.address : "",
   balance: props.shopData ? props.shopData.balance : 0,
-  active_tax_flag: props.shopData ? props.shopData.activeTaxFlag : true,
+  settings: props.shopData ? props.shopData.settings : true,
 });
 
 const submitShop = async () => {
@@ -120,8 +121,11 @@ const submitShop = async () => {
             shop_id: form.shop_id,
             address: form.address,
             name: form.name,
-            balance: form.balance,
-            active_tax_flag: form.active_tax_flag,
+            active_tax_flag: form.settings[0].value,
+            open_bill: form.settings[1].value,
+            customer_input: form.settings[2].value,
+            table_number_input: form.settings[3].value,
+            shop_payment_fee: form.settings[4].value,
           },
           {
             headers: {
@@ -153,7 +157,7 @@ const submitShop = async () => {
             address: form.address,
             name: form.name,
             balance: form.balance,
-            active_tax_flag: form.active_tax_flag,
+            settings: form.settings,
           },
           {
             headers: {

@@ -40,7 +40,7 @@
       class="loginview absolute inset-0 flex items-center justify-center overflow-y-auto"
     >
       <div
-        class="flex flex-row min-w-fit w-10/12 md:w-4/12 h-[55vh] md:h-[45vh] min-h-fit border border-1 rounded-xl bg-white shadow-lg z-10 overflow-y-auto"
+        class="flex flex-row min-w-fit w-10/12 md:w-4/12 h-[40vh] md:h-[45vh] min-h-fit border border-1 rounded-xl bg-white shadow-lg z-10 overflow-y-auto"
       >
         <!-- Image will be hidden on small screens and visible on medium (tablet) and larger screens -->
         <div
@@ -114,12 +114,12 @@
             {{ isForgotPassword ? "Login" : "Forgot password?" }}
           </p>
 
-          <button
-            class="bg-primary-700 hover:bg-primary-600 rounded-md text-xl text-white w-full px-8 py-2 mx-auto"
+          <CustomButton
+            class="bg-primary-700 hover:bg-primary-600 rounded-md text-xl text-white w-full mt-6 px-8 py-2 mx-auto"
             @click="formAction"
           >
             {{ isForgotPassword ? "Send" : "Login" }}
-          </button>
+          </CustomButton>
         </div>
       </div>
     </div>
@@ -133,6 +133,7 @@ import router from "@/router";
 import useToast from "@/stores/useToast";
 import useAuth from "@/stores/useAuth";
 import { useRoute } from "vue-router";
+import CustomButton from "@/components/Button/CustomButton.vue";
 
 const TextInput = defineAsyncComponent(() =>
   import("@/components/Input/TextInput.vue")

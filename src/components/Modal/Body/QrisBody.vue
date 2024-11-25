@@ -80,16 +80,7 @@
         </div>
       </div>
       <div class="flex justify-center items-center">
-        <!--        <img-->
-        <!--          src="https://help.spreadsheetconverter.com/wp-content/uploads/2013/07/car-loan-amortization-mobile-qrcode.png"-->
-        <!--          alt="QRIS"-->
-        <!--          class="w-40 lg:w-80 h-40 lg:h-80 mx-8 object-cover mt-4"-->
-        <!--        />-->
-        <img
-          :src="paymentUrl"
-          alt="QRIS"
-          class="w-40 lg:w-80 h-40 lg:h-80 mx-8 object-cover mt-4"
-        />
+        <qrcode-vue value="value" :size="300" level="H" render-as="svg" />
       </div>
     </div>
     <div class="flex justify-center mt-4 lg:mt-8">
@@ -114,6 +105,7 @@ import useAuth from "@/stores/useAuth";
 import { CircleEllipsis } from "lucide-vue-next";
 import router from "@/router";
 import CustomButton from "@/components/Button/CustomButton.vue";
+import QrcodeVue from "qrcode.vue";
 
 const bill = ref({
   type: "SUCCESS",

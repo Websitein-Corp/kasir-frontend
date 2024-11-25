@@ -24,7 +24,7 @@ axiosInstance.interceptors.response.use(
     if (error.response.status === 401) {
       auth.handleUnauthenticated();
       return new Promise(() => {});
-    } else if (error.response.status % 500 === 1) {
+    } else if (error.response.status >= 500) {
       // if code is 5xx
       toast.message = "Gagal";
       toast.description = "Terjadi kesalahan, mohon coba lagi";

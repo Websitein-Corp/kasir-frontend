@@ -12,7 +12,10 @@
       <DataTable :column-count="11">
         <template v-slot:action-2>
           <div class="flex space-x-2">
-            <SearchInput v-model="table.filters.keyword"></SearchInput>
+            <SearchInput
+              v-model="table.filters.keyword"
+              placeholder="Cari produk..."
+            ></SearchInput>
           </div>
         </template>
         <template v-slot:action-3>

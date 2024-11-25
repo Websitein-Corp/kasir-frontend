@@ -12,7 +12,10 @@
       <DataTable :column-count="4">
         <template v-slot:action-2>
           <div class="flex space-x-2">
-            <SearchInput v-model="table.filters.keyword"></SearchInput>
+            <SearchInput
+              v-model="table.filters.keyword"
+              placeholder="Cari karyawan..."
+            ></SearchInput>
           </div>
         </template>
         <template v-slot:action-3>
@@ -29,6 +32,7 @@
           <tr>
             <th>Email</th>
             <th>Nama</th>
+            <th>Permission</th>
             <th>Login Terakhir</th>
             <th>Actions</th>
           </tr>
@@ -37,7 +41,8 @@
           <tr v-for="(item, index) in table.items" :key="index">
             <td>{{ item.email || "-" }}</td>
             <td>{{ item.name || "-" }}</td>
-            <td>{{ item.lastLogin || "-" }}</td>
+            <td>{{ item.permission_code || "-" }}</td>
+            <td>{{ item.last_login || "-" }}</td>
             <td class="flex justify-center space-x-2">
               <CustomButton
                 size="fit"
@@ -132,8 +137,8 @@ const fetchSubusers = () => {
           id: item.id,
           email: item.email,
           name: item.name,
-          permission: item.permission_code,
-          lastLogin: item.last_login,
+          permission_code: item.permission_code,
+          last_login: item.last_login,
         };
       });
 

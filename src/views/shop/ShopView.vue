@@ -123,7 +123,7 @@ const fetchShops = () => {
           address: item.address,
           name: item.name,
           balance: item.balance,
-          activeTaxFlag: item.active_tax_flag,
+          settings: item.settings,
         };
       });
 
@@ -141,7 +141,7 @@ const editShop = (item) => {
     name: item.name,
     address: item.address,
     balance: item.balance,
-    activeTaxFlag: item.activeTaxFlag,
+    settings: item.settings,
   };
 };
 

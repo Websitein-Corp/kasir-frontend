@@ -29,8 +29,12 @@ export default {
     return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
   },
 
+  convertToCurrency: (value) => {
+    return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+  },
+
   parseRupiah: (value) => {
-    const numberString = value.replace("Rp", "").replace(".", "");
+    const numberString = value.toString().replace("Rp", "").replace(".", "");
     return parseInt(numberString, 10);
   },
 };

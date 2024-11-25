@@ -9,7 +9,10 @@
               :max-date="new Date()"
               range
             ></DatetimeInput>
-            <SearchInput v-model="table.filters.keyword"></SearchInput>
+            <SearchInput
+              v-model="table.filters.keyword"
+              placeholder="Cari transaksi..."
+            ></SearchInput>
           </div>
         </template>
         <template v-slot:action-3>

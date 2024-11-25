@@ -26,6 +26,7 @@ import { onMounted, ref } from "vue";
 import CustomButton from "@/components/Button/CustomButton.vue";
 import useModal from "@/stores/useModal";
 import useToast from "@/stores/useToast";
+import helpers from "@/helpers";
 
 const discount = ref(null);
 
@@ -34,13 +35,13 @@ const modal = useModal();
 const toast = useToast();
 
 onMounted(() => {
-  if (cart.discount > 0) {
-    discount.value = cart.discount;
+  if (helpers.parseRupiah(cart.discount) > 0) {
+    discount.value = helpers.convertToCurrency(cart.discount);
   }
 });
 
 const onSubmit = () => {
-  cart.discount = discount.value;
+  cart.discount = helpers.parseRupiah(discount.value);
 
   toast.message = "Sukses";
   toast.description = "Diskon berhasil ditambah!";

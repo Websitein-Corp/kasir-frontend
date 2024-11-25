@@ -41,7 +41,7 @@
             />
             <TextInput
               v-if="!isEdit"
-              v-model="form.passwordConfirmation"
+              v-model="form.password_confirmation"
               type="password"
               name="confirm_password"
               label="Konfirmasi Password"
@@ -133,7 +133,7 @@ const form = reactive({
   name: props.subuserData ? props.subuserData.name : "",
   email: props.subuserData ? props.subuserData.email : "",
   password: "",
-  passwordConfirmation: "",
+  password_confirmation: "",
   permission: props.subuserData ? props.subuserData.permission : "",
 });
 
@@ -176,7 +176,7 @@ const submitSubuser = async () => {
           }
         });
     } else {
-      if (form.password !== form.passwordConfirmation) {
+      if (form.password !== form.password_confirmation) {
         toast.message = "Gagal";
         toast.description = "Konfirmasi password salah";
         toast.type = "FAILED";
@@ -224,7 +224,10 @@ const validateForm = () => {
 
   Object.keys(form).forEach((field) => {
     if (!form[field] && field !== "id") {
-      if (!props.isEdit || field !== "password") {
+      if (
+        !props.isEdit ||
+        (field !== "password" && field !== "password_confirmation")
+      ) {
         toast.message = "Gagal";
         toast.description = `Kolom ${field} harus diisi!`;
         toast.type = "FAILED";
