@@ -287,95 +287,108 @@ const submitProduct = async () => {
   if (validateForm()) {
     loading.value = true;
 
-    if (props.isEdit) {
-      axios
-        .put(
-          `${process.env.VUE_APP_API_BASE_URL}/api/products`,
-          {
-            shop_id: auth.shopId,
-            sku: form.sku,
-            name: form.name,
-            selling_retail_price: form.sellingRetailPrice,
-            selling_price: form.sellingPrice,
-            capital_price: form.capitalPrice,
-            type: form.type,
-            stock: form.stock,
-            category: form.category,
-            barcode: form.barcode,
-            status: form.isActive,
-            image: form.image,
-          },
-          {
-            headers: {
-              Authorization: `Bearer ${auth.authToken}`,
-              "Content-Type": "multipart/form-data",
-            },
-            withCredentials: true,
-          }
-        )
-        .then((response) => {
-          if (response.data["error_type"]) {
-            toast.message = "Gagal";
-            toast.description = response.data.message;
-            toast.type = "FAILED";
-            toast.trigger();
-          } else {
-            toast.message = "Sukses";
-            toast.description = response.data.message;
-            toast.type = "SUCCESS";
-            toast.trigger();
+    new Compressor(form.image, {
+      quality: 0.6,
+      success(compressedImage) {
+        if (props.isEdit) {
+          axios
+            .post(
+              `${process.env.VUE_APP_API_BASE_URL}/api/products/edit`,
+              {
+                shop_id: auth.shopId,
+                sku: form.sku,
+                name: form.name,
+                selling_retail_price: form.sellingRetailPrice,
+                selling_price: form.sellingPrice,
+                capital_price: form.capitalPrice,
+                type: form.type,
+                stock: form.stock,
+                category: form.category,
+                barcode: form.barcode,
+                status: form.isActive,
+                image: compressedImage,
+              },
+              {
+                headers: {
+                  Authorization: `Bearer ${auth.authToken}`,
+                  "Content-Type": "multipart/form-data",
+                },
+                withCredentials: true,
+              }
+            )
+            .then((response) => {
+              if (response.data["error_type"]) {
+                toast.message = "Gagal";
+                toast.description = response.data.message;
+                toast.type = "FAILED";
+                toast.trigger();
+              } else {
+                toast.message = "Sukses";
+                toast.description = response.data.message;
+                toast.type = "SUCCESS";
+                toast.trigger();
 
-            emit("submitSuccess");
-          }
-        })
-        .finally(() => {
-          loading.value = false;
-        });
-    } else {
-      axios
-        .post(
-          `${process.env.VUE_APP_API_BASE_URL}/api/products`,
-          {
-            shop_id: auth.shopId,
-            sku: form.sku,
-            name: form.name,
-            selling_retail_price: form.sellingRetailPrice,
-            selling_price: form.sellingPrice,
-            capital_price: form.capitalPrice,
-            stock: form.stock,
-            type: form.type,
-            category: form.category,
-            barcode: form.barcode,
-            status: form.isActive,
-            image: form.image,
-          },
-          {
-            headers: {
-              Authorization: `Bearer ${auth.authToken}`,
-              "Content-Type": "multipart/form-data",
-            },
-            withCredentials: true,
-          }
-        )
-        .then((response) => {
-          if (response.data["error_type"]) {
-            toast.message = "Gagal";
-            toast.description = response.data.message;
-            toast.type = "FAILED";
-            toast.trigger();
-          } else {
-            toast.message = "Sukses";
-            toast.description = response.data.message;
-            toast.type = "SUCCESS";
-            toast.trigger();
+                emit("submitSuccess");
+              }
+            })
+            .finally(() => {
+              loading.value = false;
+            });
+        } else {
+          axios
+            .post(
+              `${process.env.VUE_APP_API_BASE_URL}/api/products`,
+              {
+                shop_id: auth.shopId,
+                sku: form.sku,
+                name: form.name,
+                selling_retail_price: form.sellingRetailPrice,
+                selling_price: form.sellingPrice,
+                capital_price: form.capitalPrice,
+                stock: form.stock,
+                type: form.type,
+                category: form.category,
+                barcode: form.barcode,
+                status: form.isActive,
+                image: compressedImage,
+              },
+              {
+                headers: {
+                  Authorization: `Bearer ${auth.authToken}`,
+                  "Content-Type": "multipart/form-data",
+                },
+                withCredentials: true,
+              }
+            )
+            .then((response) => {
+              if (response.data["error_type"]) {
+                toast.message = "Gagal";
+                toast.description = response.data.message;
+                toast.type = "FAILED";
+                toast.trigger();
+              } else {
+                toast.message = "Sukses";
+                toast.description = response.data.message;
+                toast.type = "SUCCESS";
+                toast.trigger();
 
-            emit("submitSuccess");
-          }
-        })
-        .finally(() => {
-          loading.value = false;
-        });
-    }
+                emit("submitSuccess");
+              }
+            })
+            .finally(() => {
+              loading.value = false;
+            });
+        }
+      },
+      error() {
+        toast.message = "Gagal";
+        toast.description = "Gagal mengunduh gambar!";
+        toast.type = "FAILED";
+        toast.trigger();
+
+        loading.value = false;
+      },
+    });
   }
 };
 
