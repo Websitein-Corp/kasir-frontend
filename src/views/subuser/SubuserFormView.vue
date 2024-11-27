@@ -55,6 +55,7 @@
               :label="isEdit ? 'Edit' : 'Add'"
               :icon="isEdit ? Pencil : Plus"
               class="bg-primary-700 hover:bg-primary-800"
+              :loading="page.buttonLoading"
               @click="submitSubuser"
             />
           </div>
@@ -105,6 +106,7 @@ import CustomButton from "@/components/Button/CustomButton.vue";
 import SwitchInput from "@/components/Input/SwitchInput.vue";
 import useToast from "@/stores/useToast";
 import useAuth from "@/stores/useAuth";
+import usePage from "@/stores/usePage";
 
 const TextInput = defineAsyncComponent(() =>
   import("@/components/Input/TextInput.vue")
@@ -125,6 +127,7 @@ const emit = defineEmits(["formBack", "submitSuccess"]);
 
 const auth = useAuth();
 const toast = useToast();
+const page = usePage();
 
 const permissionList = ref([]);
 
@@ -143,6 +146,8 @@ onMounted(() => {
 
 const submitSubuser = async () => {
   if (validateForm()) {
+    page.buttonLoading = true;
+
     if (props.isEdit) {
       axios
         .put(
