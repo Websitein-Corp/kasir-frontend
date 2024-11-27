@@ -12,10 +12,12 @@
           <TextInput
             v-model="supplierDetail.name"
             name="supplier_name"
+            type="text"
             label="Supplier Name"
-            placeholder="Enter supplier name"
+            placeholder="Masukkan nama supplier"
             required
             class="w-full"
+            pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,3}$"
           />
         </div>
 
@@ -31,6 +33,7 @@
           label="Alamat"
           required
           class="w-full"
+          pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,3}$"
         />
         <TextInput
           v-model="supplierDetail.phone_number"
@@ -39,6 +42,7 @@
           placeholder="Nomor Telepon"
           required
           class="w-full"
+          pattern="[0-9._%+-]+@[0-9.-]+\.{2,3}$"
         />
       </DashboardCard>
 
@@ -103,6 +107,7 @@ const loadExistingData = () => {
 };
 
 const handleSubmit = async () => {
+  console.log("aaaaaaaaa");
   try {
     const requestBody = {
       name: supplierDetail.value.name,
