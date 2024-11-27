@@ -41,7 +41,7 @@
       id="summarySideBar"
       class="hidden lg:block ml-auto w-[26rem] shadow-2xl h-screen"
     >
-      <div class="h-4/5 flex flex-col overflow-hidden">
+      <div class="h-3/4 xl:h-4/5 flex flex-col overflow-hidden">
         <div class="flex items-center space-x-4 p-8">
           <ShoppingCart size="40" />
           <div class="text-2xl font-bold">Pesanan#001</div>
@@ -53,7 +53,7 @@
         <SummarySidebar v-else />
       </div>
       <div
-        class="w-full h-1/5 py-8 px-12 shadow-inner font-helvetica-light space-y-2"
+        class="w-full h-1/4 xl:h-1/5 py-8 px-12 shadow-inner font-helvetica-light space-y-2"
       >
         <OrderBottomMenu v-if="page.order.step === 0" />
         <SummaryBottomMenu v-else />

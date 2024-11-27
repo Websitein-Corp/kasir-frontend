@@ -30,8 +30,8 @@
         </template>
         <template v-slot:thead>
           <tr>
-            <th>SKU</th>
             <th>Nama</th>
+            <th>SKU</th>
             <th>Tipe</th>
             <th>Kategori</th>
             <th>Stok</th>
@@ -45,8 +45,8 @@
         </template>
         <template v-slot:tbody>
           <tr v-for="(item, index) in table.items" :key="index">
-            <td>{{ item.sku || "-" }}</td>
             <td>{{ item.name || "-" }}</td>
+            <td>{{ item.sku || "-" }}</td>
             <td>{{ item.type || "-" }}</td>
             <td>{{ (item.category && item.category.name) || "-" }}</td>
             <td>{{ item.stock || "-" }}</td>
@@ -60,7 +60,7 @@
                 size="fit"
                 :icon="Trash2"
                 class="bg-red-700 hover:bg-red-800"
-                @click="deleteProduct(item.sku)"
+                @click="confirmDeleteProduct(item.sku)"
               />
               <CustomButton
                 size="fit"
@@ -91,17 +91,20 @@ import { axios } from "@/sdk/axios";
 import useTable from "@/stores/useTable";
 import CustomButton from "@/components/Button/CustomButton.vue";
 import ProductFormView from "@/views/product/ProductFormView.vue";
-import { Trash2, Pencil } from "lucide-vue-next";
+import { Trash2, Pencil, MessageCircleQuestion } from "lucide-vue-next";
 import useToast from "@/stores/useToast";
 import useAuth from "@/stores/useAuth";
 import DefaultSkeleton from "@/components/Skeleton/DefaultSkeleton.vue";
 import { useRoute } from "vue-router";
 import usePage from "@/stores/usePage";
+import useModal from "@/stores/useModal";
+import DeleteBody from "@/components/Modal/Body/DeleteBody.vue";
 
 const auth = useAuth();
 const table = useTable();
 const toast = useToast();
 const page = usePage();
+const modal = useModal();
 const route = useRoute();
 
 let debounce;
@@ -192,30 +195,17 @@ const editProduct = (item) => {
   };
 };
 
-const deleteProduct = (sku) => {
-  axios
-    .delete(
-      `${process.env.VUE_APP_API_BASE_URL}/api/products/delete?shop_id=${auth.shopId}&sku=${sku}`,
-      {
-        headers: {
-          Authorization: `Bearer ${auth.authToken}`,
-        },
-        withCredentials: true,
-      }
-    )
-    .then(({ data }) => {
-      if (data["error_type"]) {
-        toast.message = "Gagal";
-        toast.description = data.message;
-        toast.type = "FAILED";
-        toast.trigger();
-      } else {
-        toast.message = "Sukses";
-        toast.description = data.message;
-        toast.type = "SUCCESS";
-        toast.trigger();
-      }
-    });
+const confirmDeleteProduct = (sku) => {
+  modal.title = "Konfirmasi Hapus";
+  modal.icon = MessageCircleQuestion;
+  modal.props = {
+    label: "Apakah Anda yakin ingin menghapus produk ini?",
+    buttonLabel: "Hapus",
+    endpoint: `${process.env.VUE_APP_API_BASE_URL}/api/products/delete?shop_id=${auth.shopId}&sku=${sku}`,
+  };
+  modal.callback = fetchProducts;
+  modal.body = DeleteBody;
+  modal.open();
 };
 
 const resetForm = () => {

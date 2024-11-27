@@ -48,7 +48,7 @@
                 size="fit"
                 :icon="Trash2"
                 class="bg-red-700 hover:bg-red-800"
-                @click="deleteSubuser(item.id)"
+                @click="confirmDeleteSubuser(item.id)"
               />
               <CustomButton
                 size="fit"
@@ -79,17 +79,20 @@ import { axios } from "@/sdk/axios";
 import useTable from "@/stores/useTable";
 import CustomButton from "@/components/Button/CustomButton.vue";
 import SubuserFormView from "@/views/subuser/SubuserFormView.vue";
-import { Trash2, Pencil } from "lucide-vue-next";
+import { Trash2, Pencil, MessageCircleQuestion } from "lucide-vue-next";
 import useToast from "@/stores/useToast";
 import useAuth from "@/stores/useAuth";
 import { useRoute } from "vue-router";
 import DefaultSkeleton from "@/components/Skeleton/DefaultSkeleton.vue";
 import usePage from "@/stores/usePage";
+import DeleteBody from "@/components/Modal/Body/DeleteBody.vue";
+import useModal from "@/stores/useModal";
 
 const auth = useAuth();
 const table = useTable();
 const toast = useToast();
 const page = usePage();
+const modal = useModal();
 const route = useRoute();
 
 let debounce;
@@ -156,33 +159,21 @@ const editSubuser = (item) => {
     email: item.email,
     password: item.password,
     name: item.name,
-    permission: item.permission,
+    permission: item.permission_code,
   };
 };
 
-const deleteSubuser = (id) => {
-  axios
-    .delete(`${process.env.VUE_APP_API_BASE_URL}/api/subusers/${id}`, {
-      headers: {
-        Authorization: `Bearer ${auth.authToken}`,
-      },
-      withCredentials: true,
-    })
-    .then(({ data }) => {
-      if (data["error_type"]) {
-        toast.message = "Gagal";
-        toast.description = data.message;
-        toast.type = "FAILED";
-        toast.trigger();
-      } else {
-        toast.message = "Sukses";
-        toast.description = data.message;
-        toast.type = "SUCCESS";
-        toast.trigger();
-
-        fetchSubusers();
-      }
-    });
+const confirmDeleteSubuser = (id) => {
+  modal.title = "Konfirmasi Hapus";
+  modal.icon = MessageCircleQuestion;
+  modal.props = {
+    label: "Apakah Anda yakin ingin menghapus karyawan ini?",
+    buttonLabel: "Hapus",
+    endpoint: `${process.env.VUE_APP_API_BASE_URL}/api/subusers/${id}`,
+  };
+  modal.callback = fetchSubusers;
+  modal.body = DeleteBody;
+  modal.open();
 };
 
 const resetForm = () => {

@@ -1,10 +1,16 @@
 <template>
-  <div class="p-4 lg:px-8 mb-4">
+  <div
+    class="p-4 xl:px-0 lg:px-8 flex xl:flex-row space-y-4 xl:space-y-0 xl:space-x-2"
+  >
     <CategoryTab
       :items="categories"
       @tab-change="(category) => (currentCategory = category)"
     />
+    <SearchInput v-model="keyword"></SearchInput>
   </div>
+  <!--  <div class="p-4 lg:px-8 mb-4">-->
+  <!--    <SearchInput v-model="keyword"></SearchInput>-->
+  <!--  </div>-->
   <div
     class="w-full grid grid-cols-2 md:grid-cols-3 lg:grid-cols-2 xl:grid-cols-3 gap-2 md:gap-4 mb-16 lg:mb-0"
   >
@@ -52,6 +58,7 @@ import { onMounted, ref, watch } from "vue";
 import { axios } from "@/sdk/axios";
 import useAuth from "@/stores/useAuth";
 import { useRoute } from "vue-router";
+import SearchInput from "@/components/Input/SearchInput.vue";
 
 const auth = useAuth();
 const cart = useCart();
@@ -61,12 +68,17 @@ const route = useRoute();
 const categories = ref([]);
 const products = ref([]);
 const currentCategory = ref("");
+const keyword = ref(null);
 
 onMounted(() => {
   Promise.all([fetchCategories(), fetchProducts()]);
 });
 
 watch(currentCategory, () => {
+  fetchProducts();
+});
+
+watch(keyword, () => {
   fetchProducts();
 });
 
@@ -93,7 +105,11 @@ const fetchCategories = () => {
 const fetchProducts = () => {
   axios
     .get(
-      `${process.env.VUE_APP_API_BASE_URL}/api/products?category=${currentCategory.value}&shop_id=${auth.shopId}`,
+      `${process.env.VUE_APP_API_BASE_URL}/api/products?category=${
+        currentCategory.value
+      }&shop_id=${auth.shopId}${
+        keyword.value ? "&keyword=" + keyword.value : ""
+      }`,
       {
         headers: {
           Authorization: `Bearer ${auth.authToken}`,

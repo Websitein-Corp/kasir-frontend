@@ -65,6 +65,18 @@
     scrollbar-width: none; /* Firefox */
 }
 
+.dropzone-message {
+    @apply flex-grow text-center mt-3;
+}
+
+.dropzone-message::after {
+    content: " or click (.png, .jpg, .jpeg)";
+}
+
+.dropzone__progress {
+    display: none;
+}
+
 :root {
     --dp-input-padding: 12px 30px 12px 12px!important;
 }

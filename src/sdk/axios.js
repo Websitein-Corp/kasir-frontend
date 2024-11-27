@@ -10,6 +10,7 @@ axiosInstance.interceptors.response.use(
     // if code 2xx
     const page = usePage();
     page.loading = false;
+    page.buttonLoading = false;
 
     return response;
   },
@@ -19,6 +20,7 @@ axiosInstance.interceptors.response.use(
     const toast = useToast();
 
     page.loading = false;
+    page.buttonLoading = false;
 
     // if code other than 2xx
     if (error.response.status === 401) {
