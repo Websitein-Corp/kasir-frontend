@@ -143,7 +143,7 @@
         >
           <div class="space-y-8">
             <div class="flex space-x-4">
-              <div class="w-40 h-40 lg:w-64 lg:h-64 border-2 rounded-xl">
+              <div class="w-40 h-40 lg:w-64 lg:h-64 rounded-xl">
                 <img
                   class="w-full h-full"
                   v-lazy="{
@@ -206,6 +206,7 @@ import FileInput from "@/components/Input/File/FileInput.vue";
 import SelectInput from "@/components/Input/SelectInput.vue";
 import helpers from "@/helpers";
 import usePage from "@/stores/usePage";
+import Compressor from "compressorjs";
 
 const TextInput = defineAsyncComponent(() =>
   import("@/components/Input/TextInput.vue")

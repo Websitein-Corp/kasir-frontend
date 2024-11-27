@@ -3,19 +3,24 @@
     <div
       class="h-[30dvh] sm:h-64 lg:h-[40dvh] bg-primary-100 space-y-4 p-4 flex flex-col justify-center"
       :class="{
-        'bg-red-100': bill.type === 'FAILED',
-        'bg-yellow-100': bill.type === 'PENDING',
+        'bg-red-100': bill.status === 'FAILED',
+        'bg-yellow-100': bill.status === 'PENDING',
+        'bg-purple-100': bill.status === 'REFUNDED',
       }"
     >
       <div class="flex justify-center">
         <CircleCheckBig
-          v-if="bill.type === 'SUCCESS'"
+          v-if="bill.status === 'SUCCESS' || bill.status === 'REFUNDED'"
           size="150"
           stroke-width="0.7"
           class="w-32 h-32 lg:w-40 lg:h-40 text-green-600"
+          :class="{
+            'text-green-600': bill.status === 'SUCCESS',
+            'text-purple-600': bill.status === 'REFUNDED',
+          }"
         />
         <CircleX
-          v-else-if="bill.type === 'FAILED'"
+          v-else-if="bill.status === 'FAILED'"
           size="150"
           stroke-width="0.7"
           class="w-32 h-32 lg:w-40 lg:h-40 text-red-600"
@@ -78,7 +83,7 @@
         <div>Diskon</div>
         <div>{{ $helpers.money(bill.discount) }}</div>
       </div>
-      <div class="flex justify-between">
+      <div class="flex justify-between" v-if="cart.settings.active_tax_flag">
         <div>Pajak</div>
         <div class="flex justify-between w-5/12 lg:w-1/4">
           <div>10%</div>
@@ -99,18 +104,27 @@
         <div>Metode Pembayaran</div>
         <div>{{ bill.payment_method }}</div>
       </div>
-      <div v-if="bill.type === 'SUCCESS'" class="flex justify-between">
+      <div v-if="bill.status === 'SUCCESS'" class="flex justify-between">
         <div>Total Yang Dibayar</div>
         <div class="font-helvetica font-bold">
           {{ $helpers.money(bill.amount_paid) }}
         </div>
       </div>
-      <div v-if="bill.type === 'SUCCESS'" class="flex justify-between">
+      <div v-if="bill.status === 'SUCCESS'" class="flex justify-between">
         <div>Kembalian</div>
         <div>{{ $helpers.money(bill.change) }}</div>
       </div>
     </div>
-    <div class="flex flex-col justify-center mb-8">
+    <div
+      v-if="bill.status === 'PENDING'"
+      class="flex justify-center items-center my-4"
+    >
+      <img :src="bill.payment_url" alt="QRIS" class="w-80 h-80" />
+    </div>
+    <div
+      v-if="bill.status === 'SUCCESS'"
+      class="flex flex-col justify-center mb-8"
+    >
       <CustomButton
         label="Print Receipt"
         size="fit"
@@ -144,9 +158,11 @@ import DefaultSkeleton from "@/components/Skeleton/DefaultSkeleton.vue";
 import CustomButton from "@/components/Button/CustomButton.vue";
 import BluetoothBody from "@/components/Modal/Body/BluetoothBody.vue";
 import usePage from "@/stores/usePage";
+import useCart from "@/stores/useCart";
 
 const auth = useAuth();
 const page = usePage();
+const cart = useCart();
 const toast = useToast();
 const modal = useModal();
 const bluetoothReceipt = useBluetoothReceipt();
@@ -160,21 +176,15 @@ const props = defineProps({
 });
 
 const bill = ref({
-  type: "SUCCESS",
-  tr_datetime: "21 Agustus 2024, 18:07:12",
+  type: "",
+  tr_datetime: "",
   cashier: "",
   details: () => [
     {
-      item_name: "Bur",
-      quantity: 2,
-      price: 10000,
-      total_price: 20000,
-    },
-    {
-      item_name: "Ger",
-      quantity: 1,
-      price: 15000,
-      total_price: 15000,
+      item_name: "",
+      quantity: 0,
+      price: 0,
+      total_price: 0,
     },
   ],
   total_item: 0,
@@ -248,11 +258,13 @@ const getBluetoothId = async () => {
 };
 
 const getBillMessage = () => {
-  switch (bill.value.type) {
+  switch (bill.value.status) {
     case "SUCCESS":
       return "Pembayaran Berhasil!";
     case "FAILED":
       return "Pembayaran Gagal!";
+    case "REFUNDED":
+      return "Pembayaran Berhasil Dikembalikan!";
     default:
       return "Menunggu Pembayaran...";
   }
