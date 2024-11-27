@@ -36,82 +36,8 @@
           <tr>
             <th>ID</th>
             <th>Status</th>
-            <th>
-              <div class="flex flex-row items-center justify-center">
-                Transaction Date
-                <span
-                  @click="setBasedOn('SUPPLY_DATE')"
-                  class="cursor-pointer ml-1"
-                >
-                  <span v-if="basedOn === 'SUPPLY_DATE'" aria-label="Selected">
-                    <!-- Check SVG for active state -->
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 24 24"
-                      fill="currentColor"
-                      width="16"
-                      height="16"
-                    >
-                      <path
-                        d="M9 16.2l-3.5-3.5c-.4-.4-1-.4-1.4 0s-.4 1 0 1.4l4.2 4.2c.4.4 1 .4 1.4 0l8.3-8.3c.4-.4.4-1 0-1.4s-1-.4-1.4 0L9 16.2z"
-                      />
-                    </svg>
-                  </span>
-                  <span v-else aria-label="Sort">
-                    <!-- Sort SVG for inactive state -->
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 24 24"
-                      fill="currentColor"
-                      width="16"
-                      height="16"
-                    >
-                      <path
-                        d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"
-                      />
-                    </svg>
-                  </span>
-                </span>
-              </div>
-            </th>
-            <th>
-              <div class="flex flex-row items-center justify-center">
-                Due Date
-                <span
-                  @click="setBasedOn('DUE_DATE')"
-                  class="cursor-pointer ml-1"
-                >
-                  <span v-if="basedOn === 'DUE_DATE'" aria-label="Selected">
-                    <!-- Check SVG for active state -->
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 24 24"
-                      fill="currentColor"
-                      width="16"
-                      height="16"
-                    >
-                      <path
-                        d="M9 16.2l-3.5-3.5c-.4-.4-1-.4-1.4 0s-.4 1 0 1.4l4.2 4.2c.4.4 1 .4 1.4 0l8.3-8.3c.4-.4.4-1 0-1.4s-1-.4-1.4 0L9 16.2z"
-                      />
-                    </svg>
-                  </span>
-                  <span v-else aria-label="Sort">
-                    <!-- Sort SVG for inactive state -->
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 24 24"
-                      fill="currentColor"
-                      width="16"
-                      height="16"
-                    >
-                      <path
-                        d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"
-                      />
-                    </svg>
-                  </span>
-                </span>
-              </div>
-            </th>
+            <th>Transaction Date</th>
+            <th>Due Date</th>
             <th>Total Price</th>
             <th>Actions</th>
           </tr>
@@ -124,11 +50,8 @@
               <span v-if="item.status === 'PAID'">Sudah Dibayar</span>
             </td>
             <td>{{ item.tr_datetime }}</td>
-            <!-- Use tr_datetime field -->
             <td>{{ item.due_date }}</td>
-            <!-- Use due_date field -->
             <td>{{ item.total_price }}</td>
-            <!-- Use total_price field -->
             <td class="flex justify-center space-x-2">
               <CustomButton
                 size="fit"
@@ -152,6 +75,28 @@
     <DefaultSkeleton class="mb-2" />
     <DefaultSkeleton class="mb-2" />
     <DefaultSkeleton class="mb-2" />
+  </div>
+
+  <!-- Confirmation Modal -->
+  <div
+    v-if="showModal"
+    class="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center"
+  >
+    <div class="bg-white p-6 rounded-lg w-2/3">
+      <h2 class="text-lg font-semibold">Confirm Deletion</h2>
+      <p>
+        Apakah kamu yakin ingin menghapus supply <b>{{ itemToDelete.id }}</b
+        >?
+      </p>
+      <div class="flex justify-end mt-4 space-x-4">
+        <CustomButton class="bg-gray-400" @click="cancelDelete"
+          >Cancel</CustomButton
+        >
+        <CustomButton class="bg-red-600" @click="confirmDelete"
+          >Delete</CustomButton
+        >
+      </div>
+    </div>
   </div>
 </template>
 
@@ -181,6 +126,9 @@ const isShowingForm = ref(false);
 const selectedSupply = ref(null);
 const route = useRoute();
 const basedOn = ref("SUPPLY_DATE");
+const showModal = ref(false);
+const itemToDelete = ref(null);
+const itemIndexToDelete = ref(null);
 
 let debounce;
 
@@ -254,14 +202,30 @@ const handleCancel = () => {
   isShowingForm.value = false;
 };
 
-const deleteItem = (item, index) => {
+const showDeleteConfirmation = (item, index) => {
+  itemToDelete.value = item;
+  itemIndexToDelete.value = index;
+  showModal.value = true; // Show the modal
+};
+
+const cancelDelete = () => {
+  showModal.value = false; // Hide the modal without deleting
+  itemToDelete.value = null;
+  itemIndexToDelete.value = null;
+};
+
+const confirmDelete = () => {
+  // Proceed with deletion
   axios
-    .delete(`${process.env.VUE_APP_API_BASE_URL}/api/ingredients/${item.id}`, {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("auth_token")}`,
-      },
-      withCredentials: true,
-    })
+    .delete(
+      `${process.env.VUE_APP_API_BASE_URL}/api/ingredients/${itemToDelete.value.id}`,
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("auth_token")}`,
+        },
+        withCredentials: true,
+      }
+    )
     .then(({ data }) => {
       if (data["error_type"]) {
         toast.message = "Gagal";
@@ -269,13 +233,24 @@ const deleteItem = (item, index) => {
         toast.type = "FAILED";
         toast.trigger();
       } else {
-        table.items.splice(index, 1);
+        table.items.splice(itemIndexToDelete.value, 1);
 
         toast.message = "Sukses";
         toast.description = data.message;
         toast.type = "SUCCESS";
         toast.trigger();
       }
+    })
+    .catch(() => {
+      toast.message = "Gagal";
+      toast.description = "An error occurred while deleting.";
+      toast.type = "FAILED";
+      toast.trigger();
+    })
+    .finally(() => {
+      showModal.value = false;
+      itemToDelete.value = null;
+      itemIndexToDelete.value = null;
     });
 };
 

@@ -1,14 +1,17 @@
 <template>
-  <div class="relative w-screen h-screen">
+  <div class="relative w-screen h-screen overflow-hidden">
     <!-- Parent container wraps both the SVG and login view -->
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      width="1980"
-      height="1080"
+      version="1.1"
+      xmlns:xlink="http://www.w3.org/1999/xlink"
+      xmlns:svgjs="http://svgjs.dev/svgjs"
+      width="100%"
+      height="100%"
       preserveAspectRatio="none"
       viewBox="0 0 1980 1080"
     >
-      <g mask='url("#SvgjsMask1020")' fill="none">
+      <g mask='url("#SvgjsMask1118")' fill="none">
         <rect
           width="1980"
           height="1080"
@@ -17,20 +20,16 @@
           fill="rgba(205, 250, 238, 1)"
         ></rect>
         <path
-          d="M 0,907 C 132,733.6 396,111.8 660,40 C 924,-31.8 1056,547.6 1320,548 C 1584,548.4 1848,143.2 1980,42L1980 1080L0 1080z"
-          fill="rgba(18, 93, 83, 1)"
-        ></path>
-        <path
-          d="M 0,376 C 79.2,425.6 237.6,644.4 396,624 C 554.4,603.6 633.6,210.2 792,274 C 950.4,337.8 1029.6,937.2 1188,943 C 1346.4,948.8 1425.6,299 1584,303 C 1742.4,307 1900.8,831 1980,963L1980 1080L0 1080z"
+          d="M 0,130 C 79.2,165.6 237.6,312.6 396,308 C 554.4,303.4 633.6,84.8 792,107 C 950.4,129.2 1029.6,410.2 1188,419 C 1346.4,427.8 1425.6,173.4 1584,151 C 1742.4,128.6 1900.8,275.8 1980,307L1980 1080L0 1080z"
           fill="rgba(15, 146, 126, 1)"
         ></path>
         <path
-          d="M 0,355 C 132,447.8 396,794.4 660,819 C 924,843.6 1056,475 1320,478 C 1584,481 1848,762.8 1980,834L1980 1080L0 1080z"
-          fill="rgba(22, 182, 153, 1)"
+          d="M 0,548 C 79.2,647.2 237.6,1002.8 396,1044 C 554.4,1085.2 633.6,796 792,754 C 950.4,712 1029.6,866.8 1188,834 C 1346.4,801.2 1425.6,572.6 1584,590 C 1742.4,607.4 1900.8,854.8 1980,921L1980 1080L0 1080z"
+          fill="rgba(20, 77, 69, 1)"
         ></path>
       </g>
       <defs>
-        <mask id="SvgjsMask1020">
+        <mask id="SvgjsMask1118">
           <rect width="1980" height="1080" fill="#ffffff"></rect>
         </mask>
       </defs>
@@ -40,7 +39,7 @@
       class="loginview absolute inset-0 flex items-center justify-center overflow-y-auto"
     >
       <div
-        class="flex flex-row min-w-fit w-10/12 md:w-5/12 h-[55vh] md:h-[45vh] min-h-fit border border-1 rounded-xl bg-white shadow-lg z-10 overflow-y-auto"
+        class="flex flex-row min-w-fit w-10/12 md:w-5/12 h-[25rem] md:h-[30rem] min-h-fit border border-1 rounded-xl bg-white shadow-lg z-10 overflow-y-auto"
       >
         <div
           class="flex flex-col items-center justify-center p-4 w-full overflow-y-auto min-h-0"

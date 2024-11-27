@@ -1,7 +1,8 @@
 <template>
   <button
-    class="h-10 lg:h-12 p-2 px-4 rounded-lg !text-base lg:!text-xl text-white shadow-xl flex justify-center items-center gap-2 cursor-pointer transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+    class="h-10 lg:h-12 p-2 px-4 rounded-lg !text-base lg:!text-xl text-white shadow-xl flex justify-center items-center cursor-pointer transition-all disabled:opacity-40 disabled:cursor-not-allowed"
     :class="{
+      'w-[65px] lg:w-[100px] !text-sm lg:!text-base': size === 'xs',
       'w-[150px] lg:w-[200px]': size === 'sm',
       'w-[200px] lg:w-[300px]': size === 'md',
       'w-[250px] lg:w-[400px]': size === 'lg',
@@ -14,6 +15,7 @@
       '!justify-start': align === 'start',
       '!justify-end': align === 'end',
       '!justify-between': align === 'between',
+      '!text-sm': textSize === 'sm',
     }"
     :disabled="disabled || loading"
     @click="$emit('click')"
@@ -130,6 +132,10 @@ defineProps({
   loading: {
     type: Boolean,
     default: false,
+  },
+  textSize: {
+    type: String,
+    default: "base",
   },
 });
 

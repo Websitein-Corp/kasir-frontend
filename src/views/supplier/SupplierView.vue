@@ -66,6 +66,28 @@
     <DefaultSkeleton class="mb-2" />
     <DefaultSkeleton class="mb-2" />
   </div>
+
+  <!-- Confirmation Modal -->
+  <div
+    v-if="showModal"
+    class="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center"
+  >
+    <div class="bg-white p-6 rounded-lg w-2/3">
+      <h2 class="text-lg font-semibold">Confirm Deletion</h2>
+      <p>
+        Apakah kamu yakin ingin menghapus supplier <b>{{ itemToDelete.name }}</b
+        >?
+      </p>
+      <div class="flex justify-end mt-4 space-x-4">
+        <CustomButton class="bg-gray-400" @click="cancelDelete"
+          >Cancel</CustomButton
+        >
+        <CustomButton class="bg-red-600" @click="confirmDelete"
+          >Delete</CustomButton
+        >
+      </div>
+    </div>
+  </div>
 </template>
 
 <script setup>
@@ -94,6 +116,9 @@ const isShowingForm = ref(false);
 const selectedSupplier = ref(null);
 const route = useRoute();
 const basedOn = ref("SUPPLY_DATE");
+const showModal = ref(false);
+const itemToDelete = ref(null);
+const itemIndexToDelete = ref(null);
 
 let debounce;
 
@@ -164,10 +189,25 @@ const handleCancel = () => {
   isShowingForm.value = false;
 };
 
-const deleteItem = (item, index) => {
+// Show the delete confirmation modal
+const showDeleteConfirmation = (item, index) => {
+  itemToDelete.value = item;
+  itemIndexToDelete.value = index;
+  showModal.value = true;
+};
+
+// Cancel the delete action
+const cancelDelete = () => {
+  showModal.value = false;
+  itemToDelete.value = null;
+  itemIndexToDelete.value = null;
+};
+
+// Confirm and proceed with the delete action
+const confirmDelete = () => {
   const requestBody = {
     shop_id: auth.shopId,
-    name: item.name,
+    name: itemToDelete.value.name,
   };
 
   axios
@@ -188,13 +228,24 @@ const deleteItem = (item, index) => {
         toast.type = "FAILED";
         toast.trigger();
       } else {
-        table.items.splice(index, 1);
+        table.items.splice(itemIndexToDelete.value, 1);
 
         toast.message = "Sukses";
         toast.description = response.data.message;
         toast.type = "SUCCESS";
         toast.trigger();
       }
+    })
+    .catch(() => {
+      toast.message = "Gagal";
+      toast.description = "An error occurred while deleting the supplier.";
+      toast.type = "FAILED";
+      toast.trigger();
+    })
+    .finally(() => {
+      showModal.value = false;
+      itemToDelete.value = null;
+      itemIndexToDelete.value = null;
     });
 };
 </script>
