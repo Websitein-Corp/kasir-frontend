@@ -37,7 +37,7 @@
                 size="fit"
                 :icon="Trash2"
                 class="bg-red-700 hover:bg-red-800"
-                @click="deleteShop(item.id)"
+                @click="confirmDeleteShop(item.id)"
               />
               <CustomButton
                 size="fit"
@@ -66,18 +66,21 @@ import PageContainer from "@/views/PageContainer.vue";
 import { axios } from "@/sdk/axios";
 import useTable from "@/stores/useTable";
 import CustomButton from "@/components/Button/CustomButton.vue";
-import { Trash2, Pencil } from "lucide-vue-next";
+import { Trash2, Pencil, MessageCircleQuestion } from "lucide-vue-next";
 import useToast from "@/stores/useToast";
 import { useRoute } from "vue-router";
 import DefaultSkeleton from "@/components/Skeleton/DefaultSkeleton.vue";
 import usePage from "@/stores/usePage";
 import ShopFormView from "@/views/shop/ShopFormView.vue";
 import useAuth from "@/stores/useAuth";
+import DeleteBody from "@/components/Modal/Body/DeleteBody.vue";
+import useModal from "@/stores/useModal";
 
 const table = useTable();
 const toast = useToast();
 const page = usePage();
 const auth = useAuth();
+const modal = useModal();
 const route = useRoute();
 
 let debounce;
@@ -145,30 +148,17 @@ const editShop = (item) => {
   };
 };
 
-const deleteShop = async (id) => {
-  const { data } = await axios.delete(
-    `${process.env.VUE_APP_API_BASE_URL}/api/shops/${id}`,
-    {
-      headers: {
-        Authorization: `Bearer ${auth.authToken}`,
-      },
-      withCredentials: true,
-    }
-  );
-
-  if (data["error_type"]) {
-    toast.message = "Gagal";
-    toast.description = data.message;
-    toast.type = "FAILED";
-    toast.trigger();
-  } else {
-    toast.message = "Sukses";
-    toast.description = data.message;
-    toast.type = "SUCCESS";
-    toast.trigger();
-
-    await fetchShops();
-  }
+const confirmDeleteShop = (id) => {
+  modal.title = "Konfirmasi Hapus";
+  modal.icon = MessageCircleQuestion;
+  modal.props = {
+    label: "Apakah Anda yakin ingin menghapus toko ini?",
+    buttonLabel: "Hapus",
+    endpoint: `${process.env.VUE_APP_API_BASE_URL}/api/shops/${id}`,
+  };
+  modal.callback = fetchShops;
+  modal.body = DeleteBody;
+  modal.open();
 };
 
 const resetForm = () => {

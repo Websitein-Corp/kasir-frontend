@@ -22,7 +22,7 @@
         class="!h-28 bg-transparent hover:bg-slate-100 !text-primary-800 border-2 border-primary-700 hover:border-primary-800"
         orientation="vertical"
         :icon="paymentMethod.code === 'cash' ? Receipt : QrCode"
-        :disabled="cart.items.length < 1 || paymentMethod.code === 'qris'"
+        :disabled="cart.items.length < 1 && !paymentMethod.is_active"
         @click="handleModal(paymentMethod.code)"
       />
     </template>
@@ -46,20 +46,7 @@ const cart = useCart();
 const page = usePage();
 const modal = useModal();
 
-const paymentMethods = ref([
-  {
-    code: "cash",
-    name: "Cash",
-    payment_gateway: "cash",
-    payment_fee: 0,
-  },
-  {
-    code: "qris",
-    name: "QRIS",
-    payment_gateway: "qris",
-    payment_fee: 0.7,
-  },
-]);
+const paymentMethods = ref([]);
 
 watch(
   () => page.order.step,

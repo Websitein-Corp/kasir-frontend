@@ -112,7 +112,7 @@
               :label="isEdit ? 'Edit' : 'Add'"
               :icon="isEdit ? Pencil : Plus"
               class="bg-primary-700 hover:bg-primary-800"
-              :disabled="loading"
+              :loading="page.buttonLoading"
               @click="submitProduct"
             />
           </div>
@@ -138,6 +138,7 @@
         <FormCard
           title="Gambar Produk"
           :icon="PackageCheck"
+          v-if="props.productData"
           class="col-span-3 lg:col-span-1"
         >
           <div class="space-y-8">
@@ -204,6 +205,7 @@ import useIngredient from "@/stores/useIngredient";
 import FileInput from "@/components/Input/File/FileInput.vue";
 import SelectInput from "@/components/Input/SelectInput.vue";
 import helpers from "@/helpers";
+import usePage from "@/stores/usePage";
 
 const TextInput = defineAsyncComponent(() =>
   import("@/components/Input/TextInput.vue")
@@ -225,6 +227,7 @@ const emit = defineEmits(["formBack", "submitSuccess"]);
 const auth = useAuth();
 const toast = useToast();
 const modal = useModal();
+const page = usePage();
 const ingredient = useIngredient();
 
 const typeList = [
@@ -246,7 +249,6 @@ const typeList = [
   },
 ];
 
-const loading = ref(false);
 const categoryList = ref([]);
 
 const form = reactive({
@@ -285,37 +287,104 @@ onMounted(() => {
 
 const submitProduct = async () => {
   if (validateForm()) {
-    loading.value = true;
+    page.buttonLoading = true;
+    const data = {
+      shop_id: auth.shopId,
+      sku: form.sku,
+      name: form.name,
+      selling_retail_price: form.sellingRetailPrice,
+      selling_price: form.sellingPrice,
+      capital_price: form.capitalPrice,
+      type: form.type,
+      stock: form.stock,
+      category: form.category,
+      barcode: form.barcode,
+      status: form.isActive,
+    };
 
-    new Compressor(form.image, {
-      quality: 0.6,
-      success(compressedImage) {
-        if (props.isEdit) {
+    if (props.isEdit) {
+      if (form.image) {
+        new Compressor(form.image, {
+          quality: 0.6,
+          success(compressedImage) {
+            data["image"] = compressedImage;
+
+            axios
+              .post(
+                `${process.env.VUE_APP_API_BASE_URL}/api/products/edit`,
+                data,
+                {
+                  headers: {
+                    Authorization: `Bearer ${auth.authToken}`,
+                    "Content-Type": "multipart/form-data",
+                  },
+                  withCredentials: true,
+                }
+              )
+              .then((response) => {
+                if (response.data["error_type"]) {
+                  toast.message = "Gagal";
+                  toast.description = response.data.message;
+                  toast.type = "FAILED";
+                  toast.trigger();
+                } else {
+                  toast.message = "Sukses";
+                  toast.description = response.data.message;
+                  toast.type = "SUCCESS";
+                  toast.trigger();
+
+                  emit("submitSuccess");
+                }
+              });
+          },
+          error() {
+            toast.message = "Gagal";
+            toast.description = "Gagal mengunduh gambar!";
+            toast.type = "FAILED";
+            toast.trigger();
+
+            page.buttonLoading = false;
+          },
+        });
+      } else {
+        axios
+          .post(`${process.env.VUE_APP_API_BASE_URL}/api/products`, data, {
+            headers: {
+              Authorization: `Bearer ${auth.authToken}`,
+              "Content-Type": "multipart/form-data",
+            },
+            withCredentials: true,
+          })
+          .then((response) => {
+            if (response.data["error_type"]) {
+              toast.message = "Gagal";
+              toast.description = response.data.message;
+              toast.type = "FAILED";
+              toast.trigger();
+            } else {
+              toast.message = "Sukses";
+              toast.description = response.data.message;
+              toast.type = "SUCCESS";
+              toast.trigger();
+
+              emit("submitSuccess");
+            }
+          });
+      }
+    } else {
+      new Compressor(form.image, {
+        quality: 0.6,
+        success(compressedImage) {
+          data["image"] = compressedImage;
+
           axios
-            .post(
-              `${process.env.VUE_APP_API_BASE_URL}/api/products/edit`,
-              {
-                shop_id: auth.shopId,
-                sku: form.sku,
-                name: form.name,
-                selling_retail_price: form.sellingRetailPrice,
-                selling_price: form.sellingPrice,
-                capital_price: form.capitalPrice,
-                type: form.type,
-                stock: form.stock,
-                category: form.category,
-                barcode: form.barcode,
-                status: form.isActive,
-                image: compressedImage,
+            .post(`${process.env.VUE_APP_API_BASE_URL}/api/products`, data, {
+              headers: {
+                Authorization: `Bearer ${auth.authToken}`,
+                "Content-Type": "multipart/form-data",
               },
-              {
-                headers: {
-                  Authorization: `Bearer ${auth.authToken}`,
-                  "Content-Type": "multipart/form-data",
-                },
-                withCredentials: true,
-              }
-            )
+              withCredentials: true,
+            })
             .then((response) => {
               if (response.data["error_type"]) {
                 toast.message = "Gagal";
@@ -330,65 +399,18 @@ const submitProduct = async () => {
 
                 emit("submitSuccess");
               }
-            })
-            .finally(() => {
-              loading.value = false;
             });
-        } else {
-          axios
-            .post(
-              `${process.env.VUE_APP_API_BASE_URL}/api/products`,
-              {
-                shop_id: auth.shopId,
-                sku: form.sku,
-                name: form.name,
-                selling_retail_price: form.sellingRetailPrice,
-                selling_price: form.sellingPrice,
-                capital_price: form.capitalPrice,
-                stock: form.stock,
-                type: form.type,
-                category: form.category,
-                barcode: form.barcode,
-                status: form.isActive,
-                image: compressedImage,
-              },
-              {
-                headers: {
-                  Authorization: `Bearer ${auth.authToken}`,
-                  "Content-Type": "multipart/form-data",
-                },
-                withCredentials: true,
-              }
-            )
-            .then((response) => {
-              if (response.data["error_type"]) {
-                toast.message = "Gagal";
-                toast.description = response.data.message;
-                toast.type = "FAILED";
-                toast.trigger();
-              } else {
-                toast.message = "Sukses";
-                toast.description = response.data.message;
-                toast.type = "SUCCESS";
-                toast.trigger();
+        },
+        error() {
+          toast.message = "Gagal";
+          toast.description = "Gagal mengunduh gambar!";
+          toast.type = "FAILED";
+          toast.trigger();
 
-                emit("submitSuccess");
-              }
-            })
-            .finally(() => {
-              loading.value = false;
-            });
-        }
-      },
-      error() {
-        toast.message = "Gagal";
-        toast.description = "Gagal mengunduh gambar!";
-        toast.type = "FAILED";
-        toast.trigger();
-
-        loading.value = false;
-      },
-    });
+          page.buttonLoading = false;
+        },
+      });
+    }
   }
 };
 
@@ -433,17 +455,3 @@ const fetchCategories = () => {
     });
 };
 </script>
-
-<style>
-.dropzone-message {
-  @apply flex-grow text-center mt-3;
-}
-
-.dropzone-message::after {
-  content: " or click (.png, .jpg, .jpeg)";
-}
-
-.dropzone__progress {
-  display: none;
-}
-</style>

@@ -44,7 +44,7 @@
                 size="fit"
                 :icon="Trash2"
                 class="bg-red-700 hover:bg-red-800"
-                @click="deleteCategory(item.id)"
+                @click="confirmDeleteCategory(item.id)"
               />
               <CustomButton
                 size="fit"
@@ -74,18 +74,21 @@ import SearchInput from "@/components/Input/SearchInput.vue";
 import { axios } from "@/sdk/axios";
 import useTable from "@/stores/useTable";
 import CustomButton from "@/components/Button/CustomButton.vue";
-import { Trash2, Pencil } from "lucide-vue-next";
+import { Trash2, Pencil, MessageCircleQuestion } from "lucide-vue-next";
 import useToast from "@/stores/useToast";
 import useAuth from "@/stores/useAuth";
 import CategoryFormView from "@/views/category/CategoryFormView.vue";
 import DefaultSkeleton from "@/components/Skeleton/DefaultSkeleton.vue";
 import { useRoute } from "vue-router";
 import usePage from "@/stores/usePage";
+import DeleteBody from "@/components/Modal/Body/DeleteBody.vue";
+import useModal from "@/stores/useModal";
 
 const auth = useAuth();
 const table = useTable();
 const toast = useToast();
 const page = usePage();
+const modal = useModal();
 const route = useRoute();
 
 let debounce;
@@ -142,30 +145,17 @@ const editCategory = (item) => {
   selectedCategory.value = item;
 };
 
-const deleteCategory = async (id) => {
-  const { data } = await axios.delete(
-    `${process.env.VUE_APP_API_BASE_URL}/api/categories/${id}`,
-    {
-      headers: {
-        Authorization: `Bearer ${auth.authToken}`,
-      },
-      withCredentials: true,
-    }
-  );
-
-  if (data["error_type"]) {
-    toast.message = "Gagal";
-    toast.description = data.message;
-    toast.type = "FAILED";
-    toast.trigger();
-  } else {
-    toast.message = "Sukses";
-    toast.description = data.message;
-    toast.type = "SUCCESS";
-    toast.trigger();
-
-    fetchCategories();
-  }
+const confirmDeleteCategory = (id) => {
+  modal.title = "Konfirmasi Hapus";
+  modal.icon = MessageCircleQuestion;
+  modal.props = {
+    label: "Apakah Anda yakin ingin menghapus kategori ini?",
+    buttonLabel: "Hapus",
+    endpoint: `${process.env.VUE_APP_API_BASE_URL}/api/categories/${id}`,
+  };
+  modal.callback = fetchCategories;
+  modal.body = DeleteBody;
+  modal.open();
 };
 
 const resetForm = () => {

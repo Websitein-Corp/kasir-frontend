@@ -46,7 +46,7 @@
                 size="fit"
                 :icon="Trash2"
                 class="bg-red-700 hover:bg-red-800"
-                @click="deleteIngredient(item.id)"
+                @click="confirmDeleteIngredient(item.id)"
               />
               <CustomButton
                 size="fit"
@@ -76,17 +76,20 @@ import SearchInput from "@/components/Input/SearchInput.vue";
 import { axios } from "@/sdk/axios";
 import useTable from "@/stores/useTable";
 import CustomButton from "@/components/Button/CustomButton.vue";
-import { Trash2, Pencil } from "lucide-vue-next";
+import { Trash2, Pencil, MessageCircleQuestion } from "lucide-vue-next";
 import useToast from "@/stores/useToast";
 import useAuth from "@/stores/useAuth";
 import IngredientFormView from "@/views/ingredient/IngredientFormView.vue";
 import DefaultSkeleton from "@/components/Skeleton/DefaultSkeleton.vue";
 import { useRoute } from "vue-router";
 import usePage from "@/stores/usePage";
+import DeleteBody from "@/components/Modal/Body/DeleteBody.vue";
+import useModal from "@/stores/useModal";
 
 const auth = useAuth();
 const table = useTable();
 const toast = useToast();
+const modal = useModal();
 const page = usePage();
 const route = useRoute();
 
@@ -152,32 +155,17 @@ const editIngredient = (item) => {
   selectedIngredient.value = item;
 };
 
-const deleteIngredient = (id) => {
-  axios
-    .delete(
-      `${process.env.VUE_APP_API_BASE_URL}/api/ingredients?shop_id=${auth.shopId}&id=${id}`,
-      {
-        headers: {
-          Authorization: `Bearer ${auth.authToken}`,
-        },
-        withCredentials: true,
-      }
-    )
-    .then(({ data }) => {
-      if (data["error_type"]) {
-        toast.message = "Gagal";
-        toast.description = data.message;
-        toast.type = "FAILED";
-        toast.trigger();
-      } else {
-        toast.message = "Sukses";
-        toast.description = data.message;
-        toast.type = "SUCCESS";
-        toast.trigger();
-
-        fetchIngredients();
-      }
-    });
+const confirmDeleteIngredient = (id) => {
+  modal.title = "Konfirmasi Hapus";
+  modal.icon = MessageCircleQuestion;
+  modal.props = {
+    label: "Apakah Anda yakin ingin menghapus bahan baku ini?",
+    buttonLabel: "Hapus",
+    endpoint: `${process.env.VUE_APP_API_BASE_URL}/api/ingredients?shop_id=${auth.shopId}&id=${id}`,
+  };
+  modal.callback = fetchIngredients;
+  modal.body = DeleteBody;
+  modal.open();
 };
 
 const resetForm = () => {

@@ -15,7 +15,7 @@
                   v-bind:key="setting.name"
                 >
                   <SwitchInput
-                    :label="parseSettingMessage(setting.name)"
+                    :label="setting.label"
                     :is-active="setting.value"
                     @switch="
                       (newVal) => {
@@ -61,7 +61,7 @@ const route = useRoute();
 onMounted(() => {
   page.loading = true;
 
-  // await fetchSettings();
+  fetchSettings();
 });
 
 const handleSettingChange = (name, value) => {
@@ -107,35 +107,7 @@ const fetchSettings = () => {
       }
     )
     .then(({ data }) => {
-      settingsData.value = data.data.map((item) => {
-        switch (item.name) {
-          case "enable-tax":
-            settingsData.value.enableTax = true;
-            break;
-          case "enable-open-bill":
-            settingsData.value.enableOpenBill = false;
-            break;
-          case "enable-input-customer":
-            settingsData.value.enableInputCustomer = true;
-            break;
-          case "enable-input-table-number":
-            settingsData.value.enableInputTableNumber = true;
-            break;
-        }
-      });
+      settingsData.value = data.data;
     });
-};
-
-const parseSettingMessage = (name) => {
-  switch (name) {
-    case "enable-tax":
-      return "Aktifkan pajak ketika melakukan checkout pesanan";
-    case "enable-open-bill":
-      return "Aktifkan open bill ketika melakukan checkout pesanan";
-    case "enable-input-customer":
-      return "Tambah input nama customer ketika checkout pesanan";
-    case "enable-input-table-number":
-      return "Tambah input nomor meja ketika checkout pesanan";
-  }
 };
 </script>

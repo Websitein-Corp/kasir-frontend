@@ -7,5 +7,6 @@ export default defineStore("page", {
       step: 0,
     },
     loading: false,
+    buttonLoading: false,
   }),
 });

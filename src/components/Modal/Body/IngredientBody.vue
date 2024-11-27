@@ -74,9 +74,6 @@ const formattedUsedIngredients = computed(() =>
 
 onMounted(() => {
   fetchAllIngredients();
-  filterAllUsedIngredients();
-  fetchIngredients();
-  filterUsedIngredients();
 });
 
 watch(ingredient.filters, () => {
@@ -133,6 +130,8 @@ const filterAllUsedIngredients = () => {
 
     return itemOnHold;
   });
+
+  fetchIngredients();
 };
 
 const filterUsedIngredients = () => {
@@ -217,6 +216,8 @@ const fetchAllIngredients = () => {
           qty: 0,
         };
       });
+
+      filterAllUsedIngredients();
     });
 };
 
@@ -247,6 +248,8 @@ const fetchIngredients = () => {
       ingredient.page.last = data.meta.last_page;
       ingredient.page.per = data.meta.per_page;
       ingredient.page.total = data.meta.total;
+
+      filterUsedIngredients();
     });
 };
 </script>

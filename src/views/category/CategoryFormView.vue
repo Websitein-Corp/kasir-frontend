@@ -19,6 +19,7 @@
               v-model="form.code"
               name="code"
               label="Kode"
+              disabled
               placeholder="Masukkan kode untuk kategori..."
               class="col-span-2 lg:col-span-1"
             />
