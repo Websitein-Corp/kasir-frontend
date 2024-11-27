@@ -10,7 +10,7 @@
       size="md"
       label="Batal"
       @click="modal.close()"
-      class="border-2 border-slate-700 hover:bg-slate-100 text-primary-800"
+      class="border-2 border-slate-700 hover:bg-slate-100 !text-primary-800"
     />
     <CustomButton
       size="md"

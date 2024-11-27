@@ -1,6 +1,6 @@
 <template>
   <div
-    class="p-4 xl:px-0 lg:px-8 flex xl:flex-row space-y-4 xl:space-y-0 xl:space-x-2"
+    class="p-4 xl:px-0 lg:px-8 flex flex-col xl:flex-row space-y-4 xl:space-y-0 xl:space-x-2"
   >
     <CategoryTab
       :items="categories"
@@ -8,9 +8,6 @@
     />
     <SearchInput v-model="keyword"></SearchInput>
   </div>
-  <!--  <div class="p-4 lg:px-8 mb-4">-->
-  <!--    <SearchInput v-model="keyword"></SearchInput>-->
-  <!--  </div>-->
   <div
     class="w-full grid grid-cols-2 md:grid-cols-3 lg:grid-cols-2 xl:grid-cols-3 gap-2 md:gap-4 mb-16 lg:mb-0"
   >

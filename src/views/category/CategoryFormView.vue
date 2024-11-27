@@ -37,6 +37,7 @@
               :label="isEdit ? 'Edit' : 'Add'"
               :icon="isEdit ? Pencil : Plus"
               class="bg-primary-700 hover:bg-primary-800"
+              :loading="page.buttonLoading"
               @click="submitProduct"
             />
           </div>
@@ -55,6 +56,7 @@ import FormCard from "@/components/Card/FormCard.vue";
 import CustomButton from "@/components/Button/CustomButton.vue";
 import useToast from "@/stores/useToast";
 import useAuth from "@/stores/useAuth";
+import usePage from "@/stores/usePage";
 
 const TextInput = defineAsyncComponent(() =>
   import("@/components/Input/TextInput.vue")
@@ -75,6 +77,7 @@ const emit = defineEmits(["formBack", "submitSuccess"]);
 
 const auth = useAuth();
 const toast = useToast();
+const page = usePage();
 
 const form = reactive({
   code: props.categoryData ? props.categoryData.code : "",
@@ -83,6 +86,8 @@ const form = reactive({
 
 const submitProduct = async () => {
   if (validateForm()) {
+    page.buttonLoading = true;
+
     if (props.isEdit) {
       axios
         .put(
