@@ -127,6 +127,8 @@ import {
   Menu,
   Store,
   Settings,
+  Package,
+  UserCog,
 } from "lucide-vue-next";
 import NavigationMenu from "@/components/Navigation/NavigationMenu.vue";
 import usePage from "@/stores/usePage";
@@ -183,12 +185,12 @@ const menus = ref([
     submenus: [
       {
         label: "Supplier",
-        icon: Truck,
+        icon: UserCog,
         endpoint: "/supplier",
       },
       {
         label: "Supply",
-        icon: Truck,
+        icon: Package,
         endpoint: "/supply",
       },
     ],

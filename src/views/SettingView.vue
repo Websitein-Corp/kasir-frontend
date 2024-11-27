@@ -7,7 +7,7 @@
       <div class="grid grid-cols-3 gap-4">
         <FormCard
           title="Konfigurasi"
-          :icon="Users"
+          :icon="Cog"
           class="col-span-3 lg:col-span-2"
         >
           <div class="space-y-8">
@@ -34,7 +34,7 @@
         </FormCard>
         <FormCard
           title="Aplikasi"
-          :icon="Users"
+          :icon="Smartphone"
           class="col-span-3 lg:col-span-1"
         >
           <div class="space-y-6 p-4">
@@ -63,7 +63,7 @@
 </template>
 
 <script setup>
-import { Download, Users } from "lucide-vue-next";
+import { Cog, Download, Smartphone, Users } from "lucide-vue-next";
 import { ref, onMounted } from "vue";
 import PageContainer from "@/views/PageContainer.vue";
 import { axios } from "@/sdk/axios";
