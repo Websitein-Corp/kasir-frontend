@@ -1,5 +1,5 @@
 <template>
-  <PageContainer title="Supplier Detail" subtitle="Daftar supplier yang ada...">
+  <PageContainer title="Supplier Detail" subtitle="Daftar supply yang ada...">
     <!-- Apply a max-height to the form and enable scrolling -->
     <form @submit.prevent="handleSubmit" class="max-h-[95vh] overflow-y-auto">
       <!-- Supplier Detail -->
@@ -32,14 +32,20 @@
             </option>
           </select>
           <div class="flex flex-row justify-between space-x-4 mt-4">
-            <TextInput
-              v-model="supplierDetail.due_date"
-              name="due_date"
-              type="date"
-              label="Tenggat Waktu"
-              required
-              class="w-1/2"
-            />
+            <div class="w-1/2">
+              <label
+                for="due_date"
+                class="pb-2 text-primary-600 peer-focus:ml-1 peer-focus:-translate-y-3 peer-focus:px-1 peer-focus:text-sm"
+                >Tenggat Waktu</label
+              >
+              <DatetimeInput
+                v-model="supplierDetail.due_date"
+                name="due_date"
+                type="date"
+                label="Tenggat Waktu"
+                required
+              />
+            </div>
             <TextInput
               :value="totalPrice"
               v-model="supplierDetail.total_price"
@@ -230,6 +236,7 @@
               currency
               required
               class="w-1/2"
+              pattern="[0-9._%+-]+@[0-9.-]$"
             />
           </div>
         </div>
@@ -241,6 +248,7 @@
         <CustomButton
           v-if="!isEdit"
           class="w-1/4 bg-primary-600"
+          textSize="sm"
           @click="addProduct"
         >
           Tambah Produk/Ingredient
@@ -269,6 +277,7 @@ import {
 import { axios } from "@/sdk/axios";
 import CustomButton from "@/components/Button/CustomButton.vue";
 import DashboardCard from "@/components/Card/DashboardCard.vue";
+import DatetimeInput from "@/components/Input/DatetimeInput.vue";
 import useAuth from "@/stores/useAuth";
 import PageContainer from "@/views/PageContainer.vue";
 import useToast from "@/stores/useToast";
@@ -292,10 +301,31 @@ const emit = defineEmits(["cancel", "save"]);
 const totalPrice = computed(() => {
   return productDetails.value.reduce((sum, product) => {
     // Ensure capital_price is treated as a number
-    const price = parseFloat(product.capital_price) || 0;
+    const price = parseFloat(product.capital_price * product.amount) || 0;
     return sum + price;
   }, 0);
 });
+
+const generateRandomId = () => {
+  const characters =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  let result = "";
+  for (let i = 0; i < 12; i++) {
+    result += characters.charAt(Math.floor(Math.random() * characters.length));
+  }
+  return result;
+};
+
+const convertToMySQLDatetime = (isoDate) => {
+  const date = new Date(isoDate);
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0"); // Months are zero-based
+  const day = String(date.getDate()).padStart(2, "0");
+  const hours = String(date.getHours()).padStart(2, "0");
+  const minutes = String(date.getMinutes()).padStart(2, "0");
+  const seconds = String(date.getSeconds()).padStart(2, "0");
+  return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+};
 
 const supplierDetail = ref({
   id: props.supplierData ? props.supplierData.id : "",
@@ -303,6 +333,9 @@ const supplierDetail = ref({
   tr_datetime: props.supplierData ? props.supplierData.tr_datetime : "",
   due_date: props.supplierData ? props.supplierData.due_date : "",
   total_price: props.supplierData ? props.supplierData.total_price : "",
+  supply_id: props.supplierData
+    ? props.supplierData.supply_id
+    : generateRandomId(),
 });
 
 const statusLabel = computed(() => {
@@ -336,7 +369,7 @@ const handleSubmit = () => {
       shop_id: auth.shopId,
       supplier: supplierDetail.value.id,
       supply_id: supplierDetail.value.supply_id,
-      due_date: supplierDetail.value.due_date,
+      due_date: convertToMySQLDatetime(supplierDetail.value.due_date),
       data: productDetails.value.map((product) => ({
         type: product.type,
         sku: product.sku,
