@@ -7,11 +7,6 @@ const routes = [
     component: () => import("@/views/DashboardView.vue"),
   },
   {
-    path: "/table",
-    name: "table",
-    component: () => import("@/views/TableView.vue"),
-  },
-  {
     path: "/order",
     name: "order",
     component: () => import("@/views/order/OrderView.vue"),
@@ -21,11 +16,6 @@ const routes = [
     name: "bill",
     component: () => import("@/views/order/BillView.vue"),
     props: true,
-  },
-  {
-    path: "/table",
-    name: "table",
-    component: () => import("@/views/TableView.vue"),
   },
   {
     path: "/login",

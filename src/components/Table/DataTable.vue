@@ -39,6 +39,7 @@
       <CustomButton
         label="First"
         size="fit"
+        text-size="sm"
         class="bg-transparent !hover:bg-slate-100 border border-transparent !text-black !shadow-none disabled:opacity-30 disabled:cursor-not-allowed"
         :disabled="table.page.current === 1"
         @click="table.firstPage"
@@ -46,6 +47,7 @@
       <CustomButton
         label="Prev"
         size="fit"
+        text-size="sm"
         class="bg-transparent !hover:bg-slate-100 border border-transparent !text-black !shadow-none disabled:opacity-30 disabled:cursor-not-allowed"
         :disabled="table.page.current === 1"
         @click="table.prevPage"
@@ -53,6 +55,7 @@
       <CustomButton
         label="Next"
         size="fit"
+        text-size="sm"
         class="bg-transparent !hover:bg-slate-100 border border-transparent !text-black !shadow-none disabled:opacity-30 disabled:cursor-not-allowed"
         :disabled="table.page.current === table.page.last"
         @click="table.nextPage"
@@ -60,6 +63,7 @@
       <CustomButton
         label="Last"
         size="fit"
+        text-size="sm"
         class="bg-transparent !hover:bg-slate-100 border border-transparent !text-black !shadow-none disabled:opacity-30 disabled:cursor-not-allowed"
         :disabled="table.page.current === table.page.last"
         @click="table.lastPage"

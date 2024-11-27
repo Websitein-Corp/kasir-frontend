@@ -22,12 +22,11 @@
           ></SearchInput>
           <div class="flex gap-5">
             <CustomButton
-              size="md"
+              size="mobile"
+              label="Add"
+              class="bg-primary-700 hover:bg-primary-800"
               @click="handleAddSupplier"
-              class="bg-primary-600"
-            >
-              Add Supplier
-            </CustomButton>
+            />
           </div>
         </template>
         <template v-slot:thead>
@@ -43,23 +42,19 @@
             <td>{{ item.name }}</td>
             <td>{{ item.phone_number }}</td>
             <td>{{ item.address }}</td>
-            <td>
-              <div class="flex flex-row space-x-4">
-                <CustomButton
-                  size="xs"
-                  iconSide="right"
-                  label="EDIT"
-                  @click="handleEditSupplier(item)"
-                  class="bg-primary-600"
-                />
-                <CustomButton
-                  size="xs"
-                  iconSide="right"
-                  label="DELETE"
-                  @click="showDeleteConfirmation(item, index)"
-                  class="bg-red-600"
-                />
-              </div>
+            <td class="flex justify-center space-x-2">
+              <CustomButton
+                size="fit"
+                :icon="Trash2"
+                class="bg-red-700 hover:bg-red-800"
+                @click="confirmDeleteSupplier(item)"
+              />
+              <CustomButton
+                size="fit"
+                :icon="Pencil"
+                class="bg-primary-500 hover:bg-primary-600 text-primary-950"
+                @click="handleEditSupplier(item)"
+              />
             </td>
           </tr>
         </template>
@@ -70,28 +65,6 @@
     <DefaultSkeleton class="mb-2" />
     <DefaultSkeleton class="mb-2" />
     <DefaultSkeleton class="mb-2" />
-  </div>
-
-  <!-- Confirmation Modal -->
-  <div
-    v-if="showModal"
-    class="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center"
-  >
-    <div class="bg-white p-6 rounded-lg w-2/3">
-      <h2 class="text-lg font-semibold">Confirm Deletion</h2>
-      <p>
-        Apakah kamu yakin ingin menghapus supplier <b>{{ itemToDelete.name }}</b
-        >?
-      </p>
-      <div class="flex justify-end mt-4 space-x-4">
-        <CustomButton class="bg-gray-400" @click="cancelDelete"
-          >Cancel</CustomButton
-        >
-        <CustomButton class="bg-red-600" @click="confirmDelete"
-          >Delete</CustomButton
-        >
-      </div>
-    </div>
   </div>
 </template>
 
@@ -111,18 +84,20 @@ import useAuth from "@/stores/useAuth";
 import DefaultSkeleton from "@/components/Skeleton/DefaultSkeleton.vue";
 import { useRoute } from "vue-router";
 import usePage from "@/stores/usePage";
+import { MessageCircleQuestion, Pencil, Trash2 } from "lucide-vue-next";
+import DeleteBody from "@/components/Modal/Body/DeleteBody.vue";
+import useModal from "@/stores/useModal";
 
 const auth = useAuth();
 const table = useTable();
+const modal = useModal();
 const page = usePage();
 const toast = useToast();
+
 const isShowingForm = ref(false);
 const selectedSupplier = ref(null);
 const route = useRoute();
 const basedOn = ref("SUPPLY_DATE");
-const showModal = ref(false);
-const itemToDelete = ref(null);
-const itemIndexToDelete = ref(null);
 
 let debounce;
 
@@ -189,67 +164,16 @@ const handleEditSupplier = (item) => {
   isShowingForm.value = true;
 };
 
-const handleCancel = () => {
-  isShowingForm.value = false;
-};
-
-// Show the delete confirmation modal
-const showDeleteConfirmation = (item, index) => {
-  itemToDelete.value = item;
-  itemIndexToDelete.value = index;
-  showModal.value = true;
-};
-
-// Cancel the delete action
-const cancelDelete = () => {
-  showModal.value = false;
-  itemToDelete.value = null;
-  itemIndexToDelete.value = null;
-};
-
-// Confirm and proceed with the delete action
-const confirmDelete = () => {
-  const requestBody = {
-    shop_id: auth.shopId,
-    name: itemToDelete.value.name,
+const confirmDeleteSupplier = (item) => {
+  modal.title = "Konfirmasi Hapus";
+  modal.icon = MessageCircleQuestion;
+  modal.props = {
+    label: "Apakah Anda yakin ingin menghapus supplier ini?",
+    buttonLabel: "Hapus",
+    endpoint: `${process.env.VUE_APP_API_BASE_URL}/api/supplier?shop_id=${auth.shopId}&name=${item.name}`,
   };
-
-  axios
-    .delete(
-      `${process.env.VUE_APP_API_BASE_URL}/api/supplier?shop_id=${auth.shopId}`,
-      {
-        data: requestBody,
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("auth_token")}`,
-        },
-        withCredentials: true,
-      }
-    )
-    .then((response) => {
-      if (response.data["error_type"]) {
-        toast.message = "Gagal";
-        toast.description = response.data.message;
-        toast.type = "FAILED";
-        toast.trigger();
-      } else {
-        table.items.splice(itemIndexToDelete.value, 1);
-
-        toast.message = "Sukses";
-        toast.description = response.data.message;
-        toast.type = "SUCCESS";
-        toast.trigger();
-      }
-    })
-    .catch(() => {
-      toast.message = "Gagal";
-      toast.description = "An error occurred while deleting the supplier.";
-      toast.type = "FAILED";
-      toast.trigger();
-    })
-    .finally(() => {
-      showModal.value = false;
-      itemToDelete.value = null;
-      itemIndexToDelete.value = null;
-    });
+  modal.callback = fetchSupplier;
+  modal.body = DeleteBody;
+  modal.open();
 };
 </script>
