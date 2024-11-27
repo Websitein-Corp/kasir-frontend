@@ -57,7 +57,7 @@
                 size="fit"
                 :icon="Trash2"
                 class="bg-red-700 hover:bg-red-800"
-                @click="deleteItem(item, index)"
+                @click="confirmDeleteSupply(item)"
               />
               <CustomButton
                 size="fit"
@@ -75,28 +75,6 @@
     <DefaultSkeleton class="mb-2" />
     <DefaultSkeleton class="mb-2" />
     <DefaultSkeleton class="mb-2" />
-  </div>
-
-  <!-- Confirmation Modal -->
-  <div
-    v-if="showModal"
-    class="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center"
-  >
-    <div class="bg-white p-6 rounded-lg w-2/3">
-      <h2 class="text-lg font-semibold">Confirm Deletion</h2>
-      <p>
-        Apakah kamu yakin ingin menghapus supply <b>{{ itemToDelete.id }}</b
-        >?
-      </p>
-      <div class="flex justify-end mt-4 space-x-4">
-        <CustomButton class="bg-gray-400" @click="cancelDelete"
-          >Cancel</CustomButton
-        >
-        <CustomButton class="bg-red-600" @click="confirmDelete"
-          >Delete</CustomButton
-        >
-      </div>
-    </div>
   </div>
 </template>
 
@@ -116,19 +94,20 @@ import useAuth from "@/stores/useAuth";
 import { useRoute } from "vue-router";
 import DefaultSkeleton from "@/components/Skeleton/DefaultSkeleton.vue";
 import usePage from "@/stores/usePage";
-import { Pencil, Trash2 } from "lucide-vue-next";
+import { MessageCircleQuestion, Pencil, Trash2 } from "lucide-vue-next";
+import DeleteBody from "@/components/Modal/Body/DeleteBody.vue";
+import useModal from "@/stores/useModal";
 
 const auth = useAuth();
 const table = useTable();
 const page = usePage();
 const toast = useToast();
+const modal = useModal();
+
 const isShowingForm = ref(false);
 const selectedSupply = ref(null);
 const route = useRoute();
 const basedOn = ref("SUPPLY_DATE");
-const showModal = ref(false);
-const itemToDelete = ref(null);
-const itemIndexToDelete = ref(null);
 
 let debounce;
 
@@ -191,67 +170,23 @@ const handleAddSupplier = () => {
   isShowingForm.value = true;
 };
 
-// Function to handle edit supplier action
 const handleEditSupplier = (item) => {
   selectedSupply.value = { ...item };
   console.log(selectedSupply.value);
   isShowingForm.value = true;
 };
 
-const handleCancel = () => {
-  isShowingForm.value = false;
-};
-
-const showDeleteConfirmation = (item, index) => {
-  itemToDelete.value = item;
-  itemIndexToDelete.value = index;
-  showModal.value = true; // Show the modal
-};
-
-const cancelDelete = () => {
-  showModal.value = false; // Hide the modal without deleting
-  itemToDelete.value = null;
-  itemIndexToDelete.value = null;
-};
-
-const confirmDelete = () => {
-  // Proceed with deletion
-  axios
-    .delete(
-      `${process.env.VUE_APP_API_BASE_URL}/api/ingredients/${itemToDelete.value.id}`,
-      {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("auth_token")}`,
-        },
-        withCredentials: true,
-      }
-    )
-    .then(({ data }) => {
-      if (data["error_type"]) {
-        toast.message = "Gagal";
-        toast.description = data.message;
-        toast.type = "FAILED";
-        toast.trigger();
-      } else {
-        table.items.splice(itemIndexToDelete.value, 1);
-
-        toast.message = "Sukses";
-        toast.description = data.message;
-        toast.type = "SUCCESS";
-        toast.trigger();
-      }
-    })
-    .catch(() => {
-      toast.message = "Gagal";
-      toast.description = "An error occurred while deleting.";
-      toast.type = "FAILED";
-      toast.trigger();
-    })
-    .finally(() => {
-      showModal.value = false;
-      itemToDelete.value = null;
-      itemIndexToDelete.value = null;
-    });
+const confirmDeleteSupply = (item) => {
+  modal.title = "Konfirmasi Hapus";
+  modal.icon = MessageCircleQuestion;
+  modal.props = {
+    label: "Apakah Anda yakin ingin menghapus supply ini?",
+    buttonLabel: "Hapus",
+    endpoint: `${process.env.VUE_APP_API_BASE_URL}/api/ingredients/${item.id}`,
+  };
+  modal.callback = fetchSupplier;
+  modal.body = DeleteBody;
+  modal.open();
 };
 
 const setBasedOn = (value) => {
