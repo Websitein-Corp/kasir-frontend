@@ -27,14 +27,12 @@
               />
             </td>
             <td>{{ item.unitName }}</td>
-            <td>
+            <td class="flex justify-center space-x-2">
               <CustomButton
-                size="full"
-                height="lg"
-                label="SAVE"
-                align="center"
-                @click="saveStock(item, index)"
-                class="bg-primary-600"
+                size="fit"
+                :icon="Save"
+                class="bg-primary-500 hover:bg-primary-600 text-primary-950"
+                @click="saveStock(item)"
               />
             </td>
           </tr>
@@ -63,6 +61,7 @@ import useAuth from "@/stores/useAuth";
 import DefaultSkeleton from "@/components/Skeleton/DefaultSkeleton.vue";
 import { useRoute } from "vue-router";
 import usePage from "@/stores/usePage";
+import { Pencil, Save } from "lucide-vue-next";
 
 const auth = useAuth();
 const table = useTable();

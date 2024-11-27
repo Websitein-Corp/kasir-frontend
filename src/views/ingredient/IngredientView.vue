@@ -51,7 +51,7 @@
               <CustomButton
                 size="fit"
                 :icon="Pencil"
-                class="bg-primary-200 hover:bg-primary-300 text-primary-950"
+                class="bg-primary-500 hover:bg-primary-600 text-primary-950"
                 @click="editIngredient(item)"
               />
             </td>

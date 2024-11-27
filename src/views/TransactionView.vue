@@ -3,7 +3,9 @@
     <PageContainer title="Transaksi" subtitle="Daftar transaksi masuk...">
       <DataTable :column-count="4">
         <template v-slot:action-2>
-          <div class="flex space-x-2">
+          <div
+            class="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-2"
+          >
             <DatetimeInput
               v-model="table.filters.date"
               :max-date="new Date()"

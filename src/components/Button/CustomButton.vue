@@ -25,7 +25,16 @@
     </template>
     <template v-else-if="buttonType === 'text'">
       <div>
-        <span v-if="loading"><LoadingAnim /></span>
+        <span
+          v-if="loading"
+          :class="{
+            'text-sm': textSize === 'sm',
+            'text-base': textSize === 'md',
+            'text-lg': textSize === 'lg',
+            'text-xl': textSize === 'xl',
+          }"
+          ><LoadingAnim
+        /></span>
         {{ label }}
       </div>
     </template>
@@ -48,7 +57,13 @@
         <span
           v-if="label"
           class="mt-0.5"
-          :class="{ '!m-0': orientation === 'vertical' }"
+          :class="{
+            '!m-0': orientation === 'vertical',
+            'text-sm': textSize === 'sm',
+            'text-base': textSize === 'md',
+            'text-lg': textSize === 'lg',
+            'text-xl': textSize === 'xl',
+          }"
           >{{ label }}</span
         >
         <span v-if="iconSide === 'right'">
@@ -103,6 +118,10 @@ defineProps({
   size: {
     type: String,
     default: "md", // "sm" / "md" / "lg" / "xl" / "fit" / "full"
+  },
+  textSize: {
+    type: String,
+    default: "md", // "sm" / "md" / "lg" / "xl"
   },
   disabled: {
     type: Boolean,

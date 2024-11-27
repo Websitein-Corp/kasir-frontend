@@ -21,9 +21,12 @@
             v-model="table.filters.keyword"
           ></SearchInput>
           <div class="flex gap-5">
-            <DashboardButton @click="handleAddSupplier"
-              >Add Supplier</DashboardButton
-            >
+            <CustomButton
+              size="mobile"
+              label="Add"
+              class="bg-primary-700 hover:bg-primary-800"
+              @click="handleAddSupplier"
+            />
           </div>
         </template>
         <template v-slot:thead>
@@ -39,29 +42,19 @@
             <td>{{ item.name }}</td>
             <td>{{ item.phone_number }}</td>
             <td>{{ item.address }}</td>
-            <td>
-              <div class="flex flex-row space-x-4">
-                <CustomButton
-                  size="full"
-                  height="lg"
-                  iconSide="right"
-                  label="EDIT"
-                  align="center"
-                  :icon="mdiContentSave"
-                  @click="handleEditSupplier(item)"
-                  class="bg-primary-600"
-                />
-                <CustomButton
-                  size="full"
-                  height="lg"
-                  iconSide="right"
-                  label="DELETE"
-                  align="center"
-                  :icon="mdiDelete"
-                  @click="deleteItem(item, index)"
-                  class="bg-red-600"
-                />
-              </div>
+            <td class="flex justify-center space-x-2">
+              <CustomButton
+                size="fit"
+                :icon="Trash2"
+                class="bg-red-700 hover:bg-red-800"
+                @click="deleteItem(item, index)"
+              />
+              <CustomButton
+                size="fit"
+                :icon="Pencil"
+                class="bg-primary-500 hover:bg-primary-600 text-primary-950"
+                @click="handleEditSupplier(item)"
+              />
             </td>
           </tr>
         </template>
@@ -92,6 +85,7 @@ import useAuth from "@/stores/useAuth";
 import DefaultSkeleton from "@/components/Skeleton/DefaultSkeleton.vue";
 import { useRoute } from "vue-router";
 import usePage from "@/stores/usePage";
+import { Pencil, Trash2 } from "lucide-vue-next";
 
 const auth = useAuth();
 const table = useTable();
