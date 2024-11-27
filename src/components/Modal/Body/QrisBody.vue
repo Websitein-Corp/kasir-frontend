@@ -56,7 +56,7 @@
         <div>Diskon</div>
         <div>{{ $helpers.money(bill.discount) }}</div>
       </div>
-      <div class="flex justify-between">
+      <div class="flex justify-between" v-if="cart.settings.active_tax_flag">
         <div>Pajak</div>
         <div class="flex justify-between w-5/12">
           <div>10%</div>
@@ -80,14 +80,15 @@
         </div>
       </div>
       <div class="flex justify-center items-center">
-        <qrcode-vue value="value" :size="300" level="H" render-as="svg" />
+        <img :src="modal.props.payment_url" alt="QRIS" class="w-80 h-80" />
       </div>
     </div>
-    <div class="flex justify-center mt-4 lg:mt-8">
+    <div class="flex justify-center mt-4">
       <CustomButton
         size="md"
         label="Check Status"
         class="bg-primary-700 hover:bg-primary-800"
+        :loading="loading"
         @click="checkStatus"
       />
     </div>
@@ -105,36 +106,30 @@ import useAuth from "@/stores/useAuth";
 import { CircleEllipsis } from "lucide-vue-next";
 import router from "@/router";
 import CustomButton from "@/components/Button/CustomButton.vue";
-import QrcodeVue from "qrcode.vue";
 
 const bill = ref({
-  type: "SUCCESS",
-  tr_datetime: "21 Agustus 2024, 18:07:12",
+  type: "",
+  tr_datetime: "",
   cashier: "",
   details: () => [
     {
-      item_name: "Bur",
-      quantity: 2,
-      price: 10000,
-    },
-    {
-      item_name: "Ger",
-      quantity: 1,
-      price: 15000,
+      item_name: "",
+      quantity: 0,
+      price: 0,
     },
   ],
-  invoice_number: "invoice-000-000-001",
+  invoice_number: "",
   total_item: 0,
   subtotal: 0,
   discount: 0,
   tax_fee: 0,
   total_price: 0,
-  payment_method: "qris",
+  payment_method: "",
   amount_paid: 0,
   change: 0,
 });
 
-const paymentUrl = ref("");
+const loading = ref(false);
 
 const auth = useAuth();
 const cart = useCart();
@@ -142,65 +137,14 @@ const modal = useModal();
 const toast = useToast();
 const page = usePage();
 
-onMounted(async () => {
-  await checkOut();
+onMounted(() => {
+  fetchBill();
 });
 
 const checkStatus = () => {
   axios
     .get(
-      `${process.env.VUE_APP_API_BASE_URL}/api/checkout/receipt?ref_id=${bill.value.invoice_number}&shop_id=${auth.shopId}`,
-      {
-        headers: {
-          Authorization: `Bearer ${auth.authToken}`,
-        },
-        withCredentials: true,
-      }
-    )
-    .then(({ data }) => {
-      if (data["error_type"]) {
-        toast.message = "Gagal";
-        toast.description = data.message;
-        toast.type = "FAILED";
-        toast.trigger();
-      }
-
-      if (data.data.type === "SUCCESS") {
-        modal.close();
-        cart.clearAll();
-        page.order.step = 0;
-
-        router.push({
-          path: `/bill/${data.data.invoice_number}`,
-        });
-      }
-    });
-};
-
-const checkOut = () => {
-  axios
-    .post(
-      `${process.env.VUE_APP_API_BASE_URL}/api/checkout`,
-      {
-        shop_id: auth.shopId,
-        cart: cart.items.map((item) => {
-          if (item.amount) {
-            return {
-              sku: item.sku,
-              amount: item.amount,
-            };
-          } else {
-            return {
-              sku: item.sku,
-              service_start: item.service_start,
-              service_end: item.service_end,
-            };
-          }
-        }),
-        payment_method: "qris",
-        customer_pay: Number(cart.total),
-        discount: Number(cart.discount),
-      },
+      `${process.env.VUE_APP_API_BASE_URL}/api/payment/status?invoice_number=${modal.props.ref_id}&shop_id=${auth.shopId}`,
       {
         headers: {
           Authorization: `Bearer ${auth.authToken}`,
@@ -220,16 +164,15 @@ const checkOut = () => {
         toast.type = "SUCCESS";
         toast.trigger();
 
-        paymentUrl.value = data.data.payment_url;
-        fetchBill(data.data.ref_id);
+        showBill(data.data.ref_id);
       }
     });
 };
 
-const fetchBill = (refId) => {
+const fetchBill = () => {
   axios
     .get(
-      `${process.env.VUE_APP_API_BASE_URL}/api/checkout/receipt?ref_id=${refId}&shop_id=${auth.shopId}`,
+      `${process.env.VUE_APP_API_BASE_URL}/api/checkout/receipt?ref_id=${modal.props.ref_id}&shop_id=${auth.shopId}`,
       {
         headers: {
           Authorization: `Bearer ${auth.authToken}`,
@@ -243,10 +186,21 @@ const fetchBill = (refId) => {
         toast.description = data.message;
         toast.type = "FAILED";
         toast.trigger();
-      } else {
-        bill.value = data.data;
-        bill.value["type"] = "PENDING";
       }
+
+      bill.value = data.data;
     });
+};
+
+const showBill = (refId) => {
+  cart.clearAll();
+  page.order.step = 0;
+  loading.value = false;
+
+  modal.close();
+
+  router.push({
+    path: `/bill/${refId}`,
+  });
 };
 </script>

@@ -23,6 +23,7 @@
             <CustomButton
               size="mobile"
               label="Add"
+              :icon="Plus"
               class="bg-primary-700 hover:bg-primary-800"
               @click="isShowingForm = true"
             />
@@ -59,13 +60,13 @@
               <CustomButton
                 size="fit"
                 :icon="Trash2"
-                class="bg-red-700 hover:bg-red-800"
+                class="bg-red-700 hover:bg-red-800 !shadow-none"
                 @click="confirmDeleteProduct(item.sku)"
               />
               <CustomButton
                 size="fit"
                 :icon="Pencil"
-                class="bg-primary-500 hover:bg-primary-600 text-primary-950"
+                class="bg-primary-500 hover:bg-primary-600 text-primary-950 !shadow-none"
                 @click="editProduct(item)"
               />
             </td>
@@ -91,7 +92,7 @@ import { axios } from "@/sdk/axios";
 import useTable from "@/stores/useTable";
 import CustomButton from "@/components/Button/CustomButton.vue";
 import ProductFormView from "@/views/product/ProductFormView.vue";
-import { Trash2, Pencil, MessageCircleQuestion } from "lucide-vue-next";
+import { Trash2, Pencil, MessageCircleQuestion, Plus } from "lucide-vue-next";
 import useToast from "@/stores/useToast";
 import useAuth from "@/stores/useAuth";
 import DefaultSkeleton from "@/components/Skeleton/DefaultSkeleton.vue";

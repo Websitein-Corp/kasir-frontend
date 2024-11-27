@@ -32,7 +32,7 @@
   </div>
   <div
     v-if="table.page.links"
-    class="dtable-footer flex justify-between items-center mt-8 text-sm border-t-2 border-gray-100"
+    class="dtable-footer flex justify-between items-center text-sm border-t-2 border-gray-100"
   >
     <div>Page {{ table.page.current }} / {{ table.page.last }}</div>
     <div class="page-nav space-x-2 flex">
@@ -88,8 +88,9 @@ const table = useTable();
 </script>
 
 <style>
-.dtable-content tbody td {
-  @apply pt-5;
+.dtable-content tbody td,
+.dtable-content th {
+  @apply py-2 align-middle;
 }
 
 .page-nav button:disabled {
