@@ -75,7 +75,6 @@ import DataTable from "@/components/Table/DataTable.vue";
 import DatetimeInput from "@/components/Input/DatetimeInput.vue";
 import SearchInput from "@/components/Input/SearchInput.vue";
 import CustomButton from "@/components/Button/CustomButton.vue";
-import DashboardButton from "@/components/Button/DashboardButton.vue";
 import SupplierFormView from "./SupplierFormView.vue";
 import PageContainer from "@/views/PageContainer.vue";
 import { axios } from "@/sdk/axios";

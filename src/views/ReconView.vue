@@ -61,7 +61,7 @@ import useAuth from "@/stores/useAuth";
 import DefaultSkeleton from "@/components/Skeleton/DefaultSkeleton.vue";
 import { useRoute } from "vue-router";
 import usePage from "@/stores/usePage";
-import { Pencil, Save } from "lucide-vue-next";
+import { Save } from "lucide-vue-next";
 
 const auth = useAuth();
 const table = useTable();
