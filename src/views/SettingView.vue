@@ -5,7 +5,11 @@
       subtitle="Mengatur konfigurasi website..."
     >
       <div class="grid grid-cols-3 gap-4">
-        <FormCard title="Konfigurasi" :icon="Users" class="col-span-3">
+        <FormCard
+          title="Konfigurasi"
+          :icon="Users"
+          class="col-span-3 lg:col-span-2"
+        >
           <div class="space-y-8">
             <div class="flex space-x-4 mt-6">
               <div class="flex-col space-y-4">
@@ -28,6 +32,26 @@
             </div>
           </div>
         </FormCard>
+        <FormCard
+          title="Aplikasi"
+          :icon="Users"
+          class="col-span-3 lg:col-span-1"
+        >
+          <div class="space-y-6 p-4">
+            <div>
+              Sudah punya aplikasi Mobile Kasirin? Jika belum Anda dapat
+              mengunduhnya dengan menekan tombol di bawah!
+            </div>
+            <CustomButton
+              size="full"
+              iconSide="left"
+              label="Unduh"
+              class="bg-transparent hover:bg-slate-100 !text-primary-800 border-2 border-primary-700 hover:border-primary-800"
+              :icon="Download"
+              @click="installPwa"
+            />
+          </div>
+        </FormCard>
       </div>
     </PageContainer>
   </div>
@@ -39,7 +63,7 @@
 </template>
 
 <script setup>
-import { Users } from "lucide-vue-next";
+import { Download, Users } from "lucide-vue-next";
 import { ref, onMounted } from "vue";
 import PageContainer from "@/views/PageContainer.vue";
 import { axios } from "@/sdk/axios";
@@ -50,12 +74,15 @@ import useAuth from "@/stores/useAuth";
 import DefaultSkeleton from "@/components/Skeleton/DefaultSkeleton.vue";
 import usePage from "@/stores/usePage";
 import { useRoute } from "vue-router";
+import usePwa from "@/stores/usePwa";
+import CustomButton from "@/components/Button/CustomButton.vue";
 
 const settingsData = ref();
 
 const auth = useAuth();
 const toast = useToast();
 const page = usePage();
+const pwa = usePwa();
 const route = useRoute();
 
 onMounted(() => {
@@ -109,5 +136,15 @@ const fetchSettings = () => {
     .then(({ data }) => {
       settingsData.value = data.data;
     });
+};
+
+const installPwa = () => {
+  if (pwa.deferredPrompt) {
+    pwa.deferredPrompt.prompt();
+    pwa.deferredPrompt.userChoice.then(() => {
+      pwa.deferredPrompt = null;
+      pwa.isInstallable = false;
+    });
+  }
 };
 </script>

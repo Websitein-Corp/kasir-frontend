@@ -20,6 +20,18 @@ import { useRoute } from "vue-router";
 import SideNavigation from "@/components/Navigation/SideNavigation.vue";
 import ModalPopup from "@/components/Modal/ModalPopup.vue";
 import ToastAlert from "@/components/Toast/ToastAlert.vue";
+import { onMounted } from "vue";
+import usePwa from "@/stores/usePwa";
 
 const route = useRoute();
+const pwa = usePwa();
+
+onMounted(() => {
+  window.addEventListener("beforeinstallprompt", (event) => {
+    event.preventDefault();
+
+    pwa.deferredPrompt = event;
+    pwa.isInstallable = true;
+  });
+});
 </script>
