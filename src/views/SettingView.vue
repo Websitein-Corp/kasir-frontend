@@ -9,6 +9,9 @@
           title="Konfigurasi"
           :icon="Cog"
           class="col-span-3 lg:col-span-2"
+          :class="{
+            'lg:col-span-3': isStandalone(),
+          }"
         >
           <div class="space-y-8">
             <div class="flex space-x-4 mt-6">
@@ -33,6 +36,7 @@
           </div>
         </FormCard>
         <FormCard
+          v-if="!isStandalone()"
           title="Aplikasi"
           :icon="Smartphone"
           class="col-span-3 lg:col-span-1"
@@ -63,7 +67,7 @@
 </template>
 
 <script setup>
-import { Cog, Download, Smartphone, Users } from "lucide-vue-next";
+import { Cog, Download, Smartphone } from "lucide-vue-next";
 import { ref, onMounted } from "vue";
 import PageContainer from "@/views/PageContainer.vue";
 import { axios } from "@/sdk/axios";
@@ -146,5 +150,13 @@ const installPwa = () => {
       pwa.isInstallable = false;
     });
   }
+};
+
+const isStandalone = () => {
+  return (
+    window.matchMedia("(display-mode: standalone)").matches ||
+    window.navigator.standalone ||
+    document.referrer.includes("android-app://")
+  );
 };
 </script>
