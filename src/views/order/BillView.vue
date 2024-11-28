@@ -83,7 +83,10 @@
         <div>Diskon</div>
         <div>{{ $helpers.money(bill.discount) }}</div>
       </div>
-      <div class="flex justify-between" v-if="cart.settings.active_tax_flag">
+      <div
+        class="flex justify-between"
+        v-if="bill.tax_fee || cart.settings.active_tax_flag"
+      >
         <div>Pajak</div>
         <div class="flex justify-between w-5/12 lg:w-1/4">
           <div>10%</div>
