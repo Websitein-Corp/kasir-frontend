@@ -137,7 +137,7 @@
         </FormCard>
         <FormCard
           title="Gambar Produk"
-          :icon="PackageCheck"
+          :icon="Image"
           v-if="props.productData"
           class="col-span-3 lg:col-span-1"
         >
@@ -190,6 +190,7 @@ import {
   Gavel,
   Pencil,
   Receipt,
+  Image,
 } from "lucide-vue-next";
 import { ref, onMounted, defineAsyncComponent, reactive } from "vue";
 import PageContainer from "@/views/PageContainer.vue";
