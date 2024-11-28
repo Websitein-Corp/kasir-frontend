@@ -9,10 +9,30 @@
     <SearchInput v-model="keyword"></SearchInput>
   </div>
   <div
-    class="w-full grid grid-cols-2 md:grid-cols-3 lg:grid-cols-2 xl:grid-cols-3 gap-2 md:gap-4 mb-16 lg:mb-0"
+    class="w-full h-3/4 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-2 xl:grid-cols-3 gap-2 md:gap-4 mb-16 lg:mb-0"
   >
-    <div v-for="product in products" :key="product.sku" class="col-span-1">
+    <div
+      v-if="products.every((product) => !product.is_active)"
+      class="col-span-2 md:col-span-3 lg:col-span-2 xl:col-span-3 h-full flex flex-col items-center justify-center space-y-8"
+    >
+      <div class="w-1/3">
+        <img
+          src="@/assets/images/productInactive.svg"
+          alt="productInactive.svg"
+        />
+      </div>
+      <div class="text-slate-500 text-center text-xl">
+        Belum ada produk yang aktif, silakan mengaktifkan di menu produk
+      </div>
+    </div>
+    <div
+      v-else
+      v-for="product in products"
+      :key="product.sku"
+      class="col-span-1"
+    >
       <ProductCard
+        v-if="product.is_active"
         :sku="product.sku"
         :name="product.name"
         :type="product.type"
