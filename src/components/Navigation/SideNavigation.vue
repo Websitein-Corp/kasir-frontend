@@ -240,6 +240,7 @@ const rolePermissions = {
     "Daftar Produk",
     "Bahan Baku Produk",
     "Supplier",
+    "Supply",
   ],
   MANAGER: [
     "Beranda",
@@ -249,6 +250,8 @@ const rolePermissions = {
     "Supplier",
     "Rekon",
     "Karyawan",
+    "Konfigurasi",
+    "Toko",
   ],
   MASTER: null,
 };
