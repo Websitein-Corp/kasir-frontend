@@ -4,7 +4,7 @@
       :id="name"
       :name="name"
       :value="modelValue"
-      class="peer w-full h-14 border-b rounded-lg placeholder:text-transparent p-4 focus:outline-none focus:ring-2 ring-primary-600 transition-all"
+      class="peer !shadow-none !bg-white w-full h-14 border-b rounded-lg placeholder:text-transparent p-4 focus:outline-none focus:ring-2 ring-primary-600 transition-all"
       :class="{
         'ring-2': modelValue,
         'cursor-not-allowed !bg-white !ring-slate-500 !text-slate-500':
@@ -14,6 +14,7 @@
       @input="$emit('update:modelValue', $event.target.value)"
       v-bind="$attrs"
     >
+      <option value="" disabled>Pilih...</option>
       <template v-for="item in list" :key="item.code">
         <option :value="item.code">
           {{ item.label }}

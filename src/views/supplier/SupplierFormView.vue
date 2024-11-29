@@ -49,7 +49,11 @@
       <div
         class="flex flex-col space-y-4 w-full items-center justify-center mt-8"
       >
-        <CustomButton class="w-1/4 bg-primary-600" type="submit">
+        <CustomButton
+          class="w-1/4 bg-primary-600"
+          type="submit"
+          :loading="page.buttonLoading"
+        >
           Submit
         </CustomButton>
         <CustomButton class="w-1/4 bg-red-600" @click="cancelForm">
@@ -74,9 +78,11 @@ import DashboardCard from "@/components/Card/DashboardCard.vue";
 import useAuth from "@/stores/useAuth";
 import PageContainer from "@/views/PageContainer.vue";
 import useToast from "@/stores/useToast";
+import usePage from "@/stores/usePage";
 
 const toast = useToast();
 const auth = useAuth();
+const page = usePage();
 
 const TextInput = defineAsyncComponent(() =>
   import("@/components/Input/TextInput.vue")
@@ -107,7 +113,8 @@ const loadExistingData = () => {
 };
 
 const handleSubmit = async () => {
-  console.log("aaaaaaaaa");
+  page.buttonLoading = true;
+
   try {
     const requestBody = {
       name: supplierDetail.value.name,

@@ -5,6 +5,28 @@
     enable-back
     @back="$emit('formBack')"
   >
+    <CustomAlert type="info" title="Keterangan" class="mb-4">
+      <div class="ml-3">
+        <ul class="list-disc">
+          <li>
+            <span class="font-helvetica">Harga Modal</span> adalah harga
+            bahan-bahan yang diperlukan untuk membuat produk
+          </li>
+          <li>
+            <span class="font-helvetica">Harga Jual</span> adalah harga jual
+            produk
+          </li>
+          <li>
+            <span class="font-helvetica">Harga Retail</span> adalah harga yang
+            telah dipotong dengan diskon
+          </li>
+          <li>
+            <span class="font-helvetica">Harga Diskon</span> adalah hasil
+            pengurangan dari harga retail dengan harga jual
+          </li>
+        </ul>
+      </div>
+    </CustomAlert>
     <div class="grid grid-cols-3 gap-4">
       <FormCard
         title="Informasi Produk"
@@ -62,15 +84,18 @@
               class="col-span-2 lg:col-span-1"
             />
             <TextInput
+              v-if="!isEdit"
               v-model="form.discountPrice"
               name="discount_price"
               label="Diskon"
               type="text"
               currency
+              disabled
               placeholder="Masukkan diskon..."
               class="col-span-2 lg:col-span-1"
             />
             <TextInput
+              v-if="form.type === 'GOODS'"
               v-model="form.stock"
               name="stock"
               label="Stok"
@@ -82,6 +107,7 @@
               v-model="form.type"
               name="type"
               label="Tipe Produk"
+              :disabled="isEdit"
               :list="typeList"
               class="col-span-2 lg:col-span-1"
             />
@@ -129,6 +155,7 @@
               <div class="h-7">
                 <SwitchInput
                   :is-active="form.isActive === 1"
+                  label="Aktif"
                   @switch="(newVal) => (form.isActive = newVal ? 1 : 0)"
                 />
               </div>
@@ -158,7 +185,7 @@
         </FormCard>
         <FormCard
           v-if="productData && productData.type === 'FOODS'"
-          title="Actions"
+          title="Lainnya"
           :icon="Gavel"
           class="col-span-3 lg:col-span-1"
         >
@@ -208,6 +235,9 @@ import SelectInput from "@/components/Input/SelectInput.vue";
 import helpers from "@/helpers";
 import usePage from "@/stores/usePage";
 import Compressor from "compressorjs";
+import { useRoute } from "vue-router";
+import router from "@/router";
+import CustomAlert from "@/components/Alert/CustomAlert.vue";
 
 const TextInput = defineAsyncComponent(() =>
   import("@/components/Input/TextInput.vue")
@@ -298,7 +328,7 @@ const submitProduct = async () => {
       selling_price: form.sellingPrice,
       capital_price: form.capitalPrice,
       type: form.type,
-      stock: form.stock,
+      stock: form.type === "GOODS" ? form.stock : null,
       category: form.category,
       barcode: form.barcode,
       status: form.isActive,
@@ -350,7 +380,7 @@ const submitProduct = async () => {
         });
       } else {
         axios
-          .post(`${process.env.VUE_APP_API_BASE_URL}/api/products`, data, {
+          .post(`${process.env.VUE_APP_API_BASE_URL}/api/products/edit`, data, {
             headers: {
               Authorization: `Bearer ${auth.authToken}`,
               "Content-Type": "multipart/form-data",
@@ -380,13 +410,17 @@ const submitProduct = async () => {
           data["image"] = compressedImage;
 
           axios
-            .post(`${process.env.VUE_APP_API_BASE_URL}/api/products`, data, {
-              headers: {
-                Authorization: `Bearer ${auth.authToken}`,
-                "Content-Type": "multipart/form-data",
-              },
-              withCredentials: true,
-            })
+            .post(
+              `${process.env.VUE_APP_API_BASE_URL}/api/products/edit`,
+              data,
+              {
+                headers: {
+                  Authorization: `Bearer ${auth.authToken}`,
+                  "Content-Type": "multipart/form-data",
+                },
+                withCredentials: true,
+              }
+            )
             .then((response) => {
               if (response.data["error_type"]) {
                 toast.message = "Gagal";
@@ -418,7 +452,7 @@ const submitProduct = async () => {
 
 const validateForm = () => {
   let isValid = true;
-  const notRequired = ["image"];
+  const notRequired = ["image", "discountPrice"];
 
   const filteredForm = Object.keys(form).filter(
     (item) => notRequired.indexOf(item) === -1
@@ -450,10 +484,21 @@ const fetchCategories = () => {
       }
     )
     .then(({ data }) => {
-      categoryList.value = data.data.map((category) => ({
-        code: category.code,
-        label: category.name,
-      }));
+      if (data.data.length > 0) {
+        categoryList.value = data.data.map((category) => ({
+          code: category.code,
+          label: category.name,
+        }));
+      } else {
+        toast.message = "Gagal";
+        toast.description = "Mohon tambahkan kategori terlebih dahulu!";
+        toast.type = "FAILED";
+        toast.trigger();
+
+        router.push({
+          path: `/category`,
+        });
+      }
     });
 };
 </script>

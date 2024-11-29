@@ -253,7 +253,11 @@
         >
           Tambah Produk/Ingredient
         </CustomButton>
-        <CustomButton class="w-1/4 bg-primary-600" type="submit">
+        <CustomButton
+          class="w-1/4 bg-primary-600"
+          type="submit"
+          :loading="page.buttonloading"
+        >
           Submit
         </CustomButton>
         <CustomButton class="w-1/4 bg-red-600" @click="cancelForm">
@@ -281,8 +285,10 @@ import DatetimeInput from "@/components/Input/DatetimeInput.vue";
 import useAuth from "@/stores/useAuth";
 import PageContainer from "@/views/PageContainer.vue";
 import useToast from "@/stores/useToast";
+import usePage from "@/stores/usePage";
 
 const toast = useToast();
+const page = usePage();
 const auth = useAuth();
 const supplierList = ref([]);
 const ingredientsList = ref([]);
@@ -362,6 +368,8 @@ const addProduct = () => {
 };
 
 const handleSubmit = () => {
+  page.buttonLoading = true;
+
   if (props.isEdit) {
     updateStatus();
   } else {
