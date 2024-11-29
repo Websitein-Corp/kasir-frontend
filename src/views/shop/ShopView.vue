@@ -25,7 +25,8 @@
         <template v-slot:thead>
           <tr>
             <th>Nama</th>
-            <th>Address</th>
+            <th>Alamat</th>
+            <th>Saldo</th>
             <th>Actions</th>
           </tr>
         </template>
@@ -33,6 +34,7 @@
           <tr v-for="(item, index) in table.items" :key="index">
             <td>{{ item.name || "-" }}</td>
             <td>{{ item.address || "-" }}</td>
+            <td>{{ $helpers.money(item.balance) || "-" }}</td>
             <td class="flex justify-center space-x-2">
               <CustomButton
                 size="fit"

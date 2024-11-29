@@ -1,6 +1,32 @@
 <template>
   <div v-if="!page.loading">
     <PageContainer title="Transaksi" subtitle="Daftar transaksi masuk...">
+      <CustomAlert type="info" title="Keterangan" class="mb-4">
+        <div class="ml-3">
+          <ul class="list-disc">
+            <li>
+              Baris
+              <span class="font-helvetica text-green-600">Hijau</span>
+              menandakan transaksi yang sukses
+            </li>
+            <li>
+              Baris
+              <span class="font-helvetica text-yellow-600">Kuning</span>
+              menandakan transaksi yang sedang proses/pending
+            </li>
+            <li>
+              Baris
+              <span class="font-helvetica text-red-600">Merah</span> menandakan
+              transaksi yang gagal
+            </li>
+            <li>
+              Baris
+              <span class="font-helvetica text-purple-600">Ungu</span>
+              menandakan transaksi yang di-refund
+            </li>
+          </ul>
+        </div>
+      </CustomAlert>
       <DataTable :column-count="4">
         <template v-slot:action-2>
           <div
@@ -34,6 +60,7 @@
             <th>Tanggal Transaksi</th>
             <th>Jenis Pembayaran</th>
             <th>Total</th>
+            <th>Status</th>
           </tr>
         </template>
         <template v-slot:tbody>
@@ -63,6 +90,15 @@
             <td class="!py-4">
               {{ $helpers.money(item.total_price) || "-" }}
             </td>
+            <td class="!py-4">
+              <div class="flex justify-center items-center gap-2">
+                <CircleEllipsis v-if="item.status === 'PENDING'" />
+                <CircleCheck v-else-if="item.status === 'SUCCESS'" />
+                <CircleX v-else-if="item.status === 'FAILED'" />
+                <CircleAlert v-else-if="item.status === 'REFUNDED'" />
+                <span class="mt-1">{{ item.status }}</span>
+              </div>
+            </td>
           </tr>
         </template>
       </DataTable>
@@ -90,7 +126,14 @@ import useAuth from "@/stores/useAuth";
 import DefaultSkeleton from "@/components/Skeleton/DefaultSkeleton.vue";
 import { useRoute } from "vue-router";
 import usePage from "@/stores/usePage";
-import { Download } from "lucide-vue-next";
+import {
+  Download,
+  CircleEllipsis,
+  CircleX,
+  CircleCheck,
+  CircleAlert,
+} from "lucide-vue-next";
+import CustomAlert from "@/components/Alert/CustomAlert.vue";
 
 const auth = useAuth();
 const table = useTable();
