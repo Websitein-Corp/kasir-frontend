@@ -235,7 +235,6 @@ import SelectInput from "@/components/Input/SelectInput.vue";
 import helpers from "@/helpers";
 import usePage from "@/stores/usePage";
 import Compressor from "compressorjs";
-import { useRoute } from "vue-router";
 import router from "@/router";
 import CustomAlert from "@/components/Alert/CustomAlert.vue";
 
