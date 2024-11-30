@@ -17,8 +17,8 @@
             produk
           </li>
           <li>
-            <span class="font-helvetica">Harga Retail</span> adalah harga yang
-            telah dipotong dengan diskon
+            <span class="font-helvetica">Harga Retail</span> adalah harga produk
+            sebelum diskon
           </li>
           <li>
             <span class="font-helvetica">Harga Diskon</span> adalah hasil
@@ -184,7 +184,7 @@
           </div>
         </FormCard>
         <FormCard
-          v-if="productData && productData.type === 'FOODS'"
+          v-if="isEdit && productData && productData.type === 'FOODS'"
           title="Lainnya"
           :icon="Gavel"
           class="col-span-3 lg:col-span-1"
@@ -403,48 +403,70 @@ const submitProduct = async () => {
           });
       }
     } else {
-      new Compressor(form.image, {
-        quality: 0.6,
-        success(compressedImage) {
-          data["image"] = compressedImage;
+      if (form.image) {
+        new Compressor(form.image, {
+          quality: 0.6,
+          success(compressedImage) {
+            data["image"] = compressedImage;
 
-          axios
-            .post(
-              `${process.env.VUE_APP_API_BASE_URL}/api/products/edit`,
-              data,
-              {
+            axios
+              .post(`${process.env.VUE_APP_API_BASE_URL}/api/products`, data, {
                 headers: {
                   Authorization: `Bearer ${auth.authToken}`,
                   "Content-Type": "multipart/form-data",
                 },
                 withCredentials: true,
-              }
-            )
-            .then((response) => {
-              if (response.data["error_type"]) {
-                toast.message = "Gagal";
-                toast.description = response.data.message;
-                toast.type = "FAILED";
-                toast.trigger();
-              } else {
-                toast.message = "Sukses";
-                toast.description = response.data.message;
-                toast.type = "SUCCESS";
-                toast.trigger();
+              })
+              .then((response) => {
+                if (response.data["error_type"]) {
+                  toast.message = "Gagal";
+                  toast.description = response.data.message;
+                  toast.type = "FAILED";
+                  toast.trigger();
+                } else {
+                  toast.message = "Sukses";
+                  toast.description = response.data.message;
+                  toast.type = "SUCCESS";
+                  toast.trigger();
 
-                emit("submitSuccess");
-              }
-            });
-        },
-        error() {
-          toast.message = "Gagal";
-          toast.description = "Gagal mengunduh gambar!";
-          toast.type = "FAILED";
-          toast.trigger();
+                  emit("submitSuccess", { item: form });
+                }
+              });
+          },
+          error() {
+            toast.message = "Gagal";
+            toast.description = "Gagal mengunduh gambar!";
+            toast.type = "FAILED";
+            toast.trigger();
 
-          page.buttonLoading = false;
-        },
-      });
+            page.buttonLoading = false;
+          },
+        });
+      } else {
+        axios
+          .post(`${process.env.VUE_APP_API_BASE_URL}/api/products`, data, {
+            headers: {
+              Authorization: `Bearer ${auth.authToken}`,
+              "Content-Type": "multipart/form-data",
+            },
+            withCredentials: true,
+          })
+          .then((response) => {
+            if (response.data["error_type"]) {
+              toast.message = "Gagal";
+              toast.description = response.data.message;
+              toast.type = "FAILED";
+              toast.trigger();
+            } else {
+              toast.message = "Sukses";
+              toast.description = response.data.message;
+              toast.type = "SUCCESS";
+              toast.trigger();
+
+              emit("submitSuccess", { item: form });
+            }
+          });
+      }
     }
   }
 };
@@ -474,7 +496,7 @@ const validateForm = () => {
 const fetchCategories = () => {
   axios
     .get(
-      `${process.env.VUE_APP_API_BASE_URL}/api/products/categories?shop_id=${auth.shopId}`,
+      `${process.env.VUE_APP_API_BASE_URL}/api/categories?shop_id=${auth.shopId}&keyword=`,
       {
         headers: {
           Authorization: `Bearer ${auth.authToken}`,

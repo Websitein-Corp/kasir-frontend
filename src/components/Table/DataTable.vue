@@ -19,7 +19,7 @@
         </template>
         <template v-else>
           <tr>
-            <td :colspan="columnCount" class="!pt-12 py-4 text-slate-500">
+            <td :colspan="columnCount" class="!py-12 text-slate-500">
               <div class="flex items-center justify-center space-x-4">
                 <SearchX />
                 <span>No data found...</span>

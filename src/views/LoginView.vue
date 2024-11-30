@@ -170,7 +170,7 @@ const login = () => {
     })
     .then(({ data }) => {
       const token = data.data.token;
-      const shopId = data.data.shop_id;
+      const shopId = data.data.shop.id;
       const shopName = data.data.shop.name;
       const shopAddress = data.data.shop.address;
       const permission = data.data.permission;
@@ -179,7 +179,7 @@ const login = () => {
       if (token) {
         auth.clearLocalStorage();
         auth.setAuthToken(token);
-        auth.setPermission(permission);
+        auth.setPermission(userType, permission);
 
         toast.message = "Sukses";
         toast.description = "Login berhasil!";
@@ -190,7 +190,14 @@ const login = () => {
           router.push("/shop-list");
         } else {
           auth.setShopId(shopId, shopName, shopAddress);
-          router.push("/");
+
+          if (permission === "KASIR") {
+            router.push("/order");
+          } else if (permission === "PENYIMPANAN") {
+            router.push("/product");
+          } else {
+            router.push("/");
+          }
         }
       } else {
         toast.message = "Gagal";

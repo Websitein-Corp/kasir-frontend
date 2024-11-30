@@ -181,51 +181,54 @@ const submitSubuser = async () => {
           }
         });
     } else {
-      if (form.password !== form.password_confirmation) {
-        toast.message = "Gagal";
-        toast.description = "Konfirmasi password salah";
-        toast.type = "FAILED";
-        toast.trigger();
-      } else {
-        axios
-          .post(
-            `${process.env.VUE_APP_API_BASE_URL}/api/subusers`,
-            {
-              shop_id: auth.shopId,
-              email: form.email,
-              password: form.password,
-              name: form.name,
-              permission: form.permission,
+      axios
+        .post(
+          `${process.env.VUE_APP_API_BASE_URL}/api/subusers`,
+          {
+            shop_id: auth.shopId,
+            email: form.email,
+            password: form.password,
+            name: form.name,
+            permission: form.permission,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${auth.authToken}`,
             },
-            {
-              headers: {
-                Authorization: `Bearer ${auth.authToken}`,
-              },
-              withCredentials: true,
-            }
-          )
-          .then((response) => {
-            if (response.data["error_type"]) {
-              toast.message = "Gagal";
-              toast.description = response.data.message;
-              toast.type = "FAILED";
-              toast.trigger();
-            } else {
-              toast.message = "Sukses";
-              toast.description = response.data.message;
-              toast.type = "SUCCESS";
-              toast.trigger();
+            withCredentials: true,
+          }
+        )
+        .then((response) => {
+          if (response.data["error_type"]) {
+            toast.message = "Gagal";
+            toast.description = response.data.message;
+            toast.type = "FAILED";
+            toast.trigger();
+          } else {
+            toast.message = "Sukses";
+            toast.description = response.data.message;
+            toast.type = "SUCCESS";
+            toast.trigger();
 
-              emit("submitSuccess");
-            }
-          });
-      }
+            emit("submitSuccess");
+          }
+        });
     }
   }
 };
 
 const validateForm = () => {
   let isValid = true;
+
+  if (!props.isEdit && form.password !== form.password_confirmation) {
+    toast.message = "Gagal";
+    toast.description = "Konfirmasi password salah";
+    toast.type = "FAILED";
+    toast.trigger();
+
+    isValid = false;
+    return;
+  }
 
   Object.keys(form).forEach((field) => {
     if (!form[field] && field !== "id") {

@@ -32,12 +32,14 @@ export default defineStore("cart", {
         ? state.items.reduce((sum, val) => sum + (val.amount || 1), 0)
         : 0,
 
-    tax() {
-      return this.sum * this.settings.active_tax_flag ? 0.1 : 0;
+    tax(state) {
+      return (
+        (this.sum - state.discount) * (this.settings.active_tax_flag ? 0.1 : 0)
+      );
     },
 
-    total(state) {
-      return this.sum + this.tax - state.discount;
+    total() {
+      return this.sum + this.tax;
     },
   },
   actions: {

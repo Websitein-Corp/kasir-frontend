@@ -25,23 +25,24 @@
         Belum ada produk yang aktif, silakan mengaktifkan di menu produk
       </div>
     </div>
-    <div
-      v-else
-      v-for="product in products"
-      :key="product.sku"
-      class="col-span-1"
-    >
-      <ProductCard
-        v-if="product.is_active"
-        :sku="product.sku"
-        :name="product.name"
-        :type="product.type"
-        :amount="cart.getItem(product.sku) && cart.getItem(product.sku).amount"
-        :selling-price="product.selling_price"
-        :image-url="product.image_url"
-        :selected="cart.has(product.sku)"
-      />
-    </div>
+    <template v-else>
+      <template v-for="product in products" :key="product.sku">
+        <div v-if="product.is_active" class="col-span-1 h-fit">
+          <ProductCard
+            v-if="product.is_active"
+            :sku="product.sku"
+            :name="product.name"
+            :type="product.type"
+            :amount="
+              cart.getItem(product.sku) && cart.getItem(product.sku).amount
+            "
+            :selling-price="product.selling_price"
+            :image-url="product.image_url"
+            :selected="cart.has(product.sku)"
+          />
+        </div>
+      </template>
+    </template>
   </div>
   <div
     class="lg:hidden fixed z-50 bottom-4 left-1/2 -translate-x-1/2 w-11/12 transition-all"
@@ -102,7 +103,7 @@ watch(keyword, () => {
 const fetchCategories = () => {
   axios
     .get(
-      `${process.env.VUE_APP_API_BASE_URL}/api/products/categories?shop_id=${auth.shopId}`,
+      `${process.env.VUE_APP_API_BASE_URL}/api/categories?shop_id=${auth.shopId}&keyword=`,
       {
         headers: {
           Authorization: `Bearer ${auth.authToken}`,

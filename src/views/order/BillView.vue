@@ -122,7 +122,7 @@
       v-if="bill.status === 'PENDING'"
       class="flex justify-center items-center my-4"
     >
-      <img :src="bill.payment_url" alt="QRIS" class="w-80 h-80" />
+      <img :src="bill.payment_url" alt="QRIS" class="w-80 h-80 object-cover" />
     </div>
     <div
       v-if="bill.status === 'SUCCESS'"

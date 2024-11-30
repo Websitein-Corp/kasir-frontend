@@ -35,16 +35,16 @@
           {{ $helpers.money(cart.sum) }}
         </div>
       </div>
-      <div class="flex justify-between" v-if="cart.settings.active_tax_flag">
-        <div>PPN 10%</div>
-        <div>
-          {{ $helpers.money(cart.tax) }}
-        </div>
-      </div>
       <div v-if="cart.discount > 0" class="flex justify-between">
         <div>Diskon</div>
         <div>
           {{ $helpers.money(cart.discount) }}
+        </div>
+      </div>
+      <div class="flex justify-between" v-if="cart.settings.active_tax_flag">
+        <div>PPN 10%</div>
+        <div>
+          {{ $helpers.money(cart.tax) }}
         </div>
       </div>
       <div class="flex justify-between">

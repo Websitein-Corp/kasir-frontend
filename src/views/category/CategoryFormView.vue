@@ -19,7 +19,7 @@
               v-model="form.code"
               name="code"
               label="Kode"
-              disabled
+              :disabled="isEdit"
               placeholder="Masukkan kode untuk kategori..."
               class="col-span-2 lg:col-span-1"
             />
