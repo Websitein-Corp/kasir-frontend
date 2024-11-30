@@ -95,7 +95,7 @@ export default defineStore("bluetoothReceipt", {
         },
         {
           headers: {
-            Authorization: `Bearer ${auth.authToken}`,
+            Authorization: `Bearer ${this.auth.authToken}`,
           },
           withCredentials: true,
         }
@@ -115,7 +115,6 @@ export default defineStore("bluetoothReceipt", {
     },
 
     printReceipt(bill) {
-      console.log(!this.receiptPrinter, this.printerStatus);
       try {
         if (!this.receiptPrinter || this.printerStatus === "WAITING...") {
           this.modal.open();
@@ -158,9 +157,16 @@ export default defineStore("bluetoothReceipt", {
           data = encoder
             .initialize()
             .align("center")
-            .line(bill.tr_datetime)
-            .line(bill.invoice_number)
-            .line(bill.cashier)
+            .box(
+              {
+                align: "center",
+              },
+              (encoder) =>
+                encoder
+                  .line(bill.tr_datetime)
+                  .line(bill.invoice_number)
+                  .line(bill.cashier)
+            )
             .line("===============================")
             .newline()
             .encode();
