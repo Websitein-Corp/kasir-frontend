@@ -246,6 +246,8 @@ const rolePermissions = {
     "Supplier",
     "Rekon",
     "Karyawan",
+    "Konfigurasi",
+    "Toko",
   ],
   MASTER: null,
 };
