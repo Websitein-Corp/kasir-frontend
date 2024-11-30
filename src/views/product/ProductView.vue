@@ -4,7 +4,7 @@
       :product-data="selectedProduct"
       :is-edit="!!selectedProduct"
       @form-back="resetForm"
-      @submit-success="resetForm"
+      @submit-success="(item) => handleAddProductSuccess(item)"
     />
   </div>
   <div v-else-if="!page.loading">
@@ -206,6 +206,13 @@ const confirmDeleteProduct = (sku) => {
   };
   modal.callback = fetchProducts;
   modal.body = DeleteBody;
+  modal.open();
+};
+
+const handleAddProductSuccess = (item) => {
+  resetForm();
+
+  editProduct(item);
   modal.open();
 };
 

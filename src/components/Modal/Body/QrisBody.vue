@@ -80,7 +80,11 @@
         </div>
       </div>
       <div class="flex justify-center items-center">
-        <img :src="modal.props.payment_url" alt="QRIS" class="w-80 h-80" />
+        <img
+          :src="modal.props.payment_url"
+          alt="QRIS"
+          class="w-80 h-80 object-cover"
+        />
       </div>
     </div>
     <div class="flex justify-center mt-4">

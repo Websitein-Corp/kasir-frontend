@@ -136,7 +136,7 @@ import { axios } from "@/sdk/axios";
 import router from "@/router";
 import useToast from "@/stores/useToast";
 import useAuth from "@/stores/useAuth";
-import { ref } from "vue";
+import { onMounted, ref } from "vue";
 
 const menus = ref([
   {
@@ -221,17 +221,13 @@ const menus = ref([
     current: false,
   },
 ]);
-
-const logoutSubmenus = [
-  {
-    label: "Toko",
-    icon: Store,
-  },
+const filteredMenus = ref([]);
+const logoutSubmenus = ref([
   {
     label: "Logout",
     icon: LogOut,
   },
-];
+]);
 
 const rolePermissions = {
   KASIR: ["Pesan", "Transaksi"],
@@ -259,6 +255,17 @@ const rolePermissions = {
 const auth = useAuth();
 const page = usePage();
 const toast = useToast();
+
+onMounted(() => {
+  filteredMenus.value = filterMenuByRole(menus.value, auth.permission);
+
+  if (auth.userType === "USER") {
+    logoutSubmenus.value.unshift({
+      label: "Toko",
+      icon: Store,
+    });
+  }
+});
 
 const backToShopList = () => {
   auth.clearLocalStorage("shop_id");
@@ -290,8 +297,6 @@ function filterMenuByRole(menus, role) {
       .filter((menu) => menu !== null);
   }
 }
-
-const filteredMenus = filterMenuByRole(menus.value, auth.permission);
 
 const logout = () => {
   const baseURL = process.env.VUE_APP_API_BASE_URL;
