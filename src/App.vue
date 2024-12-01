@@ -2,6 +2,7 @@
   <div class="font-helvetica flex">
     <SideNavigation
       v-if="
+        auth.authToken &&
         route.path !== '/login' &&
         route.path !== '/shop-list' &&
         route.path !== '/forgot-password'
@@ -22,8 +23,10 @@ import ModalPopup from "@/components/Modal/ModalPopup.vue";
 import ToastAlert from "@/components/Toast/ToastAlert.vue";
 import { onMounted } from "vue";
 import usePwa from "@/stores/usePwa";
+import useAuth from "@/stores/useAuth";
 
 const route = useRoute();
+const auth = useAuth();
 const pwa = usePwa();
 
 onMounted(() => {

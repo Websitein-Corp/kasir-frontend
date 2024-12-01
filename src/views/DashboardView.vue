@@ -1,57 +1,64 @@
 <template>
-  <PageContainer title="Dashboard" subtitle="">
-    <div class="mt-4">
-      <div class="flex">
-        <button
-          v-for="frequency in frequencies"
-          :key="frequency"
-          :class="['px-2 md:px-4 py-2 rounded-md']"
-          @click="selectFrequency(frequency.value)"
-        >
-          <span
-            :class="[
-              selectedFrequency === frequency.value
-                ? 'text-primary-300'
-                : 'text-primary-700',
-            ]"
+  <div v-if="!page.loading">
+    <PageContainer title="Dashboard" subtitle="">
+      <div class="mt-4">
+        <div class="flex">
+          <button
+            v-for="frequency in frequencies"
+            :key="frequency"
+            :class="['px-2 md:px-4 py-2 rounded-md']"
+            @click="selectFrequency(frequency.value)"
           >
-            {{ frequency.label }}
-          </span>
-          <span v-if="frequency.value !== 'Yearly'" class="ps-2 md:ps-8"
-            >|</span
-          >
-        </button>
+            <span
+              :class="[
+                selectedFrequency === frequency.value
+                  ? 'text-primary-300'
+                  : 'text-primary-700',
+              ]"
+            >
+              {{ frequency.label }}
+            </span>
+            <span v-if="frequency.value !== 'Yearly'" class="ps-2 md:ps-8"
+              >|</span
+            >
+          </button>
+        </div>
       </div>
-    </div>
 
-    <!-- Stat Cards -->
-    <div class="flex space-x-2 mt-2">
-      <StatsCard :value="selectedRevenue" label="Total Pendapatan">
-        <!-- SVG Icon -->
-      </StatsCard>
-      <StatsCard :value="selectedOrders" label="Total Pesanan">
-        <!-- SVG Icon -->
-      </StatsCard>
-    </div>
+      <!-- Stat Cards -->
+      <div class="flex space-x-2 mt-2">
+        <StatsCard :value="selectedRevenue" label="Total Pendapatan">
+          <!-- SVG Icon -->
+        </StatsCard>
+        <StatsCard :value="selectedOrders" label="Total Pesanan">
+          <!-- SVG Icon -->
+        </StatsCard>
+      </div>
 
-    <!-- Charts -->
-    <div class="flex space-2 flex-col md:flex-row mt-8">
-      <div class="w-full">
-        <LineChart
-          ref="lineRef"
-          :chart-data="lineChartData"
-          :options="lineChartOptions"
-        />
+      <!-- Charts -->
+      <div class="flex space-2 flex-col md:flex-row mt-8">
+        <div class="w-full">
+          <LineChart
+            ref="lineRef"
+            :chart-data="lineChartData"
+            :options="lineChartOptions"
+          />
+        </div>
+        <div class="w-full">
+          <DoughnutChart
+            ref="doughnutRef"
+            :chart-data="doughnutChartData"
+            :options="doughnutChartOptions"
+          />
+        </div>
       </div>
-      <div class="w-full">
-        <DoughnutChart
-          ref="doughnutRef"
-          :chart-data="doughnutChartData"
-          :options="doughnutChartOptions"
-        />
-      </div>
-    </div>
-  </PageContainer>
+    </PageContainer>
+  </div>
+  <div v-else>
+    <DefaultSkeleton class="mb-2" />
+    <DefaultSkeleton class="mb-2" />
+    <DefaultSkeleton class="mb-2" />
+  </div>
 </template>
 
 <script setup>
@@ -75,6 +82,8 @@ import {
   Title,
 } from "chart.js";
 import { useRoute } from "vue-router";
+import DefaultSkeleton from "@/components/Skeleton/DefaultSkeleton.vue";
+import usePage from "@/stores/usePage";
 
 Chart.register(
   DoughnutController,
@@ -90,6 +99,7 @@ Chart.register(
 );
 
 const auth = useAuth();
+const page = usePage();
 const route = useRoute();
 const frequencies = ref([
   { label: "Harian", value: "Daily" },
@@ -201,6 +211,8 @@ const doughnutChartData = ref({
 });
 
 onMounted(() => {
+  page.loading = true;
+
   showData("Daily");
 });
 
