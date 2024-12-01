@@ -38,8 +38,8 @@ export default defineStore("cart", {
       );
     },
 
-    total() {
-      return this.sum + this.tax;
+    total(state) {
+      return this.sum - state.discount + this.tax;
     },
   },
   actions: {
