@@ -9,7 +9,7 @@
       :value="currentValue"
       class="peer w-full border-b rounded-lg placeholder:text-transparent p-4 focus:outline-none focus:ring-2 ring-primary-600 transition-all"
       :class="{
-        'ring-2': modelValue,
+        'ring-2': modelValue || currency,
         'cursor-not-allowed !bg-white !ring-slate-500 !text-slate-500':
           disabled,
         'pl-12': currency,

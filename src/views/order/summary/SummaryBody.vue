@@ -66,7 +66,7 @@
           {{ $helpers.money(cart.sum) }}
         </div>
       </div>
-      <div class="flex justify-between">
+      <div class="flex justify-between" v-if="cart.settings.active_tax_flag">
         <div>PPN 10%</div>
         <div>
           {{ $helpers.money(cart.tax) }}
@@ -97,8 +97,11 @@
           class="bg-transparent hover:bg-slate-100 h-32 !text-primary-800 border-2 border-primary-700 hover:border-primary-800"
           orientation="vertical"
           :icon="paymentMethod.code === 'cash' ? Receipt : QrCode"
-          :disabled="cart.items.length < 1"
-          @click="modal.toggle()"
+          :disabled="
+            (cart.items.length < 1 && !paymentMethod.is_active) ||
+            (paymentMethod.code === 'cash' && modal.props && modal.props.ref_id)
+          "
+          @click="handleModal(paymentMethod.code)"
         />
       </div>
     </div>
@@ -141,28 +144,19 @@ import SummaryCard from "@/components/Card/SummaryCard.vue";
 import useModal from "@/stores/useModal";
 import { ref, watch } from "vue";
 import CashBody from "@/components/Modal/Body/CashBody.vue";
+import QrisBody from "@/components/Modal/Body/QrisBody.vue";
 import { axios } from "@/sdk/axios";
 import useAuth from "@/stores/useAuth";
+import useToast from "@/stores/useToast";
 
 const auth = useAuth();
+const toast = useToast();
 const cart = useCart();
 const page = usePage();
 const modal = useModal();
 
-const paymentMethods = ref([
-  {
-    code: "cash",
-    name: "Cash",
-    payment_gateway: "cash",
-    payment_fee: 0,
-  },
-  {
-    code: "qris",
-    name: "QRIS",
-    payment_gateway: "qris",
-    payment_fee: 0.7,
-  },
-]);
+const paymentMethods = ref([]);
+const refId = ref(null);
 
 watch(
   () => page.order.step,
@@ -188,5 +182,75 @@ const fetchPaymentMethods = () => {
     .then(({ data }) => {
       paymentMethods.value = data.data;
     });
+};
+
+const checkOut = (method) => {
+  axios
+    .post(
+      `${process.env.VUE_APP_API_BASE_URL}/api/checkout`,
+      {
+        shop_id: auth.shopId,
+        cart: cart.items.map((item) => {
+          if (item.amount) {
+            return {
+              sku: item.sku,
+              amount: item.amount,
+            };
+          } else {
+            return {
+              sku: item.sku,
+              service_start: item.service_start,
+              service_end: item.service_end,
+            };
+          }
+        }),
+        payment_method: method,
+        customer_pay: Number(cart.total),
+        discount: Number(cart.discount),
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${auth.authToken}`,
+        },
+        withCredentials: true,
+      }
+    )
+    .then(({ data }) => {
+      if (data["error_type"]) {
+        toast.message = "Gagal";
+        toast.description = data.message;
+        toast.type = "FAILED";
+        toast.trigger();
+      } else {
+        toast.message = "Sukses";
+        toast.description = data.message;
+        toast.type = "SUCCESS";
+        toast.trigger();
+
+        refId.value = data.data.ref_id;
+
+        modal.title = "QRIS";
+        modal.props = {
+          ref_id: data.data.ref_id,
+          payment_url: data.data.payment_url,
+        };
+        modal.body = QrisBody;
+        modal.toggle();
+      }
+    });
+};
+
+const handleModal = (method) => {
+  if (method === "cash") {
+    modal.title = "Tunai";
+    modal.body = CashBody;
+    modal.toggle();
+  } else {
+    if (modal.props && modal.props.ref_id === refId.value) {
+      modal.open();
+    } else {
+      checkOut("qris");
+    }
+  }
 };
 </script>

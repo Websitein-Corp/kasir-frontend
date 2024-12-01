@@ -6,7 +6,7 @@
       label="Tambah Diskon"
       class="bg-transparent hover:bg-slate-100 !text-primary-800 border-2 border-primary-700 hover:border-primary-800"
       :icon="TicketPercent"
-      @click="modal.open()"
+      @click="handleModalDiscount()"
     />
   </div>
   <hr class="mt-8" />
@@ -35,16 +35,16 @@
           {{ $helpers.money(cart.sum) }}
         </div>
       </div>
-      <div class="flex justify-between">
-        <div>PPN 10%</div>
-        <div>
-          {{ $helpers.money(cart.tax) }}
-        </div>
-      </div>
       <div v-if="cart.discount > 0" class="flex justify-between">
         <div>Diskon</div>
         <div>
           {{ $helpers.money(cart.discount) }}
+        </div>
+      </div>
+      <div class="flex justify-between" v-if="cart.settings.active_tax_flag">
+        <div>PPN 10%</div>
+        <div>
+          {{ $helpers.money(cart.tax) }}
         </div>
       </div>
       <div class="flex justify-between">
@@ -62,7 +62,6 @@ import { TicketPercent } from "lucide-vue-next";
 import CustomButton from "@/components/Button/CustomButton.vue";
 import useCart from "@/stores/useCart";
 import useModal from "@/stores/useModal";
-import { onMounted } from "vue";
 import usePage from "@/stores/usePage";
 import DiscountBody from "@/components/Modal/Body/DiscountBody.vue";
 
@@ -70,9 +69,10 @@ const cart = useCart();
 const page = usePage();
 const modal = useModal();
 
-onMounted(() => {
+const handleModalDiscount = () => {
   modal.title = "Tambah Diskon";
   modal.icon = TicketPercent;
   modal.body = DiscountBody;
-});
+  modal.open();
+};
 </script>

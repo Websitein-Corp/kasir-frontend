@@ -28,7 +28,7 @@ import useModal from "@/stores/useModal";
 import useToast from "@/stores/useToast";
 import helpers from "@/helpers";
 
-const discount = ref(null);
+const discount = ref(0);
 
 const cart = useCart();
 const modal = useModal();
@@ -41,7 +41,18 @@ onMounted(() => {
 });
 
 const onSubmit = () => {
-  cart.discount = helpers.parseRupiah(discount.value);
+  const parsedDiscount = helpers.parseRupiah(discount.value);
+
+  if (parsedDiscount > cart.sum) {
+    toast.message = "Gagal";
+    toast.description = "Diskon tidak boleh lebih dari subtotal!";
+    toast.type = "FAILED";
+    toast.trigger();
+
+    return;
+  }
+
+  cart.discount = parsedDiscount;
 
   toast.message = "Sukses";
   toast.description = "Diskon berhasil ditambah!";

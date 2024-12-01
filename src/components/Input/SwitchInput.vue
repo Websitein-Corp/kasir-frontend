@@ -11,7 +11,7 @@
       <span class="toggle-background" :class="backgroundStyles" />
       <span class="toggle-indicator" :style="indicatorStyles" />
     </span>
-    <span v-if="label" class="ml-4">
+    <span v-if="label" class="text-sm lg:text-base ml-4">
       {{ label }}
     </span>
   </div>

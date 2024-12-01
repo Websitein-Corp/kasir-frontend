@@ -19,6 +19,7 @@
             class="flex items-center"
             :class="{
               'hidden lg:flex': page.navIsOpened,
+              '!hidden': modal.props && modal.props.ref_id,
             }"
           >
             <ArrowLeft @click="page.order.step--" class="cursor-pointer" />
@@ -53,7 +54,7 @@
         <SummarySidebar v-else />
       </div>
       <div
-        class="w-full h-1/4 xl:h-1/5 py-8 px-12 shadow-inner font-helvetica-light space-y-2"
+        class="w-full h-1/4 xl:h-1/5 py-6 px-12 shadow-inner font-helvetica-light space-y-2"
       >
         <OrderBottomMenu v-if="page.order.step === 0" />
         <SummaryBottomMenu v-else />
@@ -79,10 +80,37 @@ import SummaryBottomMenu from "@/views/order/summary/SummaryBottomMenu.vue";
 import DefaultSkeleton from "@/components/Skeleton/DefaultSkeleton.vue";
 import usePage from "@/stores/usePage";
 import { onMounted } from "vue";
+import useModal from "@/stores/useModal";
+import { axios } from "@/sdk/axios";
+import useCart from "@/stores/useCart";
+import useAuth from "@/stores/useAuth";
 
 const page = usePage();
+const modal = useModal();
+const auth = useAuth();
+const cart = useCart();
 
 onMounted(() => {
   page.loading = true;
+
+  fetchSettings();
 });
+
+const fetchSettings = () => {
+  axios
+    .get(
+      `${process.env.VUE_APP_API_BASE_URL}/api/settings?shop_id=${auth.shopId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${auth.authToken}`,
+        },
+        withCredentials: true,
+      }
+    )
+    .then(({ data }) => {
+      cart.settings.active_tax_flag = data.data.find(
+        (item) => item.name === "active_tax_flag"
+      ).value;
+    });
+};
 </script>

@@ -35,7 +35,7 @@
     </component>
     <div
       v-if="submenus.length > 0"
-      class="absolute lg:static top-1/3 left-20 rounded-lg bg-primary-100 w-44 lg:w-full opacity-0 z-50 pointer-events-none group-hover/container:pointer-events-auto group-hover/container:translate-x-1 lg:group-hover/container:translate-x-0 overflow-hidden transition-all"
+      class="absolute lg:static top-1/3 left-24 rounded-lg bg-primary-100 w-44 lg:w-full opacity-0 z-50 pointer-events-none group-hover/container:pointer-events-auto group-hover/container:translate-x-1 lg:group-hover/container:translate-x-0 overflow-hidden transition-all"
       :class="{
         'group-hover/container:opacity-100': page.navIsOpened,
         '!-top-12': isLogout,

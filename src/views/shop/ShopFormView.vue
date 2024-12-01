@@ -111,7 +111,35 @@ const form = reactive({
   name: props.shopData ? props.shopData.name : "",
   address: props.shopData ? props.shopData.address : "",
   balance: props.shopData ? props.shopData.balance : 0,
-  settings: props.shopData ? props.shopData.settings : true,
+  settings: props.shopData
+    ? props.shopData.settings
+    : [
+        {
+          name: "active_tax_flag",
+          label: "Aktifkan Pajak untuk Customer",
+          value: false,
+        },
+        {
+          name: "open_bill",
+          label: "Fitur Open Bill",
+          value: false,
+        },
+        {
+          name: "customer_input",
+          label: "Fitur Nama Customer pada Transaksi",
+          value: false,
+        },
+        {
+          name: "table_number_input",
+          label: "Fitur Nomor Meja pada Transaksi",
+          value: false,
+        },
+        {
+          name: "shop_payment_fee",
+          label: "Biaya Metode Pembayaran oleh Toko",
+          value: false,
+        },
+      ],
 });
 
 const submitShop = async () => {
@@ -192,8 +220,13 @@ const submitShop = async () => {
 
 const validateForm = () => {
   let isValid = true;
+  const notRequired = ["balance"];
 
-  Object.keys(form).forEach((field) => {
+  const filteredForm = Object.keys(form).filter(
+    (item) => notRequired.indexOf(item) === -1
+  );
+
+  filteredForm.forEach((field) => {
     if (!form[field] && field !== "shop_id") {
       if (!props.isEdit) {
         toast.message = "Gagal";

@@ -80,3 +80,7 @@
 :root {
     --dp-input-padding: 12px 30px 12px 12px!important;
 }
+
+select {
+    -webkit-appearance: none;
+}

@@ -27,6 +27,7 @@
             <CustomButton
               size="mobile"
               label="Add"
+              :icon="Plus"
               class="bg-primary-700 hover:bg-primary-800"
               @click="handleAddSupplier"
             />
@@ -56,13 +57,13 @@
               <CustomButton
                 size="fit"
                 :icon="Trash2"
-                class="bg-red-700 hover:bg-red-800"
+                class="bg-red-700 hover:bg-red-800 !shadow-none"
                 @click="confirmDeleteSupply(item)"
               />
               <CustomButton
                 size="fit"
                 :icon="Pencil"
-                class="bg-primary-500 hover:bg-primary-600 text-primary-950"
+                class="bg-primary-500 hover:bg-primary-600 text-primary-950 !shadow-none"
                 @click="handleEditSupplier(item)"
               />
             </td>
@@ -94,7 +95,7 @@ import useAuth from "@/stores/useAuth";
 import { useRoute } from "vue-router";
 import DefaultSkeleton from "@/components/Skeleton/DefaultSkeleton.vue";
 import usePage from "@/stores/usePage";
-import { MessageCircleQuestion, Pencil, Trash2 } from "lucide-vue-next";
+import { MessageCircleQuestion, Pencil, Plus, Trash2 } from "lucide-vue-next";
 import DeleteBody from "@/components/Modal/Body/DeleteBody.vue";
 import useModal from "@/stores/useModal";
 

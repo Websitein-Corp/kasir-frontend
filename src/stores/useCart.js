@@ -6,6 +6,9 @@ export default defineStore("cart", {
     items: [],
     discount: 0,
     totalPaid: 0,
+    settings: {
+      active_tax_flag: true,
+    },
   }),
   getters: {
     sum: (state) => {
@@ -29,12 +32,14 @@ export default defineStore("cart", {
         ? state.items.reduce((sum, val) => sum + (val.amount || 1), 0)
         : 0,
 
-    tax() {
-      return this.sum * 0.1;
+    tax(state) {
+      return (
+        (this.sum - state.discount) * (this.settings.active_tax_flag ? 0.1 : 0)
+      );
     },
 
     total(state) {
-      return this.sum + this.tax - state.discount;
+      return this.sum - state.discount + this.tax;
     },
   },
   actions: {
