@@ -19,7 +19,6 @@ axiosInstance.interceptors.response.use(
     const page = usePage();
     const toast = useToast();
 
-    page.loading = false;
     page.buttonLoading = false;
 
     // if code other than 2xx

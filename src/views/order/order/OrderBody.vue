@@ -1,6 +1,6 @@
 <template>
   <div
-    class="p-4 xl:px-0 lg:px-8 flex flex-col xl:flex-row space-y-4 xl:space-y-0 xl:space-x-2"
+    class="xl:px-0 lg:px-8 flex flex-col xl:flex-row space-y-4 xl:space-y-0 xl:space-x-2"
   >
     <CategoryTab
       :items="categories"
