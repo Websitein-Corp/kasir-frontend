@@ -6,7 +6,7 @@
     <!-- Apply a max-height to the form and enable scrolling -->
     <form @submit.prevent="handleSubmit" class="max-h-[95vh] overflow-y-auto">
       <!-- Supplier Detail -->
-      <DashboardCard class="form-section">
+      <FormCard class="form-section">
         <!-- If not editing, show input field for supplier name -->
         <div v-if="!isEdit">
           <TextInput
@@ -44,7 +44,7 @@
           class="w-full"
           pattern="[0-9._%+-]+@[0-9.-]+\.{2,3}$"
         />
-      </DashboardCard>
+      </FormCard>
 
       <div
         class="flex flex-col space-y-4 w-full items-center justify-center mt-8"
@@ -56,7 +56,11 @@
         >
           Submit
         </CustomButton>
-        <CustomButton class="w-1/4 bg-red-600" @click="cancelForm">
+        <CustomButton
+          type="button"
+          class="w-1/4 bg-red-600"
+          @click="cancelForm"
+        >
           Cancel
         </CustomButton>
       </div>
@@ -74,7 +78,7 @@ import {
 } from "vue";
 import { axios } from "@/sdk/axios";
 import CustomButton from "@/components/Button/CustomButton.vue";
-import DashboardCard from "@/components/Card/DashboardCard.vue";
+import FormCard from "@/components/Card/FormCard.vue";
 import useAuth from "@/stores/useAuth";
 import PageContainer from "@/views/PageContainer.vue";
 import useToast from "@/stores/useToast";

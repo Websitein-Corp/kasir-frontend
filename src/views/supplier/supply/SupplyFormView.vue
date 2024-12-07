@@ -1,36 +1,52 @@
 <template>
-  <PageContainer title="Supplier Detail" subtitle="Daftar supply yang ada...">
+  <PageContainer title="Supply Detail" subtitle="Daftar supply yang ada...">
     <!-- Apply a max-height to the form and enable scrolling -->
-    <form @submit.prevent="handleSubmit" class="max-h-[95vh] overflow-y-auto">
+    <form
+      @submit.prevent="handleSubmit"
+      class="h-[95vh] overflow-y-auto scrollbar-hide"
+    >
       <!-- Supplier Detail -->
-      <DashboardCard class="form-section">
+      <FormCard class="form-section scrollbar-hide">
         <!-- If not editing, show input field for supplier name -->
         <div v-if="!isEdit">
-          <label
-            for="supplier_id"
-            class="pb-2 text-primary-600 peer-focus:ml-1 peer-focus:-translate-y-3 peer-focus:px-1 peer-focus:text-sm"
-            >Supplier</label
-          >
-          <select
-            v-model="supplierDetail.id"
-            name="supplier_id"
-            required
-            class="peer w-full border-b rounded-lg placeholder:text-transparent p-4 focus:outline-none focus:ring-2 ring-primary-600 transition-all"
-            :class="{
-              'ring-2': modelValue,
-              'cursor-not-allowed !bg-white !ring-slate-500 !text-slate-500':
-                disabled,
-            }"
-          >
-            <option value="" disabled>Select a supplier</option>
-            <option
-              v-for="supplier in supplierList"
-              :key="supplier.id"
-              :value="supplier.id"
-            >
-              {{ supplier.name }}
-            </option>
-          </select>
+          <div class="flex flex-row justify-between space-x-4 mt-4">
+            <div class="w-1/2">
+              <label
+                for="supplier_id"
+                class="pb-2 text-primary-600 peer-focus:ml-1 peer-focus:-translate-y-3 peer-focus:px-1 peer-focus:text-sm"
+                >Supplier</label
+              >
+              <select
+                v-model="supplierDetail.id"
+                name="supplier_id"
+                required
+                class="peer w-full border-b rounded-lg placeholder:text-transparent p-4 focus:outline-none focus:ring-2 ring-primary-600 transition-all"
+                :class="{
+                  'ring-2': modelValue,
+                  'cursor-not-allowed !bg-white !ring-slate-500 !text-slate-500':
+                    disabled,
+                }"
+              >
+                <option value="" disabled>Select a supplier</option>
+                <option
+                  v-for="supplier in supplierList"
+                  :key="supplier.id"
+                  :value="supplier.id"
+                >
+                  {{ supplier.name }}
+                </option>
+              </select>
+            </div>
+            <TextInput
+              v-model="supplierDetail.supply_id"
+              type="text"
+              name="supply_id"
+              label="Supply ID"
+              placeholder="Enter Supply ID"
+              class="w-1/2"
+              pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,3}$"
+            />
+          </div>
           <div class="flex flex-row justify-between space-x-4 mt-4">
             <div class="w-1/2">
               <label
@@ -60,7 +76,8 @@
         </div>
 
         <div v-else class="flex flex-col space-y-2">
-          <p><strong>Supplier:</strong> {{ supplierDetail.id }}</p>
+          <p><strong>Supply ID:</strong> {{ supplierDetail.id }}</p>
+          <p><strong>Supplier:</strong> {{ supplierDetail.supplier }}</p>
           <div class="flex flex-row justify-between space-x-4 mt-4">
             <TextInput
               v-model="statusLabel"
@@ -103,20 +120,27 @@
         <CustomButton
           class="w-1/4 mt-4 bg-primary-600"
           type="submit"
-          v-if="isEdit"
+          v-if="isEdit && supplierDetail.status === 'NOT_PAID'"
         >
           Update Status
         </CustomButton>
-      </DashboardCard>
+      </FormCard>
 
       <!-- Product/Ingredient Detail -->
-      <DashboardCard
+      <FormCard
         v-for="(product, index) in productDetails"
         :key="index"
-        class="form-section mt-8"
+        class="form-section mt-8 relative"
+        title="Product/Ingredient Detail"
       >
-        <h2>Product/Ingredient Detail</h2>
-        <hr />
+        <button
+          type="button"
+          class="text-red-600 hover:text-red-800 absolute top-2 right-2 font-bold"
+          @click="removeProduct(index)"
+          title="Remove"
+        >
+          ✕
+        </button>
         <div v-if="isEdit">
           <div class="flex flex-row justify-between space-x-4 mt-4">
             <TextInput
@@ -208,7 +232,7 @@
               >
                 <option value="" disabled>Pilih SKU</option>
                 <option
-                  v-for="ingredient in ingredientsList"
+                  v-for="ingredient in getSkuOptions(product.type)"
                   :key="ingredient.name"
                   :value="ingredient.name"
                 >
@@ -240,7 +264,7 @@
             />
           </div>
         </div>
-      </DashboardCard>
+      </FormCard>
 
       <div
         class="flex flex-col space-y-4 w-full items-center justify-center mt-8"
@@ -260,7 +284,11 @@
         >
           Submit
         </CustomButton>
-        <CustomButton class="w-1/4 bg-red-600" @click="cancelForm">
+        <CustomButton
+          type="button"
+          class="w-1/4 bg-red-600"
+          @click="cancelForm"
+        >
           Cancel
         </CustomButton>
       </div>
@@ -280,7 +308,7 @@ import {
 } from "vue";
 import { axios } from "@/sdk/axios";
 import CustomButton from "@/components/Button/CustomButton.vue";
-import DashboardCard from "@/components/Card/DashboardCard.vue";
+import FormCard from "@/components/Card/FormCard.vue";
 import DatetimeInput from "@/components/Input/DatetimeInput.vue";
 import useAuth from "@/stores/useAuth";
 import PageContainer from "@/views/PageContainer.vue";
@@ -291,7 +319,7 @@ const toast = useToast();
 const page = usePage();
 const auth = useAuth();
 const supplierList = ref([]);
-const ingredientsList = ref([]);
+const ingredientsList = ref({ products: [], ingredients: [] });
 
 const TextInput = defineAsyncComponent(() =>
   import("@/components/Input/TextInput.vue")
@@ -342,6 +370,7 @@ const supplierDetail = ref({
   supply_id: props.supplierData
     ? props.supplierData.supply_id
     : generateRandomId(),
+  supplier: props.supplierData ? props.supplierData.supplier : "",
 });
 
 const statusLabel = computed(() => {
@@ -454,10 +483,10 @@ const fetchSupplier = () => {
     });
 };
 
-const fetchIngredients = () => {
+const fetchProducts = () => {
   axios
     .get(
-      `${process.env.VUE_APP_API_BASE_URL}/api/ingredients?shop_id=${auth.shopId}`,
+      `${process.env.VUE_APP_API_BASE_URL}/api/supplier/supply/products?shop_id=${auth.shopId}`,
       {
         headers: {
           Authorization: `Bearer ${auth.authToken}`,
@@ -466,7 +495,16 @@ const fetchIngredients = () => {
       }
     )
     .then(({ data }) => {
-      ingredientsList.value = data.data.map((item) => {
+      ingredientsList.value.products = data.data.products.map((item) => {
+        return {
+          id: item.id,
+          name: item.sku,
+          stock: item.stock,
+          price: item.price,
+        };
+      });
+
+      ingredientsList.value.ingredients = data.data.ingredients.map((item) => {
         return {
           id: item.id,
           name: item.name,
@@ -501,6 +539,16 @@ const fetchSupplierDetails = () => {
     });
 };
 
+const getSkuOptions = (type) => {
+  return type === "PRODUCT"
+    ? ingredientsList.value.products
+    : ingredientsList.value.ingredients;
+};
+
+const removeProduct = (index) => {
+  productDetails.value.splice(index, 1);
+};
+
 const cancelForm = () => {
   emit("cancel");
 };
@@ -525,7 +573,7 @@ watch(
 
 onMounted(() => {
   fetchSupplier();
-  fetchIngredients();
+  fetchProducts();
   if (props.isEdit) {
     loadExistingData();
   }

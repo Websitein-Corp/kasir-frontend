@@ -1,6 +1,7 @@
 <template>
   <div v-if="isShowingForm">
     <SupplyFormView
+      :key="selectedSupply?.id || 'new'"
       :supplierData="selectedSupply"
       :isEdit="!!selectedSupply"
       @cancel="handleCancel"
@@ -19,6 +20,28 @@
             :max-date="new Date()"
             range
           ></DatetimeInput>
+          <div
+            class="peer !shadow-none !bg-white w-full placeholder:text-transparent border-1 border-gray-300 rounded focus:outline-none focus:ring-2 ring-primary-600 transition-all"
+          >
+            <select
+              class="peer w-full border-b rounded-lg placeholder:text-transparent p-4 border-1 border-gray-300 focus:outline-none focus:ring-2 ring-primary-600 transition-all"
+              :class="{
+                'ring-2': modelValue,
+                'cursor-not-allowed !bg-white !ring-slate-500 !text-slate-500':
+                  disabled,
+              }"
+              @change="setBasedOn($event.target.value)"
+            >
+              <option value="" disabled selected>Sort Supply</option>
+              <option
+                v-for="item in typeList"
+                :key="item.value"
+                :value="item.value"
+              >
+                {{ item.label }}
+              </option>
+            </select>
+          </div>
           <SearchInput
             class="mx-4"
             v-model="table.filters.keyword"
@@ -36,23 +59,26 @@
         <template v-slot:thead>
           <tr>
             <th>ID</th>
+            <th>Supplier</th>
             <th>Status</th>
-            <th>Transaction Date</th>
-            <th>Due Date</th>
+            <th>Tanggal Transaksi</th>
+            <th>Jatuh Tempo</th>
             <th>Total Price</th>
             <th>Actions</th>
           </tr>
         </template>
         <template v-slot:tbody>
           <tr v-for="(item, index) in table.items" :key="index">
-            <td>{{ item.id }}</td>
+            <td>{{ item?.id || "N/A" }}</td>
+            <td>{{ item?.supplier || "N/A" }}</td>
             <td>
-              <span v-if="item.status === 'NOT_PAID'">Belum Dibayar</span>
-              <span v-if="item.status === 'PAID'">Sudah Dibayar</span>
+              <span v-if="item?.status === 'NOT_PAID'">Belum Dibayar</span>
+              <span v-if="item?.status === 'PAID'">Sudah Dibayar</span>
+              <span v-else>Unknown</span>
             </td>
-            <td>{{ item.tr_datetime }}</td>
-            <td>{{ item.due_date }}</td>
-            <td>{{ item.total_price }}</td>
+            <td>{{ item?.tr_datetime || "N/A" }}</td>
+            <td>{{ item?.due_date || "N/A" }}</td>
+            <td>{{ item?.total_price || 0 }}</td>
             <td class="flex justify-center space-x-2">
               <CustomButton
                 size="fit"
@@ -80,11 +106,12 @@
 </template>
 
 <script setup>
-import { onMounted, ref, watch } from "vue";
+import { onMounted, ref, watch, nextTick } from "vue";
 
 import DataTable from "@/components/Table/DataTable.vue";
 import DatetimeInput from "@/components/Input/DatetimeInput.vue";
 import SearchInput from "@/components/Input/SearchInput.vue";
+import SelectInput from "@/components/Input/SelectInput.vue";
 import CustomButton from "@/components/Button/CustomButton.vue";
 import SupplyFormView from "./SupplyFormView.vue";
 import PageContainer from "@/views/PageContainer.vue";
@@ -111,6 +138,18 @@ const route = useRoute();
 const basedOn = ref("SUPPLY_DATE");
 
 let debounce;
+let debounceFetch = null;
+
+const typeList = [
+  {
+    label: "Tanggal Transaksi",
+    value: "SUPPLY_DATE",
+  },
+  {
+    label: "Tanggal Jatuh Tempo",
+    value: "DUE_DATE",
+  },
+];
 
 onMounted(async () => {
   table.resetPage();
@@ -135,46 +174,54 @@ watch(
 );
 
 const fetchSupplier = async () => {
-  const formattedDate = table.filters.date.map((rawDate) =>
-    new Date(rawDate).toISOString().slice(0, 10)
-  );
+  try {
+    const formattedDate = table.filters.date.map((rawDate) =>
+      new Date(rawDate).toISOString().slice(0, 10)
+    );
 
-  const { data } = await axios.get(
-    `${process.env.VUE_APP_API_BASE_URL}/api/supplier/supply?shop_id=${auth.shopId}&date_start=${formattedDate[0]}&date_end=${formattedDate[1]}&keyword=${table.filters.keyword}&page=${table.page.current}&based_on=${basedOn.value}`,
-    {
-      headers: {
-        Authorization: `Bearer ${auth.authToken}`,
-      },
-      withCredentials: true,
-    }
-  );
+    const { data } = await axios.get(
+      `${process.env.VUE_APP_API_BASE_URL}/api/supplier/supply?shop_id=${auth.shopId}&date_start=${formattedDate[0]}&date_end=${formattedDate[1]}&keyword=${table.filters.keyword}&page=${table.page.current}&based_on=${basedOn.value}`,
+      {
+        headers: {
+          Authorization: `Bearer ${auth.authToken}`,
+        },
+        withCredentials: true,
+      }
+    );
 
-  table.items = data.data.map((item) => {
-    return {
-      id: item.id,
-      status: item.status,
-      tr_datetime: item.tr_datetime,
-      due_date: item.due_date,
-      total_price: item.total_price,
-    };
-  });
+    table.items = data.data.map((item) => ({
+      id: item?.id || "Unknown ID",
+      status: item?.status || "UNKNOWN",
+      tr_datetime: item?.tr_datetime || "N/A",
+      due_date: item?.due_date || "N/A",
+      total_price: item?.total_price || 0,
+      supplier: item?.supplier?.name || "Unknown Supplier",
+    }));
 
-  table.page.current = data.meta.current_page;
-  table.page.last = data.meta.last_page;
-  table.page.per = data.meta.per_page;
-  table.page.total = data.meta.total;
-  isShowingForm.value = false;
+    table.page.current = data.meta.current_page;
+    table.page.last = data.meta.last_page;
+    table.page.per = data.meta.per_page;
+    table.page.total = data.meta.total;
+    isShowingForm.value = false;
+  } catch (error) {
+    console.error("Error fetching suppliers:", error);
+    toast.message = "Error";
+    toast.description = "Failed to fetch supplier data.";
+    toast.type = "FAILED";
+    toast.trigger();
+  }
 };
 
-const handleAddSupplier = () => {
+const handleAddSupplier = async () => {
   selectedSupply.value = null;
   isShowingForm.value = true;
+  await nextTick();
 };
 
-const handleEditSupplier = (item) => {
+const handleEditSupplier = async (item) => {
   selectedSupply.value = { ...item };
-  console.log(selectedSupply.value);
   isShowingForm.value = true;
+  await nextTick();
 };
 
 const confirmDeleteSupply = (item) => {
@@ -196,4 +243,18 @@ const setBasedOn = (value) => {
     fetchSupplier();
   }
 };
+
+watch(
+  [() => table.filters, () => table.page.current],
+  () => {
+    if (debounceFetch) {
+      clearTimeout(debounceFetch);
+    }
+
+    debounceFetch = setTimeout(() => {
+      fetchSupplier();
+    }, 300);
+  },
+  { deep: true }
+);
 </script>
