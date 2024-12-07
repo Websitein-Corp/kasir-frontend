@@ -7,7 +7,7 @@ export default defineStore("cart", {
     discount: 0,
     totalPaid: 0,
     settings: {
-      active_tax_flag: true,
+      tax_amount: 0.0,
     },
   }),
   getters: {
@@ -33,9 +33,7 @@ export default defineStore("cart", {
         : 0,
 
     tax(state) {
-      return (
-        (this.sum - state.discount) * (this.settings.active_tax_flag ? 0.1 : 0)
-      );
+      return (this.sum - state.discount) * this.settings.tax_amount;
     },
 
     total(state) {
@@ -92,8 +90,8 @@ export default defineStore("cart", {
 
     setServiceTime(sku, serviceRange) {
       const [startString, endString] = serviceRange;
-      const serviceStart = helpers.formatDate(startString);
-      const serviceEnd = helpers.formatDate(endString);
+      const serviceStart = startString;
+      const serviceEnd = endString;
 
       this.getItem(sku).service_start = serviceStart;
       this.getItem(sku).service_end = serviceEnd;

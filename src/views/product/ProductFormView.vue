@@ -40,6 +40,7 @@
               name="sku"
               label="SKU"
               placeholder="Masukkan SKU..."
+              :disabled="isEdit"
               class="col-span-2 lg:col-span-1"
             />
             <TextInput
@@ -135,8 +136,8 @@
           <div class="flex justify-center pt-4">
             <CustomButton
               size="xl"
-              :label="isEdit ? 'Edit' : 'Add'"
-              :icon="isEdit ? Pencil : Plus"
+              :label="isEdit ? 'Save' : 'Add'"
+              :icon="isEdit ? Save : Plus"
               class="bg-primary-700 hover:bg-primary-800"
               :loading="page.buttonLoading"
               @click="submitProduct"
@@ -215,9 +216,9 @@ import {
   Package,
   Plus,
   Gavel,
-  Pencil,
   Receipt,
   Image,
+  Save,
 } from "lucide-vue-next";
 import { ref, onMounted, defineAsyncComponent, reactive } from "vue";
 import PageContainer from "@/views/PageContainer.vue";
@@ -364,7 +365,7 @@ const submitProduct = async () => {
                   toast.type = "SUCCESS";
                   toast.trigger();
 
-                  emit("submitSuccess");
+                  emit("submitSuccess", { item: null, isAdd: false });
                 }
               });
           },
@@ -398,7 +399,7 @@ const submitProduct = async () => {
               toast.type = "SUCCESS";
               toast.trigger();
 
-              emit("submitSuccess");
+              emit("submitSuccess", { item: null, isAdd: false });
             }
           });
       }
@@ -429,7 +430,7 @@ const submitProduct = async () => {
                   toast.type = "SUCCESS";
                   toast.trigger();
 
-                  emit("submitSuccess", { item: form });
+                  emit("submitSuccess", { item: form, isAdd: true });
                 }
               });
           },
@@ -463,7 +464,7 @@ const submitProduct = async () => {
               toast.type = "SUCCESS";
               toast.trigger();
 
-              emit("submitSuccess", { item: form });
+              emit("submitSuccess", { item: form, isAdd: true });
             }
           });
       }

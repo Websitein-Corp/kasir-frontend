@@ -1,38 +1,16 @@
 <template>
-  <VueDatePicker
-    class="border-1 border-gray-300 rounded"
-    :class="{
-      'border-2 !border-primary-700': border === 'primary',
-    }"
+  <VueCtkDateTimePicker
+    label="Pilih tanggal dan waktu"
+    class="!border-2 !border-primary-700 rounded !h-12"
+    format="YYYY-MM-DD hh:mm:ss"
+    color="#0F927E"
     v-model="date"
-    :range="range"
-    :disabled="disabled"
-    :enable-time-picker="timePicker"
     v-bind="$attrs"
   />
 </template>
 
 <script setup>
-import VueDatePicker from "@vuepic/vue-datepicker";
-
-defineProps({
-  disabled: {
-    type: Boolean,
-    default: false,
-  },
-  range: {
-    type: Boolean,
-    default: false,
-  },
-  timePicker: {
-    type: Boolean,
-    default: false,
-  },
-  border: {
-    type: String,
-    default: "default",
-  },
-});
+import VueCtkDateTimePicker from "vue-ctk-date-time-picker";
 
 const date = defineModel();
 </script>

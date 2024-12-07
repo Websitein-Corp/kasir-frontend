@@ -36,6 +36,13 @@
             :amount="
               cart.getItem(product.sku) && cart.getItem(product.sku).amount
             "
+            :service-start="
+              cart.getItem(product.sku) &&
+              cart.getItem(product.sku).service_start
+            "
+            :service-end="
+              cart.getItem(product.sku) && cart.getItem(product.sku).service_end
+            "
             :selling-price="product.selling_price"
             :image-url="product.image_url"
             :selected="cart.has(product.sku)"

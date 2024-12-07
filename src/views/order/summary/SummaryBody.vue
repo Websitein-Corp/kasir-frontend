@@ -66,8 +66,8 @@
           {{ $helpers.money(cart.sum) }}
         </div>
       </div>
-      <div class="flex justify-between" v-if="cart.settings.active_tax_flag">
-        <div>PPN 10%</div>
+      <div class="flex justify-between" v-if="cart.settings.tax_amount !== 0.0">
+        <div>PPN {{ cart.settings.tax_amount }}%</div>
         <div>
           {{ $helpers.money(cart.tax) }}
         </div>

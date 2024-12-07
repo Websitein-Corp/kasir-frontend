@@ -85,11 +85,13 @@
       </div>
       <div
         class="flex justify-between"
-        v-if="bill.tax_fee || cart.settings.active_tax_flag"
+        v-if="bill.tax_fee || cart.settings.tax_amount !== 0.0"
       >
         <div>Pajak</div>
         <div class="flex justify-between w-5/12 lg:w-1/4">
-          <div>10%</div>
+          <div>
+            {{ (bill.tax_fee / (bill.subtotal - bill.discount)) * 100 }}%
+          </div>
           <div>{{ $helpers.money(bill.tax_fee) }}</div>
         </div>
       </div>

@@ -5,12 +5,12 @@ export default defineStore("table", {
     items: [],
     filters: {
       keyword: "",
-      date: [
-        new Date(new Date().setMonth(new Date().getMonth() - 1))
+      date: {
+        start: new Date(new Date().setMonth(new Date().getMonth() - 1))
           .toISOString()
           .slice(0, 10),
-        new Date().toISOString().slice(0, 10),
-      ],
+        end: new Date().toISOString().slice(0, 10),
+      },
     },
     page: {
       current: 1,
@@ -48,12 +48,12 @@ export default defineStore("table", {
     resetPage() {
       this.page.current = 1;
       this.filters.keyword = "";
-      this.filters.date = [
-        new Date(new Date().setMonth(new Date().getMonth() - 1))
+      this.filters.date = {
+        start: new Date(new Date().setMonth(new Date().getMonth() - 1))
           .toISOString()
           .slice(0, 10),
-        new Date().toISOString().slice(0, 10),
-      ];
+        end: new Date().toISOString().slice(0, 10),
+      };
     },
   },
 });

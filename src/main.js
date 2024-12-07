@@ -9,6 +9,7 @@ import VueLazyLoad from "vue3-lazyload";
 import "@vuepic/vue-datepicker/dist/main.css";
 import DropZone from "dropzone-vue";
 import "dropzone-vue/dist/dropzone-vue.common.css";
+import "vue-ctk-date-time-picker/dist/vue-ctk-date-time-picker.css";
 
 const pinia = createPinia();
 

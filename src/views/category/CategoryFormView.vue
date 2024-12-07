@@ -34,8 +34,8 @@
           <div class="flex justify-center pt-4">
             <CustomButton
               size="xl"
-              :label="isEdit ? 'Edit' : 'Add'"
-              :icon="isEdit ? Pencil : Plus"
+              :label="isEdit ? 'Save' : 'Add'"
+              :icon="isEdit ? Save : Plus"
               class="bg-primary-700 hover:bg-primary-800"
               :loading="page.buttonLoading"
               @click="submitProduct"
@@ -48,7 +48,7 @@
 </template>
 
 <script setup>
-import { ArchiveRestore, Plus, Pencil } from "lucide-vue-next";
+import { ArchiveRestore, Plus, Save } from "lucide-vue-next";
 import { defineAsyncComponent, reactive } from "vue";
 import PageContainer from "@/views/PageContainer.vue";
 import { axios } from "@/sdk/axios";
