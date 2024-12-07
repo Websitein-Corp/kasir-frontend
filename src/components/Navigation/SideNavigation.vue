@@ -62,7 +62,7 @@
         />
       </div>
       <div
-        class="flex flex-col grow lg:mt-24 h-[70%] overflow-y-scroll overflow-x-visible no-scrollbar"
+        class="flex flex-col grow lg:mt-24 h-[75%] overflow-y-scroll overflow-x-visible no-scrollbar"
         :class="{
           'pointer-events-none lg:pointer-events-auto': !page.navIsOpened,
         }"
@@ -170,6 +170,11 @@ const menus = ref([
         icon: ShoppingBasket,
         endpoint: "/ingredient",
       },
+      {
+        label: "Rekon",
+        icon: Shuffle,
+        endpoint: "/recon",
+      },
     ],
     current: false,
   },
@@ -194,12 +199,6 @@ const menus = ref([
         endpoint: "/supply",
       },
     ],
-    current: false,
-  },
-  {
-    label: "Rekon",
-    icon: Shuffle,
-    endpoint: "/recon",
     current: false,
   },
   {
