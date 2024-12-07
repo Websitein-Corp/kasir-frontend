@@ -177,4 +177,8 @@ const confirmDeleteSupplier = (item) => {
   modal.body = DeleteBody;
   modal.open();
 };
+
+const handleCancel = () => {
+  isShowingForm.value = false;
+};
 </script>
