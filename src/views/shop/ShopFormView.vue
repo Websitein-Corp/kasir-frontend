@@ -41,8 +41,8 @@
           <div class="flex justify-center pt-4">
             <CustomButton
               size="xl"
-              :label="isEdit ? 'Edit' : 'Add'"
-              :icon="isEdit ? Pencil : Plus"
+              :label="isEdit ? 'Save' : 'Add'"
+              :icon="isEdit ? Save : Plus"
               class="bg-primary-700 hover:bg-primary-800"
               :loading="page.buttonLoading"
               @click="submitShop"
@@ -58,13 +58,36 @@
         <div class="space-y-8">
           <div class="flex space-x-4 mt-6">
             <div class="flex-col space-y-4">
-              <SwitchInput
+              <template
                 v-for="(setting, index) in form.settings"
                 v-bind:key="setting.name"
-                :label="setting.label"
-                :is-active="form.settings[index].value"
-                @switch="(newVal) => (form.settings[index].value = newVal)"
-              />
+              >
+                <div
+                  class="h-7"
+                  :class="{
+                    '!mb-6 lg:!mb-8': setting.name === 'tax_amount',
+                  }"
+                >
+                  <div
+                    v-if="setting.name === 'tax_amount'"
+                    class="flex space-x-4 items-center text-sm lg:text-base"
+                  >
+                    <NumberInput
+                      :model-value="setting.value || 0"
+                      @update:model-value="
+                        (newVal) => (form.settings[index].value = newVal)
+                      "
+                    />
+                    <span>Pajak Pelanggan</span>
+                  </div>
+                  <SwitchInput
+                    v-else
+                    :label="setting.label"
+                    :is-active="form.settings[index].value"
+                    @switch="(newVal) => (form.settings[index].value = newVal)"
+                  />
+                </div>
+              </template>
             </div>
           </div>
         </div>
@@ -74,7 +97,7 @@
 </template>
 
 <script setup>
-import { Plus, Pencil, ShoppingBag, Store } from "lucide-vue-next";
+import { Plus, ShoppingBag, Store, Save } from "lucide-vue-next";
 import { defineAsyncComponent, reactive } from "vue";
 import PageContainer from "@/views/PageContainer.vue";
 import { axios } from "@/sdk/axios";
@@ -84,6 +107,7 @@ import SwitchInput from "@/components/Input/SwitchInput.vue";
 import useToast from "@/stores/useToast";
 import useAuth from "@/stores/useAuth";
 import usePage from "@/stores/usePage";
+import NumberInput from "@/components/Input/NumberInput.vue";
 
 const TextInput = defineAsyncComponent(() =>
   import("@/components/Input/TextInput.vue")
@@ -115,9 +139,9 @@ const form = reactive({
     ? props.shopData.settings
     : [
         {
-          name: "active_tax_flag",
+          name: "tax_amount",
           label: "Aktifkan Pajak untuk Customer",
-          value: false,
+          value: 0.0,
         },
         {
           name: "open_bill",
@@ -154,7 +178,7 @@ const submitShop = async () => {
             shop_id: form.shop_id,
             address: form.address,
             name: form.name,
-            active_tax_flag: form.settings[0].value,
+            tax_amount: form.settings[0].value,
             open_bill: form.settings[1].value,
             customer_input: form.settings[2].value,
             table_number_input: form.settings[3].value,

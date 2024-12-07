@@ -92,6 +92,7 @@ const cart = useCart();
 
 onMounted(() => {
   page.loading = true;
+  modal.props = null;
 
   fetchSettings();
 });
@@ -108,8 +109,8 @@ const fetchSettings = () => {
       }
     )
     .then(({ data }) => {
-      cart.settings.active_tax_flag = data.data.find(
-        (item) => item.name === "active_tax_flag"
+      cart.settings.tax_amount = data.data.find(
+        (item) => item.name === "tax_amount"
       ).value;
     });
 };

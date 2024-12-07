@@ -18,13 +18,11 @@
         {{ sellingPrice }}
       </div>
       <div class="pt-2">
-        <DatetimeInput
+        <DatetimeRangeInput
           v-if="type === 'SERVICE TIME'"
-          v-model="serviceRange"
           :disabled="page.order.step === 2"
-          border="primary"
-          range
-          time-picker
+          :datetime-range="serviceRange"
+          @click="openDatetimeInputModal"
         />
         <NumberInput
           v-else
@@ -43,11 +41,13 @@
 
 <script setup>
 import NumberInput from "@/components/Input/NumberInput.vue";
-import { Trash2 } from "lucide-vue-next";
+import { CalendarClock, Trash2 } from "lucide-vue-next";
 import useCart from "@/stores/useCart";
 import { ref, toRef, watch } from "vue";
 import usePage from "@/stores/usePage";
-import DatetimeInput from "@/components/Input/DatetimeInput.vue";
+import DatetimeBody from "@/components/Modal/Body/DatetimeBody.vue";
+import useModal from "@/stores/useModal";
+import DatetimeRangeInput from "@/components/Input/DatetimeRangeInput.vue";
 
 const props = defineProps({
   sku: {
@@ -86,11 +86,12 @@ const props = defineProps({
 
 const cart = useCart();
 const page = usePage();
+const modal = useModal();
 
 const amount = toRef(props.amount);
 const serviceRange = ref(
   props.serviceStart && props.serviceEnd
-    ? [new Date(props.serviceStart), new Date(props.serviceEnd)]
+    ? [props.serviceStart, props.serviceEnd]
     : null
 );
 
@@ -110,4 +111,24 @@ watch(serviceRange, () => {
     cart.setServiceTime(props.sku, serviceRange.value);
   }
 });
+
+const openDatetimeInputModal = () => {
+  const yesterday = new Date();
+  yesterday.setDate(yesterday.getDate() - 1);
+
+  modal.title = "Atur Durasi";
+  modal.icon = CalendarClock;
+  modal.props = {
+    serviceStart: props.serviceStart,
+    serviceEnd: props.serviceEnd,
+    minDate: yesterday.toISOString(),
+  };
+  modal.body = DatetimeBody;
+  modal.callback = handleDatetimeInput;
+  modal.open();
+};
+
+const handleDatetimeInput = () => {
+  serviceRange.value = modal.response;
+};
 </script>

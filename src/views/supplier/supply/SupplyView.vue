@@ -17,7 +17,7 @@
         <template v-slot:action-2>
           <DatetimeInput
             v-model="table.filters.date"
-            :max-date="new Date()"
+            :max-date="new Date().toISOString()"
             range
           ></DatetimeInput>
           <div
@@ -174,41 +174,38 @@ watch(
 );
 
 const fetchSupplier = async () => {
-  try {
-    const formattedDate = table.filters.date.map((rawDate) =>
-      new Date(rawDate).toISOString().slice(0, 10)
-    );
+  if (table.filters.date.start && table.filters.date.end) {
+    try {
+      const { data } = await axios.get(
+        `${process.env.VUE_APP_API_BASE_URL}/api/supplier/supply?shop_id=${auth.shopId}&date_start=${table.filters.date.start}&date_end=${table.filters.date.end}&keyword=${table.filters.keyword}&page=${table.page.current}&based_on=${basedOn.value}`,
+        {
+          headers: {
+            Authorization: `Bearer ${auth.authToken}`,
+          },
+          withCredentials: true,
+        }
+      );
 
-    const { data } = await axios.get(
-      `${process.env.VUE_APP_API_BASE_URL}/api/supplier/supply?shop_id=${auth.shopId}&date_start=${formattedDate[0]}&date_end=${formattedDate[1]}&keyword=${table.filters.keyword}&page=${table.page.current}&based_on=${basedOn.value}`,
-      {
-        headers: {
-          Authorization: `Bearer ${auth.authToken}`,
-        },
-        withCredentials: true,
-      }
-    );
+      table.items = data.data.map((item) => ({
+        id: item?.id || "Unknown ID",
+        status: item?.status || "UNKNOWN",
+        tr_datetime: item?.tr_datetime || "N/A",
+        due_date: item?.due_date || "N/A",
+        total_price: item?.total_price || 0,
+        supplier: item?.supplier?.name || "Unknown Supplier",
+      }));
 
-    table.items = data.data.map((item) => ({
-      id: item?.id || "Unknown ID",
-      status: item?.status || "UNKNOWN",
-      tr_datetime: item?.tr_datetime || "N/A",
-      due_date: item?.due_date || "N/A",
-      total_price: item?.total_price || 0,
-      supplier: item?.supplier?.name || "Unknown Supplier",
-    }));
-
-    table.page.current = data.meta.current_page;
-    table.page.last = data.meta.last_page;
-    table.page.per = data.meta.per_page;
-    table.page.total = data.meta.total;
-    isShowingForm.value = false;
-  } catch (error) {
-    console.error("Error fetching suppliers:", error);
-    toast.message = "Error";
-    toast.description = "Failed to fetch supplier data.";
-    toast.type = "FAILED";
-    toast.trigger();
+      table.page.current = data.meta.current_page;
+      table.page.last = data.meta.last_page;
+      table.page.per = data.meta.per_page;
+      table.page.total = data.meta.total;
+      isShowingForm.value = false;
+    } catch (error) {
+      toast.message = "Error";
+      toast.description = "Failed to fetch supplier data.";
+      toast.type = "FAILED";
+      toast.trigger();
+    }
   }
 };
 
