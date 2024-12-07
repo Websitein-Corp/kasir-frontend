@@ -103,6 +103,7 @@
               type="password"
               label="PASSWORD"
               placeholder="Enter your password"
+              @keyup.enter="formAction"
             />
           </div>
 
