@@ -1,6 +1,6 @@
 <template>
   <div
-    class="xl:px-0 lg:px-8 flex flex-col xl:flex-row space-y-4 xl:space-y-0 xl:space-x-2"
+    class="xl:px-0 lg:px-8 flex flex-col xl:flex-row space-y-4 xl:space-y-0 xl:space-x-2 mb-4"
   >
     <CategoryTab
       :items="categories"
@@ -70,12 +70,18 @@
       </CustomButton>
     </transition>
   </div>
+  <div
+    class="fixed z-10 bottom-4 rounded-full bg-primary-700 text-white p-4 hover:bg-primary-800 transition-all cursor-pointer"
+    @click="openBarcodeScanModal"
+  >
+    <ScanQrCode size="28" />
+  </div>
 </template>
 
 <script setup>
 import ProductCard from "@/components/Card/ProductCard.vue";
 import useCart from "@/stores/useCart";
-import { CornerDownRight } from "lucide-vue-next";
+import { CornerDownRight, ScanQrCode } from "lucide-vue-next";
 import CustomButton from "@/components/Button/CustomButton.vue";
 import usePage from "@/stores/usePage";
 import CategoryTab from "@/components/Tab/CategoryTab.vue";
@@ -84,10 +90,13 @@ import { axios } from "@/sdk/axios";
 import useAuth from "@/stores/useAuth";
 import { useRoute } from "vue-router";
 import SearchInput from "@/components/Input/SearchInput.vue";
+import BarcodeScanBody from "@/components/Modal/Body/BarcodeScanBody.vue";
+import useModal from "@/stores/useModal";
 
 const auth = useAuth();
 const cart = useCart();
 const page = usePage();
+const modal = useModal();
 const route = useRoute();
 
 const categories = ref([]);
@@ -145,5 +154,13 @@ const fetchProducts = () => {
     .then(({ data }) => {
       products.value = data.data;
     });
+};
+
+const openBarcodeScanModal = () => {
+  modal.title = "Pindai Barcode Produk";
+  modal.icon = ScanQrCode;
+  modal.body = BarcodeScanBody;
+  modal.props = products.value;
+  modal.open();
 };
 </script>

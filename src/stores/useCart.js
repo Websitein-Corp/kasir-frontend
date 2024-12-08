@@ -33,7 +33,7 @@ export default defineStore("cart", {
         : 0,
 
     tax(state) {
-      return (this.sum - state.discount) * this.settings.tax_amount;
+      return ((this.sum - state.discount) * this.settings.tax_amount) / 100;
     },
 
     total(state) {

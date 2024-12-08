@@ -8,7 +8,7 @@
   <transition name="slide-fade-up">
     <div
       v-if="modal.isOpened"
-      class="z-50 fixed top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 bg-white w-11/12 md:3/4 xl:w-1/2 h-fit rounded-lg p-5 lg:p-10 flex flex-col shadow-xl"
+      class="z-50 fixed top-1/2 left-1/2 max-h-[90dvh] -translate-y-1/2 -translate-x-1/2 bg-white w-11/12 md:3/4 xl:w-1/2 h-fit rounded-lg p-5 lg:p-10 flex flex-col shadow-xl"
     >
       <div
         id="header"
@@ -28,7 +28,7 @@
           />
         </div>
       </div>
-      <div id="body" class="py-4 lg:py-8">
+      <div id="body" class="px-2 py-4 lg:py-8 overflow-y-scroll">
         <component :is="modal.body"></component>
       </div>
     </div>
