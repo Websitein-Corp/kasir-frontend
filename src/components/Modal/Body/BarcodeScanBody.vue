@@ -80,7 +80,7 @@ function onDetect(detectedCodes) {
         cart.increment(detectedCode.value);
       } else {
         cart.add(
-          detectedCode.value,
+          product.sku,
           product.name,
           product.type,
           product.selling_price,
