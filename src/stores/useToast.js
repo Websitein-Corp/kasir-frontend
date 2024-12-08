@@ -7,12 +7,13 @@ export default defineStore("toast", {
     description: "",
     type: "INFO",
     timout: null,
+    duration: 4000,
   }),
   actions: {
     trigger() {
       this.isActive = true;
 
-      this.timeout = setTimeout(() => this.close(), 4000);
+      this.timeout = setTimeout(() => this.close(), this.duration);
     },
     close() {
       this.isActive = false;
