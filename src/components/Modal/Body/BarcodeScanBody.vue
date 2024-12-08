@@ -76,8 +76,8 @@ function onDetect(detectedCodes) {
     );
 
     if (product) {
-      if (cart.getItem(detectedCode.value)) {
-        cart.increment(detectedCode.value);
+      if (cart.getItem(product.sku)) {
+        cart.increment(product.sku);
       } else {
         cart.add(
           product.sku,
