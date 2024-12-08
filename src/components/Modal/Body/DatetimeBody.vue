@@ -26,7 +26,7 @@
     />
     <CustomButton
       size="md"
-      label="Kembali"
+      label="Lanjut"
       @click="modal.close()"
       class="bg-primary-700 hover:bg-primary-800"
     />
