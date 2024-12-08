@@ -60,7 +60,9 @@
       <span v-else>{{ cart.getItem(sku).amount }}x</span>
     </div>
     <div
-      v-show="!cart.getItem(sku)"
+      :class="{
+        'hidden lg:block': cart.getItem(sku),
+      }"
       class="absolute top-0 left-0 w-full h-full z-10"
       @click="
         () => {

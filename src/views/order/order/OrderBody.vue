@@ -9,7 +9,7 @@
     <SearchInput v-model="keyword"></SearchInput>
   </div>
   <div
-    class="w-full h-3/4 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-2 xl:grid-cols-3 gap-2 md:gap-4 mb-16 lg:mb-0"
+    class="w-full grid grid-cols-2 md:grid-cols-3 lg:grid-cols-2 xl:grid-cols-3 gap-2 md:gap-4 mb-16 lg:mb-4"
   >
     <div
       v-if="products.every((product) => !product.is_active)"
@@ -71,7 +71,10 @@
     </transition>
   </div>
   <div
-    class="fixed z-10 bottom-4 rounded-full bg-primary-700 text-white p-4 hover:bg-primary-800 transition-all cursor-pointer"
+    class="fixed z-10 left-4 lg:left-auto bottom-4 rounded-full bg-primary-700 text-white p-4 hover:bg-primary-800 transition-all cursor-pointer"
+    :class="{
+      'bottom-16 lg:bottom-4': cart.items.length > 0,
+    }"
     @click="openBarcodeScanModal"
   >
     <ScanQrCode size="28" />
