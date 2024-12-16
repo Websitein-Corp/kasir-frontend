@@ -129,7 +129,12 @@ const fetchShops = () => {
           address: item.address,
           name: item.name,
           balance: item.balance,
-          settings: item.settings,
+          settings: item.settings.map((setting) => ({
+            name: setting.name,
+            label: setting.label,
+            value: setting.value ? 1 : 0,
+          })),
+          imageUrl: item.image_url,
         };
       });
 
@@ -148,6 +153,7 @@ const editShop = (item) => {
     address: item.address,
     balance: item.balance,
     settings: item.settings,
+    imageUrl: item.imageUrl,
   };
 };
 
