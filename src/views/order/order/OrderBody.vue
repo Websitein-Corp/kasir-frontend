@@ -95,10 +95,12 @@ import { useRoute } from "vue-router";
 import SearchInput from "@/components/Input/SearchInput.vue";
 import BarcodeScanBody from "@/components/Modal/Body/BarcodeScanBody.vue";
 import useModal from "@/stores/useModal";
+import useToast from "@/stores/useToast";
 
 const auth = useAuth();
 const cart = useCart();
 const page = usePage();
+const toast = useToast();
 const modal = useModal();
 const route = useRoute();
 
@@ -163,7 +165,37 @@ const openBarcodeScanModal = () => {
   modal.title = "Pindai Barcode Produk";
   modal.icon = ScanQrCode;
   modal.body = BarcodeScanBody;
-  modal.props = products.value;
+  modal.callback = addProductToCart;
   modal.open();
+};
+
+const addProductToCart = (detectedCode) => {
+  const product = products.value.find((item) => item.barcode === detectedCode);
+
+  if (product) {
+    if (cart.getItem(product.sku)) {
+      cart.increment(product.sku);
+    } else {
+      cart.add(
+        product.sku,
+        product.name,
+        product.type,
+        product.selling_price,
+        product.image_url
+      );
+    }
+
+    toast.message = "Berhasil";
+    toast.description = "Produk berhasil ditambahkan";
+    toast.type = "SUCCESS";
+    toast.duration = 1500;
+    toast.trigger();
+  } else {
+    toast.message = "Gagal";
+    toast.description = "Kode produk tidak ditemukan";
+    toast.type = "FAILED";
+    toast.duration = 1500;
+    toast.trigger();
+  }
 };
 </script>
