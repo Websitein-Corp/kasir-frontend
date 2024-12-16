@@ -6,6 +6,7 @@
           src: imageUrl,
           loading: './img/imageLoading.svg',
           error: './img/imageLoading.svg',
+          log: false,
         }"
         class="w-32 md:w-64 h-28 md:h-52 object-cover rounded-lg"
       />

@@ -10,6 +10,7 @@
             src: imageUrl,
             loading: './img/imageLoading.svg',
             error: './img/imageLoading.svg',
+            log: false,
           }"
           class="w-full h-full object-cover object-center rounded-lg"
         />
