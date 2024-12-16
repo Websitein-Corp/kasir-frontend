@@ -1,17 +1,18 @@
 <template>
   <div class="rounded-lg p-4 lg:p-8 shadow-xl flex items-center">
-    <div class="mr-8" v-if="imageUrl">
+    <div class="mr-2 lg:mr-8 grow-0 shrink-0" v-if="imageUrl">
       <img
         v-lazy="{
           src: imageUrl,
           loading: './img/imageLoading.svg',
           error: './img/imageLoading.svg',
+          log: false,
         }"
-        class="w-40 md:w-64 h-28 md:h-52 object-cover rounded-lg"
+        class="w-32 md:w-64 h-28 md:h-52 object-cover rounded-lg"
       />
     </div>
     <div class="space-y-2">
-      <div class="font-bold text-base lg:text-2xl">
+      <div class="font-bold text-base lg:text-xl">
         {{ name }}
       </div>
       <div class="text-slate-500 text-sm lg:text-base">

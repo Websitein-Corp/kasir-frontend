@@ -71,9 +71,9 @@
     </transition>
   </div>
   <div
-    class="fixed z-10 left-4 lg:left-auto bottom-4 rounded-full bg-primary-700 text-white p-4 hover:bg-primary-800 transition-all cursor-pointer"
+    class="fixed z-10 left-6 lg:left-auto bottom-4 rounded-full bg-primary-700 text-white p-4 hover:bg-primary-800 transition-all cursor-pointer"
     :class="{
-      'bottom-16 lg:bottom-4': cart.items.length > 0,
+      '!bottom-16 lg:!bottom-4': cart.items.length > 0,
     }"
     @click="openBarcodeScanModal"
   >

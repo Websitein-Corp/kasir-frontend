@@ -124,6 +124,7 @@
                   src: props.shopData.imageUrl,
                   loading: './img/imageLoading.svg',
                   error: './img/imageLoading.svg',
+                  log: false,
                 }"
               />
             </div>
