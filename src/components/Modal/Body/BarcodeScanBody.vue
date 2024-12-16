@@ -71,35 +71,7 @@ function onDetect(detectedCodes) {
   detectedCode.value = detectedCodes[0].rawValue;
 
   if (detectedCode.value) {
-    const product = modal.props.find(
-      (item) => item.barcode === detectedCode.value
-    );
-
-    if (product) {
-      if (cart.getItem(product.sku)) {
-        cart.increment(product.sku);
-      } else {
-        cart.add(
-          product.sku,
-          product.name,
-          product.type,
-          product.selling_price,
-          product.image_url
-        );
-      }
-
-      toast.message = "Berhasil";
-      toast.description = "Produk berhasil ditambahkan";
-      toast.type = "SUCCESS";
-      toast.duration = 1500;
-      toast.trigger();
-    } else {
-      toast.message = "Gagal";
-      toast.description = "Kode produk tidak ditemukan";
-      toast.type = "FAILED";
-      toast.duration = 1500;
-      toast.trigger();
-    }
+    modal.callback(detectedCode.value);
   }
 }
 
