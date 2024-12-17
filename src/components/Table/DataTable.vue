@@ -99,6 +99,6 @@ const table = useTable();
 
 .dtable-content td,
 .dtable-content th {
-  @apply min-w-[150px];
+  @apply min-w-[150px] text-sm lg:text-base leading-tight;
 }
 </style>

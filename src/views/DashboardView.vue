@@ -142,18 +142,12 @@ const dashboardData = ref({
 });
 
 const selectedRevenue = computed(() => {
-  const revenue =
-    dashboardData.value?.summary?.revenue?.[
-      selectedFrequency.value.toLowerCase()
-    ];
+  const revenue = dashboardData.value?.summary?.revenue;
   return revenue || "Rp0";
 });
 
 const selectedOrders = computed(() => {
-  const orders =
-    dashboardData.value?.summary?.orders?.[
-      selectedFrequency.value.toLowerCase()
-    ];
+  const orders = dashboardData.value?.summary?.orders;
   return orders || 0;
 });
 
@@ -236,12 +230,10 @@ const showData = (frequency) => {
 };
 
 const updateLineChart = () => {
-  const selectedRevenueData =
-    dashboardData.value?.chart?.revenue?.[selectedFrequency.value.toLowerCase()]
-      ?.data || [];
+  const revenueData = dashboardData.value.chart?.revenue?.data || [];
 
-  lineChartData.value.labels = selectedRevenueData.map((item) => item.date);
-  lineChartData.value.datasets[0].data = selectedRevenueData.map(
+  lineChartData.value.labels = revenueData.map((item) => item.date);
+  lineChartData.value.datasets[0].data = revenueData.map(
     (item) => item.total_revenue
   );
 };

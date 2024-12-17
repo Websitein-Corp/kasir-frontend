@@ -13,7 +13,7 @@
         <template v-slot:action-2>
           <DatetimeInput
             v-model="table.filters.date"
-            :max-date="new Date()"
+            :max-date="new Date().toISOString()"
             range
           ></DatetimeInput>
           <SearchInput
@@ -125,34 +125,32 @@ watch(
 );
 
 const fetchSupplier = async () => {
-  const formattedDate = table.filters.date.map((rawDate) =>
-    new Date(rawDate).toISOString().slice(0, 10)
-  );
+  if (table.filters.date.start && table.filters.date.end) {
+    const { data } = await axios.get(
+      `${process.env.VUE_APP_API_BASE_URL}/api/supplier?shop_id=${auth.shopId}&date_start=${table.filters.date.start}&date_end=${table.filters.date.end}&keyword=${table.filters.keyword}&page=${table.page.current}`,
+      {
+        headers: {
+          Authorization: `Bearer ${auth.authToken}`,
+        },
+        withCredentials: true,
+      }
+    );
 
-  const { data } = await axios.get(
-    `${process.env.VUE_APP_API_BASE_URL}/api/supplier?shop_id=${auth.shopId}&date_start=${formattedDate[0]}&date_end=${formattedDate[1]}&keyword=${table.filters.keyword}&page=${table.page.current}`,
-    {
-      headers: {
-        Authorization: `Bearer ${auth.authToken}`,
-      },
-      withCredentials: true,
-    }
-  );
+    table.items = data.data.map((item) => {
+      return {
+        id: item.id,
+        name: item.name,
+        phone_number: item.phone_number,
+        address: item.address,
+      };
+    });
 
-  table.items = data.data.map((item) => {
-    return {
-      id: item.id,
-      name: item.name,
-      phone_number: item.phone_number,
-      address: item.address,
-    };
-  });
-
-  table.page.current = data.meta.current_page;
-  table.page.last = data.meta.last_page;
-  table.page.per = data.meta.per_page;
-  table.page.total = data.meta.total;
-  isShowingForm.value = false;
+    table.page.current = data.meta.current_page;
+    table.page.last = data.meta.last_page;
+    table.page.per = data.meta.per_page;
+    table.page.total = data.meta.total;
+    isShowingForm.value = false;
+  }
 };
 
 const handleAddSupplier = () => {
@@ -176,5 +174,9 @@ const confirmDeleteSupplier = (item) => {
   modal.callback = fetchSupplier;
   modal.body = DeleteBody;
   modal.open();
+};
+
+const handleCancel = () => {
+  isShowingForm.value = false;
 };
 </script>

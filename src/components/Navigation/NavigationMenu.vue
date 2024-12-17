@@ -2,7 +2,7 @@
   <div
     class="relative group/container px-2 lg:px-0 max-h-fit h-[4.5rem] lg:h-14 transition-all"
     :class="{
-      'lg:hover:h-64': page.navIsOpened,
+      'lg:hover:h-80': page.navIsOpened,
     }"
   >
     <component

@@ -6,67 +6,141 @@
     @back="$emit('formBack')"
   >
     <div class="grid grid-cols-3 gap-4">
-      <FormCard
-        title="Informasi Toko"
-        :icon="Store"
-        class="col-span-3 lg:col-span-2"
-      >
-        <div class="space-y-8">
-          <div class="grid grid-cols-2 gap-4">
-            <TextInput
-              v-model="form.name"
-              name="name"
-              label="Nama"
-              placeholder="Masukkan nama..."
-              class="col-span-2 lg:col-span-1"
-            />
-            <TextInput
-              v-model="form.address"
-              name="address"
-              label="Alamat"
-              placeholder="Masukkan alamat..."
-              class="col-span-2 lg:col-span-1"
-            />
-            <TextInput
-              v-model="form.balance"
-              type="text"
-              name="balance"
-              label="Saldo"
-              currency
-              disabled
-              placeholder="Rp 0,00"
-              class="col-span-2 lg:col-span-1"
-            />
-          </div>
-          <div class="flex justify-center pt-4">
-            <CustomButton
-              size="xl"
-              :label="isEdit ? 'Edit' : 'Add'"
-              :icon="isEdit ? Pencil : Plus"
-              class="bg-primary-700 hover:bg-primary-800"
-              :loading="page.buttonLoading"
-              @click="submitShop"
-            />
-          </div>
-        </div>
-      </FormCard>
-      <FormCard
-        title="Konfigurasi Toko"
-        :icon="ShoppingBag"
-        class="col-span-3 lg:col-span-1"
-      >
-        <div class="space-y-8">
-          <div class="flex space-x-4 mt-6">
-            <div class="flex-col space-y-4">
-              <SwitchInput
-                v-for="(setting, index) in form.settings"
-                v-bind:key="setting.name"
-                :label="setting.label"
-                :is-active="form.settings[index].value"
-                @switch="(newVal) => (form.settings[index].value = newVal)"
+      <div class="col-span-3 lg:col-span-2 flex flex-col gap-4">
+        <FormCard title="Informasi Toko" :icon="Store">
+          <div class="space-y-8">
+            <div class="grid grid-cols-2 gap-4">
+              <TextInput
+                v-model="form.name"
+                name="name"
+                label="Nama"
+                placeholder="Masukkan nama..."
+                class="col-span-2 lg:col-span-1"
+              />
+              <TextInput
+                v-model="form.address"
+                name="address"
+                label="Alamat"
+                placeholder="Masukkan alamat..."
+                class="col-span-2 lg:col-span-1"
+              />
+              <TextInput
+                v-model="form.balance"
+                type="text"
+                name="balance"
+                label="Saldo"
+                currency
+                disabled
+                placeholder="Rp 0,00"
+                class="col-span-2 lg:col-span-1"
+              />
+              <div class="col-span-2 flex justify-center">
+                <FileInput
+                  label="Gambar"
+                  :acceptedFiles="['png', 'jpg', 'jpeg']"
+                  :clickable="true"
+                  dropzoneMessageClassName="dropzone-message"
+                  @addedFile="
+                    (file) => {
+                      form.image = file.file;
+                    }
+                  "
+                />
+              </div>
+            </div>
+            <div class="flex justify-center pt-4">
+              <CustomButton
+                size="xl"
+                :label="isEdit ? 'Save' : 'Add'"
+                :icon="isEdit ? Save : Plus"
+                class="bg-primary-700 hover:bg-primary-800"
+                :loading="page.buttonLoading"
+                @click="submitShop"
               />
             </div>
           </div>
+        </FormCard>
+        <FormCard title="Konfigurasi Toko" :icon="ShoppingBag">
+          <div class="space-y-8">
+            <div class="flex space-x-4 mt-6">
+              <div class="flex-col space-y-4">
+                <template
+                  v-for="(setting, index) in form.settings"
+                  v-bind:key="setting.name"
+                >
+                  <div
+                    class="h-7"
+                    :class="{
+                      '!mb-6 lg:!mb-8': setting.name === 'tax_amount',
+                    }"
+                  >
+                    <div
+                      v-if="setting.name === 'tax_amount'"
+                      class="flex space-x-4 items-center text-sm lg:text-base"
+                    >
+                      <NumberInput
+                        :model-value="setting.value || 0"
+                        @update:model-value="
+                          (newVal) => (form.settings[index].value = newVal)
+                        "
+                      />
+                      <span>Pajak Pelanggan</span>
+                    </div>
+                    <SwitchInput
+                      v-else
+                      :label="setting.label"
+                      :is-active="form.settings[index].value === 1"
+                      @switch="
+                        (newVal) =>
+                          (form.settings[index].value = newVal ? 1 : 0)
+                      "
+                    />
+                  </div>
+                </template>
+              </div>
+            </div>
+          </div>
+        </FormCard>
+      </div>
+      <FormCard
+        title="Gambar Produk"
+        :icon="Image"
+        v-if="props.shopData"
+        class="col-span-3 lg:col-span-1"
+      >
+        <div class="space-y-8">
+          <div class="flex justify-center space-x-4">
+            <div
+              class="m-10 w-fit h-fit lg:w-fit lg:h-fit rounded-xl"
+              :class="{
+                '!m-0 !w-40 !h-40 lg:!w-64 lg:!h-64':
+                  props.shopData.imageUrl ===
+                  'https://stage-descartes.websitein.id/api/s3?path=https%3A%2F%2F',
+              }"
+            >
+              <img
+                class="w-full h-full object-cover"
+                v-lazy="{
+                  src: props.shopData.imageUrl,
+                  loading: './img/imageLoading.svg',
+                  error: './img/imageLoading.svg',
+                  log: false,
+                }"
+              />
+            </div>
+          </div>
+          <CustomButton
+            v-if="
+              isEdit &&
+              props.shopData.imageUrl !==
+                'https://stage-descartes.websitein.id/api/s3?path=https%3A%2F%2F'
+            "
+            size="full"
+            label="Hapus"
+            :icon="Trash"
+            class="bg-red-700 hover:bg-red-800"
+            @click="deleteImage"
+          />
         </div>
       </FormCard>
     </div>
@@ -74,7 +148,7 @@
 </template>
 
 <script setup>
-import { Plus, Pencil, ShoppingBag, Store } from "lucide-vue-next";
+import { Plus, ShoppingBag, Store, Save, Image, Trash } from "lucide-vue-next";
 import { defineAsyncComponent, reactive } from "vue";
 import PageContainer from "@/views/PageContainer.vue";
 import { axios } from "@/sdk/axios";
@@ -84,6 +158,9 @@ import SwitchInput from "@/components/Input/SwitchInput.vue";
 import useToast from "@/stores/useToast";
 import useAuth from "@/stores/useAuth";
 import usePage from "@/stores/usePage";
+import NumberInput from "@/components/Input/NumberInput.vue";
+import FileInput from "@/components/Input/File/FileInput.vue";
+import Compressor from "compressorjs";
 
 const TextInput = defineAsyncComponent(() =>
   import("@/components/Input/TextInput.vue")
@@ -115,31 +192,32 @@ const form = reactive({
     ? props.shopData.settings
     : [
         {
-          name: "active_tax_flag",
+          name: "tax_amount",
           label: "Aktifkan Pajak untuk Customer",
-          value: false,
+          value: 0.0,
         },
         {
           name: "open_bill",
           label: "Fitur Open Bill",
-          value: false,
+          value: 0,
         },
         {
           name: "customer_input",
           label: "Fitur Nama Customer pada Transaksi",
-          value: false,
+          value: 0,
         },
         {
           name: "table_number_input",
           label: "Fitur Nomor Meja pada Transaksi",
-          value: false,
+          value: 0,
         },
         {
           name: "shop_payment_fee",
           label: "Biaya Metode Pembayaran oleh Toko",
-          value: false,
+          value: 0,
         },
       ],
+  image: props.shopData ? props.shopData.image : null,
 });
 
 const submitShop = async () => {
@@ -147,80 +225,233 @@ const submitShop = async () => {
     page.buttonLoading = true;
 
     if (props.isEdit) {
-      axios
-        .put(
-          `${process.env.VUE_APP_API_BASE_URL}/api/shops`,
-          {
-            shop_id: form.shop_id,
-            address: form.address,
-            name: form.name,
-            active_tax_flag: form.settings[0].value,
-            open_bill: form.settings[1].value,
-            customer_input: form.settings[2].value,
-            table_number_input: form.settings[3].value,
-            shop_payment_fee: form.settings[4].value,
+      const data = {
+        shop_id: form.shop_id,
+        address: form.address,
+        name: form.name,
+        tax_amount: form.settings[0].value,
+        open_bill: form.settings[1].value,
+        customer_input: form.settings[2].value,
+        table_number_input: form.settings[3].value,
+        shop_payment_fee: form.settings[4].value,
+        delete_image_flag: 0,
+      };
+
+      if (form.image) {
+        new Compressor(form.image, {
+          quality: 0.6,
+          success(compressedImage) {
+            data["image"] = compressedImage;
+
+            axios
+              .post(
+                `${process.env.VUE_APP_API_BASE_URL}/api/shops/edit`,
+                data,
+                {
+                  headers: {
+                    Authorization: `Bearer ${auth.authToken}`,
+                    "Content-Type": "multipart/form-data",
+                  },
+                  withCredentials: true,
+                }
+              )
+              .then((response) => {
+                if (response.data["error_type"]) {
+                  toast.message = "Gagal";
+                  toast.description = response.data.message;
+                  toast.type = "FAILED";
+                  toast.trigger();
+                } else {
+                  toast.message = "Sukses";
+                  toast.description = response.data.message;
+                  toast.type = "SUCCESS";
+                  toast.trigger();
+
+                  emit("submitSuccess");
+                }
+              });
           },
-          {
-            headers: {
-              Authorization: `Bearer ${auth.authToken}`,
-            },
-            withCredentials: true,
-          }
-        )
-        .then((response) => {
-          if (response.data["error_type"]) {
+          error() {
             toast.message = "Gagal";
-            toast.description = response.data.message;
+            toast.description = "Gagal mengunduh gambar!";
             toast.type = "FAILED";
             toast.trigger();
-          } else {
-            toast.message = "Sukses";
-            toast.description = response.data.message;
-            toast.type = "SUCCESS";
-            toast.trigger();
 
-            emit("submitSuccess");
-          }
+            page.buttonLoading = false;
+          },
         });
+      } else {
+        axios
+          .post(`${process.env.VUE_APP_API_BASE_URL}/api/shops/edit`, data, {
+            headers: {
+              Authorization: `Bearer ${auth.authToken}`,
+              "Content-Type": "multipart/form-data",
+            },
+            withCredentials: true,
+          })
+          .then((response) => {
+            if (response.data["error_type"]) {
+              toast.message = "Gagal";
+              toast.description = response.data.message;
+              toast.type = "FAILED";
+              toast.trigger();
+            } else {
+              toast.message = "Sukses";
+              toast.description = response.data.message;
+              toast.type = "SUCCESS";
+              toast.trigger();
+
+              emit("submitSuccess");
+            }
+          });
+      }
     } else {
-      axios
-        .post(
-          `${process.env.VUE_APP_API_BASE_URL}/api/shops`,
-          {
-            address: form.address,
-            name: form.name,
-            balance: form.balance,
-            settings: form.settings,
+      const data = {
+        address: form.address,
+        name: form.name,
+        balance: form.balance,
+        settings: form.settings,
+        delete_image_flag: 0,
+      };
+
+      if (form.image) {
+        new Compressor(form.image, {
+          quality: 0.6,
+          success(compressedImage) {
+            data["image"] = compressedImage;
+
+            axios
+              .post(
+                `${process.env.VUE_APP_API_BASE_URL}/api/shops`,
+                {
+                  address: form.address,
+                  name: form.name,
+                  balance: form.balance,
+                  settings: form.settings,
+                },
+                {
+                  headers: {
+                    Authorization: `Bearer ${auth.authToken}`,
+                    "Content-Type": "multipart/form-data",
+                  },
+                  withCredentials: true,
+                }
+              )
+              .then((response) => {
+                if (response.data["error_type"]) {
+                  toast.message = "Gagal";
+                  toast.description = response.data.message;
+                  toast.type = "FAILED";
+                  toast.trigger();
+                } else {
+                  toast.message = "Sukses";
+                  toast.description = response.data.message;
+                  toast.type = "SUCCESS";
+                  toast.trigger();
+
+                  emit("submitSuccess");
+                }
+              });
           },
-          {
-            headers: {
-              Authorization: `Bearer ${auth.authToken}`,
-            },
-            withCredentials: true,
-          }
-        )
-        .then((response) => {
-          if (response.data["error_type"]) {
+          error() {
             toast.message = "Gagal";
-            toast.description = response.data.message;
+            toast.description = "Gagal mengunduh gambar!";
             toast.type = "FAILED";
             toast.trigger();
-          } else {
-            toast.message = "Sukses";
-            toast.description = response.data.message;
-            toast.type = "SUCCESS";
-            toast.trigger();
 
-            emit("submitSuccess");
-          }
+            page.buttonLoading = false;
+          },
         });
+      } else {
+        if (form.image) {
+          new Compressor(form.image, {
+            quality: 0.6,
+            success(compressedImage) {
+              data["image"] = compressedImage;
+
+              axios
+                .post(
+                  `${process.env.VUE_APP_API_BASE_URL}/api/shops`,
+                  {
+                    address: form.address,
+                    name: form.name,
+                    balance: form.balance,
+                    settings: form.settings,
+                  },
+                  {
+                    headers: {
+                      Authorization: `Bearer ${auth.authToken}`,
+                      "Content-Type": "multipart/form-data",
+                    },
+                    withCredentials: true,
+                  }
+                )
+                .then((response) => {
+                  if (response.data["error_type"]) {
+                    toast.message = "Gagal";
+                    toast.description = response.data.message;
+                    toast.type = "FAILED";
+                    toast.trigger();
+                  } else {
+                    toast.message = "Sukses";
+                    toast.description = response.data.message;
+                    toast.type = "SUCCESS";
+                    toast.trigger();
+
+                    emit("submitSuccess");
+                  }
+                });
+            },
+            error() {
+              toast.message = "Gagal";
+              toast.description = "Gagal mengunduh gambar!";
+              toast.type = "FAILED";
+              toast.trigger();
+
+              page.buttonLoading = false;
+            },
+          });
+        } else {
+          axios
+            .post(
+              `${process.env.VUE_APP_API_BASE_URL}/api/shops`,
+              {
+                address: form.address,
+                name: form.name,
+                balance: form.balance,
+                settings: form.settings,
+              },
+              {
+                headers: {
+                  Authorization: `Bearer ${auth.authToken}`,
+                },
+                withCredentials: true,
+              }
+            )
+            .then((response) => {
+              if (response.data["error_type"]) {
+                toast.message = "Gagal";
+                toast.description = response.data.message;
+                toast.type = "FAILED";
+                toast.trigger();
+              } else {
+                toast.message = "Sukses";
+                toast.description = response.data.message;
+                toast.type = "SUCCESS";
+                toast.trigger();
+
+                emit("submitSuccess");
+              }
+            });
+        }
+      }
     }
   }
 };
 
 const validateForm = () => {
   let isValid = true;
-  const notRequired = ["balance"];
+  const notRequired = ["balance", "image"];
 
   const filteredForm = Object.keys(form).filter(
     (item) => notRequired.indexOf(item) === -1
@@ -240,5 +471,43 @@ const validateForm = () => {
   });
 
   return isValid;
+};
+
+const deleteImage = () => {
+  const data = {
+    shop_id: form.shop_id,
+    address: form.address,
+    name: form.name,
+    tax_amount: form.settings[0].value,
+    open_bill: form.settings[1].value,
+    customer_input: form.settings[2].value,
+    table_number_input: form.settings[3].value,
+    shop_payment_fee: form.settings[4].value,
+    delete_image_flag: 1,
+  };
+
+  axios
+    .post(`${process.env.VUE_APP_API_BASE_URL}/api/shops/edit`, data, {
+      headers: {
+        Authorization: `Bearer ${auth.authToken}`,
+        "Content-Type": "multipart/form-data",
+      },
+      withCredentials: true,
+    })
+    .then((response) => {
+      if (response.data["error_type"]) {
+        toast.message = "Gagal";
+        toast.description = response.data.message;
+        toast.type = "FAILED";
+        toast.trigger();
+      } else {
+        toast.message = "Sukses";
+        toast.description = response.data.message;
+        toast.type = "SUCCESS";
+        toast.trigger();
+
+        emit("submitSuccess", { item: null, isAdd: false });
+      }
+    });
 };
 </script>

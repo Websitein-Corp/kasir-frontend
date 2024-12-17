@@ -40,6 +40,7 @@
               name="sku"
               label="SKU"
               placeholder="Masukkan SKU..."
+              :disabled="isEdit"
               class="col-span-2 lg:col-span-1"
             />
             <TextInput
@@ -135,8 +136,8 @@
           <div class="flex justify-center pt-4">
             <CustomButton
               size="xl"
-              :label="isEdit ? 'Edit' : 'Add'"
-              :icon="isEdit ? Pencil : Plus"
+              :label="isEdit ? 'Save' : 'Add'"
+              :icon="isEdit ? Save : Plus"
               class="bg-primary-700 hover:bg-primary-800"
               :loading="page.buttonLoading"
               @click="submitProduct"
@@ -145,11 +146,7 @@
         </div>
       </FormCard>
       <div class="col-span-3 lg:col-span-1 flex flex-col gap-4">
-        <FormCard
-          title="Status Produk"
-          :icon="PackageCheck"
-          class="col-span-3 lg:col-span-1"
-        >
+        <FormCard title="Status Produk" :icon="PackageCheck">
           <div class="space-y-8">
             <div class="flex space-x-4 mt-4">
               <div class="h-7">
@@ -162,32 +159,46 @@
             </div>
           </div>
         </FormCard>
-        <FormCard
-          title="Gambar Produk"
-          :icon="Image"
-          v-if="props.productData"
-          class="col-span-3 lg:col-span-1"
-        >
+        <FormCard title="Gambar Produk" :icon="Image" v-if="props.productData">
           <div class="space-y-8">
-            <div class="flex space-x-4">
-              <div class="w-40 h-40 lg:w-64 lg:h-64 rounded-xl">
+            <div class="flex justify-center space-x-4">
+              <div
+                class="m-10 w-fit h-fit lg:w-fit lg:h-fit rounded-xl"
+                :class="{
+                  '!m-0 !w-40 !h-40 lg:!w-64 lg:!h-64':
+                    props.productData.imageUrl ===
+                    'https://stage-descartes.websitein.id/api/s3?path=https%3A%2F%2F',
+                }"
+              >
                 <img
                   class="w-full h-full"
                   v-lazy="{
                     src: props.productData.imageUrl,
                     loading: './img/imageLoading.svg',
                     error: './img/imageLoading.svg',
+                    log: false,
                   }"
                 />
               </div>
             </div>
+            <CustomButton
+              v-if="
+                isEdit &&
+                props.productData.imageUrl !==
+                  'https://stage-descartes.websitein.id/api/s3?path=https%3A%2F%2F'
+              "
+              size="full"
+              label="Hapus"
+              :icon="Trash"
+              class="bg-red-700 hover:bg-red-800"
+              @click="deleteImage"
+            />
           </div>
         </FormCard>
         <FormCard
           v-if="isEdit && productData && productData.type === 'FOODS'"
           title="Lainnya"
           :icon="Gavel"
-          class="col-span-3 lg:col-span-1"
         >
           <div class="space-y-8">
             <div class="flex space-x-4 mt-4">
@@ -205,6 +216,12 @@
         </FormCard>
       </div>
     </div>
+    <div
+      class="fixed z-10 left-4 lg:left-auto bottom-4 rounded-full bg-primary-700 text-white p-4 hover:bg-primary-800 transition-all cursor-pointer"
+      @click="openBarcodeScanModal"
+    >
+      <ScanQrCode size="28" />
+    </div>
   </PageContainer>
 </template>
 
@@ -215,9 +232,11 @@ import {
   Package,
   Plus,
   Gavel,
-  Pencil,
   Receipt,
   Image,
+  Save,
+  Trash,
+  ScanQrCode,
 } from "lucide-vue-next";
 import { ref, onMounted, defineAsyncComponent, reactive } from "vue";
 import PageContainer from "@/views/PageContainer.vue";
@@ -237,6 +256,7 @@ import usePage from "@/stores/usePage";
 import Compressor from "compressorjs";
 import router from "@/router";
 import CustomAlert from "@/components/Alert/CustomAlert.vue";
+import BarcodeScanBody from "@/components/Modal/Body/BarcodeScanBody.vue";
 
 const TextInput = defineAsyncComponent(() =>
   import("@/components/Input/TextInput.vue")
@@ -331,6 +351,7 @@ const submitProduct = async () => {
       category: form.category,
       barcode: form.barcode,
       status: form.isActive,
+      delete_image_flag: 0,
     };
 
     if (props.isEdit) {
@@ -364,7 +385,7 @@ const submitProduct = async () => {
                   toast.type = "SUCCESS";
                   toast.trigger();
 
-                  emit("submitSuccess");
+                  emit("submitSuccess", { item: null, isAdd: false });
                 }
               });
           },
@@ -398,7 +419,7 @@ const submitProduct = async () => {
               toast.type = "SUCCESS";
               toast.trigger();
 
-              emit("submitSuccess");
+              emit("submitSuccess", { item: null, isAdd: false });
             }
           });
       }
@@ -429,7 +450,7 @@ const submitProduct = async () => {
                   toast.type = "SUCCESS";
                   toast.trigger();
 
-                  emit("submitSuccess", { item: form });
+                  emit("submitSuccess", { item: form, isAdd: true });
                 }
               });
           },
@@ -463,7 +484,7 @@ const submitProduct = async () => {
               toast.type = "SUCCESS";
               toast.trigger();
 
-              emit("submitSuccess", { item: form });
+              emit("submitSuccess", { item: form, isAdd: true });
             }
           });
       }
@@ -521,5 +542,66 @@ const fetchCategories = () => {
         });
       }
     });
+};
+
+const deleteImage = () => {
+  const data = {
+    shop_id: auth.shopId,
+    sku: form.sku,
+    name: form.name,
+    selling_retail_price: form.sellingRetailPrice,
+    selling_price: form.sellingPrice,
+    capital_price: form.capitalPrice,
+    type: form.type,
+    stock: form.type === "GOODS" ? form.stock : null,
+    category: form.category,
+    barcode: form.barcode,
+    status: form.isActive,
+    delete_image_flag: 1,
+  };
+
+  axios
+    .post(`${process.env.VUE_APP_API_BASE_URL}/api/products/edit`, data, {
+      headers: {
+        Authorization: `Bearer ${auth.authToken}`,
+        "Content-Type": "multipart/form-data",
+      },
+      withCredentials: true,
+    })
+    .then((response) => {
+      if (response.data["error_type"]) {
+        toast.message = "Gagal";
+        toast.description = response.data.message;
+        toast.type = "FAILED";
+        toast.trigger();
+      } else {
+        toast.message = "Sukses";
+        toast.description = response.data.message;
+        toast.type = "SUCCESS";
+        toast.trigger();
+
+        emit("submitSuccess", { item: null, isAdd: false });
+      }
+    });
+};
+
+const openBarcodeScanModal = () => {
+  modal.title = "Pindai Barcode Produk";
+  modal.icon = ScanQrCode;
+  modal.body = BarcodeScanBody;
+  modal.callback = insertBarcode;
+  modal.open();
+};
+
+const insertBarcode = (detectedCode) => {
+  form.barcode = detectedCode;
+
+  toast.message = "Berhasil";
+  toast.description = "Barcode berhasil dipindai";
+  toast.type = "SUCCESS";
+  toast.duration = 1500;
+  toast.trigger();
+
+  modal.close();
 };
 </script>

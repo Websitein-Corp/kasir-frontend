@@ -31,8 +31,6 @@ const pwa = usePwa();
 
 onMounted(() => {
   window.addEventListener("beforeinstallprompt", (event) => {
-    event.preventDefault();
-
     pwa.deferredPrompt = event;
     pwa.isInstallable = true;
   });

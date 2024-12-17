@@ -16,21 +16,43 @@
           <div class="space-y-8">
             <div class="flex space-x-4 mt-6">
               <div class="flex-col space-y-4">
-                <div
-                  class="h-7"
+                <template
                   v-for="setting in settingsData"
                   v-bind:key="setting.name"
                 >
-                  <SwitchInput
-                    :label="setting.label"
-                    :is-active="setting.value"
-                    @switch="
-                      (newVal) => {
-                        handleSettingChange(setting.name, newVal);
-                      }
-                    "
-                  />
-                </div>
+                  <div
+                    class="h-7"
+                    :class="{
+                      '!mb-6 lg:!mb-8': setting.name === 'tax_amount',
+                    }"
+                  >
+                    <div
+                      v-if="setting.name === 'tax_amount'"
+                      class="flex space-x-4 items-center text-sm lg:text-base"
+                    >
+                      <NumberInput
+                        :model-value="setting.value || 0"
+                        @update:model-value="
+                          (val) => {
+                            setting.value = val;
+                            handleSettingChange(setting.name, val);
+                          }
+                        "
+                      />
+                      <span>Pajak Pelanggan</span>
+                    </div>
+                    <SwitchInput
+                      v-else
+                      :label="setting.label"
+                      :is-active="setting.value"
+                      @switch="
+                        (newVal) => {
+                          handleSettingChange(setting.name, newVal);
+                        }
+                      "
+                    />
+                  </div>
+                </template>
               </div>
             </div>
           </div>
@@ -80,6 +102,7 @@ import usePage from "@/stores/usePage";
 import { useRoute } from "vue-router";
 import usePwa from "@/stores/usePwa";
 import CustomButton from "@/components/Button/CustomButton.vue";
+import NumberInput from "@/components/Input/NumberInput.vue";
 
 const settingsData = ref();
 
