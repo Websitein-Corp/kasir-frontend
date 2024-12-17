@@ -122,9 +122,15 @@
     </div>
     <div
       v-if="bill.status === 'PENDING'"
-      class="flex justify-center items-center my-4"
+      class="flex flex-col justify-center items-center my-4"
     >
       <img :src="bill.payment_url" alt="QRIS" class="w-80 h-80 object-cover" />
+      <CustomButton
+        label="Print QR Pembayaran"
+        size="fit"
+        class="bg-primary-400 text-black mx-auto"
+        @click="bluetoothReceipt.printReceipt(bill)"
+      />
     </div>
     <div
       v-if="bill.status === 'SUCCESS'"

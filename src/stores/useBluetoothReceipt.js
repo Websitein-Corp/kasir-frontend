@@ -211,15 +211,41 @@ export default defineStore("bluetoothReceipt", {
                 ],
               ]
             )
-            .align("center")
-            .newline()
-            .text("Terimakasih sudah berbelanja di " + this.auth.shopName)
-            .newline()
-            .newline()
-            .newline()
             .encode();
 
           this.receiptPrinter.print(data);
+
+          if (bill.payment_method === "QRIS" && bill.status === "PENDING") {
+            data = encoder
+              .initialize()
+              .newline()
+              .qrcode(bill.payment_url)
+              .align("center")
+              .newline()
+              .line("Silakan scan QR diatas untuk membayar menggunakan QRIS")
+              .line("===============================")
+              .bold()
+              .line("**INI BUKAN BUKTI PEMBAYARAN**")
+              .text("===============================")
+              .newline()
+              .newline()
+              .newline()
+              .encode();
+
+            this.receiptPrinter.print(data);
+          } else {
+            data = encoder
+              .initialize()
+              .align("center")
+              .newline()
+              .text("Terimakasih sudah berbelanja di " + this.auth.shopName)
+              .newline()
+              .newline()
+              .newline()
+              .encode();
+
+            this.receiptPrinter.print(data);
+          }
         }
       } catch (exception) {
         console.log("Error printing receipt:", exception);
