@@ -8,6 +8,7 @@ export default defineStore("auth", {
     shopId: localStorage.getItem("shop_id"),
     shopName: localStorage.getItem("shop_name"),
     shopAddress: localStorage.getItem("shop_address"),
+    shopImageUrl: localStorage.getItem("shop_image_url"),
     userType: localStorage.getItem("userType"),
     permission: localStorage.getItem("permission"),
   }),
@@ -55,11 +56,12 @@ export default defineStore("auth", {
       localStorage.setItem("auth_token", token);
     },
 
-    setShopId(id, name, address) {
+    setShopId(id, name, address, imageUrl) {
       this.shopId = id;
       localStorage.setItem("shop_id", id);
       localStorage.setItem("shop_name", name);
       localStorage.setItem("shop_address", address);
+      localStorage.setItem("shop_image_url", imageUrl);
     },
 
     setPermission(userType, permission) {
