@@ -24,7 +24,7 @@
   <div
     class="fixed z-50 top-4 left-5 p-2 mt-3 lg:mt-0 transition-all duration-300"
     :class="{
-      '-top-20 lg:top-4': !page.navIsOpened && page.scroll > 0,
+      '!-top-20 lg:!top-4': !page.navIsOpened && page.scroll > 0,
     }"
   >
     <Menu
