@@ -3,6 +3,7 @@
     <div
       class="w-full lg:w-full h-screen pb-20 px-2 xl:px-8 overflow-x-hidden overflow-y-scroll no-scrollbar"
       @scroll="(event) => (page.scroll = event.target.scrollTop)"
+      @touchmove="(event) => (page.scroll = event.target.scrollTop)"
     >
       <div
         id="header"
