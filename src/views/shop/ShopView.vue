@@ -95,7 +95,7 @@ onMounted(async () => {
   page.loading = true;
   table.resetPage();
 
-  await fetchShops();
+  fetchShops();
 });
 
 watch(table.filters, () => {
