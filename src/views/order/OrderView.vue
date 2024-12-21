@@ -80,7 +80,7 @@ import SummarySidebar from "@/views/order/summary/SummarySidebar.vue";
 import SummaryBottomMenu from "@/views/order/summary/SummaryBottomMenu.vue";
 import DefaultSkeleton from "@/components/Skeleton/DefaultSkeleton.vue";
 import usePage from "@/stores/usePage";
-import { onMounted, onUnmounted, ref } from "vue";
+import { onMounted } from "vue";
 import useModal from "@/stores/useModal";
 import { axios } from "@/sdk/axios";
 import useCart from "@/stores/useCart";
