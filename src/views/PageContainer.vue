@@ -1,6 +1,7 @@
 <template>
   <div
     class="w-full h-screen pb-20 px-2 xl:px-8 overflow-hidden overflow-y-auto"
+    @scroll="(event) => (page.scroll = event.target.scrollTop)"
   >
     <div
       id="header"

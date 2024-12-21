@@ -204,6 +204,8 @@ const bill = ref({
 
 onMounted(async () => {
   page.loading = true;
+  page.scroll = 0;
+
   showBill();
   const bluetooth = await getBluetoothId();
 
