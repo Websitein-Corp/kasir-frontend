@@ -4,7 +4,7 @@
       :key="selectedSupply?.id || 'new'"
       :supplierData="selectedSupply"
       :isEdit="!!selectedSupply"
-      @cancel="handleCancel"
+      @form-back="resetForm"
       @save="fetchSupplier"
     />
   </div>
@@ -254,4 +254,11 @@ watch(
   },
   { deep: true }
 );
+
+const resetForm = () => {
+  isShowingForm.value = false;
+  selectedSupply.value = null;
+
+  fetchSupplier();
+};
 </script>

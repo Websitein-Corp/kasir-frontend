@@ -3,7 +3,7 @@
     <SupplierFormView
       :supplierData="selectedSupplier"
       :isEdit="!!selectedSupplier"
-      @cancel="handleCancel"
+      @form-back="resetForm"
       @save="fetchSupplier"
     />
   </div>
@@ -176,7 +176,10 @@ const confirmDeleteSupplier = (item) => {
   modal.open();
 };
 
-const handleCancel = () => {
+const resetForm = () => {
   isShowingForm.value = false;
+  selectedSupplier.value = null;
+
+  fetchSupplier();
 };
 </script>
