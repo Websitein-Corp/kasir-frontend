@@ -4,7 +4,7 @@
       :key="selectedSupply?.id || 'new'"
       :supplierData="selectedSupply"
       :isEdit="!!selectedSupply"
-      @cancel="handleCancel"
+      @form-back="resetForm"
       @save="fetchSupplier"
     />
   </div>
@@ -111,7 +111,6 @@ import { onMounted, ref, watch, nextTick } from "vue";
 import DataTable from "@/components/Table/DataTable.vue";
 import DatetimeInput from "@/components/Input/DatetimeInput.vue";
 import SearchInput from "@/components/Input/SearchInput.vue";
-import SelectInput from "@/components/Input/SelectInput.vue";
 import CustomButton from "@/components/Button/CustomButton.vue";
 import SupplyFormView from "./SupplyFormView.vue";
 import PageContainer from "@/views/PageContainer.vue";
@@ -254,4 +253,11 @@ watch(
   },
   { deep: true }
 );
+
+const resetForm = () => {
+  isShowingForm.value = false;
+  selectedSupply.value = null;
+
+  fetchSupplier();
+};
 </script>

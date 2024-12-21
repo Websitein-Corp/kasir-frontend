@@ -1,12 +1,21 @@
 <template>
-  <PageContainer title="Supply Detail" subtitle="Daftar supply yang ada...">
+  <PageContainer
+    title="Supply Detail"
+    subtitle="Daftar supply yang ada..."
+    enable-back
+    @back="$emit('formBack')"
+  >
     <!-- Apply a max-height to the form and enable scrolling -->
     <form
       @submit.prevent="handleSubmit"
       class="h-[95vh] overflow-y-auto scrollbar-hide"
     >
       <!-- Supplier Detail -->
-      <FormCard class="form-section scrollbar-hide">
+      <FormCard
+        class="form-section scrollbar-hide"
+        title="Detail Supplier"
+        :icon="Truck"
+      >
         <!-- If not editing, show input field for supplier name -->
         <div v-if="!isEdit">
           <div class="flex flex-row justify-between space-x-4 mt-4">
@@ -131,7 +140,8 @@
         v-for="(product, index) in productDetails"
         :key="index"
         class="form-section mt-8 relative"
-        title="Product/Ingredient Detail"
+        title="Detail Produk/Bahan Baku"
+        :icon="Box"
       >
         <button
           type="button"
@@ -267,29 +277,22 @@
       </FormCard>
 
       <div
-        class="flex flex-col space-y-4 w-full items-center justify-center mt-8"
+        class="flex flex-col lg:flex-row space-y-4 space-x-0 lg:space-y-0 lg:space-x-4 w-full items-center justify-center mt-8"
       >
         <CustomButton
           v-if="!isEdit"
-          class="w-1/4 bg-primary-600"
+          class="w-full lg:w-1/4 bg-primary-600"
           textSize="sm"
           @click="addProduct"
         >
-          Tambah Produk/Ingredient
+          Tambah Produk/Bahan Baku
         </CustomButton>
         <CustomButton
-          class="w-1/4 bg-primary-600"
+          class="w-full lg:w-1/4 bg-primary-600"
           type="submit"
           :loading="page.buttonloading"
         >
           Submit
-        </CustomButton>
-        <CustomButton
-          type="button"
-          class="w-1/4 bg-red-600"
-          @click="cancelForm"
-        >
-          Cancel
         </CustomButton>
       </div>
     </form>
@@ -314,6 +317,7 @@ import useAuth from "@/stores/useAuth";
 import PageContainer from "@/views/PageContainer.vue";
 import useToast from "@/stores/useToast";
 import usePage from "@/stores/usePage";
+import { Box, Truck } from "lucide-vue-next";
 
 const toast = useToast();
 const page = usePage();

@@ -45,7 +45,7 @@
         class="flex items-center space-x-2"
         :class="{
           '!flex-col !space-y-2.5': orientation === 'vertical',
-          '!space-x-0': loading,
+          '!space-x-0': loading || !icon,
         }"
       >
         <span v-if="iconSide === 'left'">

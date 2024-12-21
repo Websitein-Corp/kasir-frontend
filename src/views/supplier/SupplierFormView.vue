@@ -2,11 +2,13 @@
   <PageContainer
     title="Supplier Detail"
     subtitle="Tambat/Edit supplier yang ada..."
+    enable-back
+    @back="$emit('formBack')"
   >
     <!-- Apply a max-height to the form and enable scrolling -->
     <form @submit.prevent="handleSubmit" class="max-h-[95vh] overflow-y-auto">
       <!-- Supplier Detail -->
-      <FormCard class="form-section">
+      <FormCard class="form-section" title="Detail Supplier" :icon="Truck">
         <!-- If not editing, show input field for supplier name -->
         <div v-if="!isEdit">
           <TextInput
@@ -56,13 +58,6 @@
         >
           Submit
         </CustomButton>
-        <CustomButton
-          type="button"
-          class="w-1/4 bg-red-600"
-          @click="cancelForm"
-        >
-          Cancel
-        </CustomButton>
       </div>
     </form>
   </PageContainer>
@@ -83,6 +78,7 @@ import useAuth from "@/stores/useAuth";
 import PageContainer from "@/views/PageContainer.vue";
 import useToast from "@/stores/useToast";
 import usePage from "@/stores/usePage";
+import { Truck } from "lucide-vue-next";
 
 const toast = useToast();
 const auth = useAuth();
