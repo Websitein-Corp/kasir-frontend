@@ -2,8 +2,7 @@
   <div v-if="!page.loading" class="flex">
     <div
       class="w-full lg:w-full h-screen pb-20 px-2 xl:px-8 overflow-x-hidden overflow-y-scroll no-scrollbar"
-      @scroll="(event) => (page.scroll = event.target.scrollTop)"
-      @touchmove="(event) => (page.scroll = event.target.scrollTop)"
+      @scroll="handleScroll"
     >
       <div
         id="header"
@@ -81,7 +80,7 @@ import SummarySidebar from "@/views/order/summary/SummarySidebar.vue";
 import SummaryBottomMenu from "@/views/order/summary/SummaryBottomMenu.vue";
 import DefaultSkeleton from "@/components/Skeleton/DefaultSkeleton.vue";
 import usePage from "@/stores/usePage";
-import { onMounted } from "vue";
+import { onMounted, onUnmounted, ref } from "vue";
 import useModal from "@/stores/useModal";
 import { axios } from "@/sdk/axios";
 import useCart from "@/stores/useCart";
@@ -98,6 +97,10 @@ onMounted(() => {
 
   fetchSettings();
 });
+
+const handleScroll = (event) => {
+  page.scroll = event.target.scrollTop;
+};
 
 const fetchSettings = () => {
   axios
