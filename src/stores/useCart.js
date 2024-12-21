@@ -41,6 +41,15 @@ export default defineStore("cart", {
     },
   },
   actions: {
+    reset() {
+      this.clearAll();
+      this.discount = 0;
+      this.totalPaid = 0;
+      this.settings = {
+        tax_amount: 0.0,
+      };
+    },
+
     clearAll() {
       this.items = [];
     },

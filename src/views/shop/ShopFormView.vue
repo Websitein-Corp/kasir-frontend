@@ -39,7 +39,6 @@
                   label="Gambar"
                   :acceptedFiles="['png', 'jpg', 'jpeg']"
                   :clickable="true"
-                  dropzoneMessageClassName="dropzone-message"
                   @addedFile="
                     (file) => {
                       form.image = file.file;
@@ -114,8 +113,9 @@
               class="m-10 w-fit h-fit lg:w-fit lg:h-fit rounded-xl"
               :class="{
                 '!m-0 !w-40 !h-40 lg:!w-64 lg:!h-64':
-                  props.shopData.imageUrl ===
-                  'https://stage-descartes.websitein.id/api/s3?path=https%3A%2F%2F',
+                  props.shopData.imageUrl.includes(
+                    '/api/s3?path=https%3A%2F%2F'
+                  ),
               }"
             >
               <img
@@ -132,8 +132,7 @@
           <CustomButton
             v-if="
               isEdit &&
-              props.shopData.imageUrl !==
-                'https://stage-descartes.websitein.id/api/s3?path=https%3A%2F%2F'
+              !props.shopData.imageUrl.includes('/api/s3?path=https%3A%2F%2F')
             "
             size="full"
             label="Hapus"
