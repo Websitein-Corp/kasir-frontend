@@ -197,7 +197,7 @@ const fetchBill = () => {
 };
 
 const showBill = (refId) => {
-  cart.clearAll();
+  cart.reset();
   page.order.step = 0;
   loading.value = false;
 
