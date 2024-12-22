@@ -1,7 +1,7 @@
 <template>
   <div class="h-[70dvh] overflow-y-auto no-scrollbar">
     <div
-      class="h-[20dvh] lg:h-[25dvh] bg-yellow-100 space-y-1 lg:space-y-2 p-2 lg:p-4 flex flex-col justify-center"
+      class="h-[25dvh] lg:h-[30dvh] bg-yellow-100 space-y-1 lg:space-y-2 p-2 lg:p-4 flex flex-col justify-center"
     >
       <div class="flex justify-center">
         <CircleEllipsis
@@ -15,6 +15,14 @@
       </div>
       <div class="flex justify-center font-helvetica-light text-xs lg:text-lg">
         {{ bill.tr_datetime }}
+      </div>
+      <div
+        v-if="paymentTimeLeft"
+        class="flex justify-center items-center font-helvetica text-xs lg:text-lg font-bold"
+      >
+        <Timer class="mr-2 mb-1" />
+        Batas waktu bayar
+        <div class="ml-2 text-red-500">{{ paymentTimeLeft }}</div>
       </div>
     </div>
     <div
@@ -63,12 +71,16 @@
           <div>{{ $helpers.money(bill.tax_fee) }}</div>
         </div>
       </div>
+      <div class="flex justify-between" v-if="!cart.settings.shop_payment_fee">
+        <div>Biaya Admin</div>
+        <div>{{ $helpers.money(bill.payment_fee) }}</div>
+      </div>
       <div class="flex justify-between">
         <div>Total</div>
         <div class="flex justify-between w-5/12">
           <div>{{ bill.total_item }} barang</div>
           <div class="font-helvetica font-bold">
-            {{ $helpers.money(bill.total_price) }}
+            {{ $helpers.money(bill.final_price) }}
           </div>
         </div>
       </div>
@@ -92,7 +104,7 @@
         size="md"
         label="Check Status"
         class="bg-primary-700 hover:bg-primary-800"
-        :loading="loading"
+        :loading="page.buttonLoading"
         @click="checkStatus"
       />
     </div>
@@ -107,7 +119,7 @@ import useToast from "@/stores/useToast";
 import { axios } from "@/sdk/axios";
 import usePage from "@/stores/usePage";
 import useAuth from "@/stores/useAuth";
-import { CircleEllipsis } from "lucide-vue-next";
+import { CircleEllipsis, Timer } from "lucide-vue-next";
 import router from "@/router";
 import CustomButton from "@/components/Button/CustomButton.vue";
 
@@ -129,11 +141,14 @@ const bill = ref({
   tax_fee: 0,
   total_price: 0,
   payment_method: "",
+  payment_fee: 0,
+  final_price: 0,
   amount_paid: 0,
+  expired_at: null,
   change: 0,
 });
 
-const loading = ref(false);
+const paymentTimeLeft = ref();
 
 const auth = useAuth();
 const cart = useCart();
@@ -146,6 +161,8 @@ onMounted(() => {
 });
 
 const checkStatus = () => {
+  page.buttonLoading = true;
+
   axios
     .get(
       `${process.env.VUE_APP_API_BASE_URL}/api/payment/status?invoice_number=${modal.props.ref_id}&shop_id=${auth.shopId}`,
@@ -163,10 +180,36 @@ const checkStatus = () => {
         toast.type = "FAILED";
         toast.trigger();
       } else {
-        toast.message = "Sukses";
-        toast.description = data.message;
-        toast.type = "SUCCESS";
-        toast.trigger();
+        switch (data.data.status) {
+          case "PENDING":
+            toast.message = "Informasi";
+            toast.description = "Transaksi belum dibayar!";
+            toast.trigger();
+            break;
+          case "EXPIRED":
+            toast.message = "Gagal";
+            toast.description = "Pembayaran kedaluwarsa!";
+            toast.type = "FAILED";
+            toast.trigger();
+            break;
+          case "SUCCESS":
+            toast.message = "Sukses";
+            toast.description = "Pembayaran berhasil!";
+            toast.type = "SUCCESS";
+            toast.trigger();
+            break;
+          case "FAILED":
+            toast.message = "Gagal";
+            toast.description = "Pembayaran gagal!";
+            toast.type = "FAILED";
+            toast.trigger();
+            break;
+          case "REFUNDED":
+            toast.message = "Sukses";
+            toast.description = "Pembayaran berhasil dikembalikan!";
+            toast.type = "SUCCESS";
+            toast.trigger();
+        }
 
         showBill(data.data.ref_id);
       }
@@ -193,18 +236,67 @@ const fetchBill = () => {
       }
 
       bill.value = data.data;
+
+      if (data.data.status === "PENDING") {
+        handleCountDown();
+      } else {
+        paymentTimeLeft.value = null;
+      }
     });
 };
 
 const showBill = (refId) => {
   cart.reset();
   page.order.step = 0;
-  loading.value = false;
+  page.buttonLoading = false;
 
   modal.close();
 
   router.push({
     path: `/bill/${refId}`,
   });
+};
+
+let countdownInterval;
+
+const handleCountDown = () => {
+  const expiredTime = new Date(bill.value.expired_at.replace(" ", "T"));
+
+  updateCountdown(expiredTime);
+  countdownInterval = setInterval(() => updateCountdown(expiredTime), 1000);
+};
+
+const updateCountdown = (expiredTime) => {
+  const currentTime = new Date();
+
+  const timeDifference = expiredTime - currentTime;
+  if (timeDifference <= 0) {
+    bill.value.status = "EXPIRED";
+    paymentTimeLeft.value = null;
+
+    toast.message = "Gagal";
+    toast.description = "Pembayaran kedaluwarsa!";
+    toast.type = "FAILED";
+    toast.trigger();
+
+    clearInterval(countdownInterval);
+    showBill(modal.props.ref_id);
+  } else {
+    const hours = Math.floor(
+      (timeDifference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
+    );
+    const minutes = Math.floor(
+      (timeDifference % (1000 * 60 * 60)) / (1000 * 60)
+    );
+    const seconds = Math.floor((timeDifference % (1000 * 60)) / 1000);
+
+    paymentTimeLeft.value = `${padZero(hours)}:${padZero(minutes)}:${padZero(
+      seconds
+    )}`;
+  }
+};
+
+const padZero = (num) => {
+  return num.toString().padStart(2, "0");
 };
 </script>

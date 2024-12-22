@@ -1,9 +1,10 @@
 <template>
   <div v-if="!page.loading">
     <div
-      class="h-[30dvh] sm:h-64 lg:h-[40dvh] bg-primary-100 space-y-4 p-4 flex flex-col justify-center"
+      class="h-[30dvh] sm:h-64 lg:h-[40dvh] bg-primary-100 space-y-2 lg:space-y-4 p-4 flex flex-col justify-center"
       :class="{
         'bg-red-100': bill.status === 'FAILED',
+        'bg-orange-100': bill.status === 'EXPIRED',
         'bg-yellow-100': bill.status === 'PENDING',
         'bg-purple-100': bill.status === 'REFUNDED',
       }"
@@ -20,10 +21,14 @@
           }"
         />
         <CircleX
-          v-else-if="bill.status === 'FAILED'"
+          v-else-if="bill.status === 'FAILED' || bill.status === 'EXPIRED'"
           size="150"
           stroke-width="0.7"
-          class="w-32 h-32 lg:w-40 lg:h-40 text-red-600"
+          class="w-32 h-32 lg:w-40 lg:h-40"
+          :class="{
+            'text-red-600': bill.status === 'FAILED',
+            'text-orange-600': bill.status === 'EXPIRED',
+          }"
         />
         <CircleEllipsis
           v-else
@@ -35,16 +40,24 @@
       <div
         class="flex justify-center font-bold text-base sm:text-lg lg:text-3xl"
       >
-        {{ getBillMessage() }}
+        {{ getBillMessage(bill.status) }}
       </div>
       <div
         class="flex justify-center font-helvetica-light text-xs sm:text-sm lg:text-xl"
       >
         {{ bill.tr_datetime }}
       </div>
+      <div
+        v-if="paymentTimeLeft"
+        class="flex justify-center items-center font-helvetica text-xs sm:text-sm lg:text-xl font-bold"
+      >
+        <Timer class="mr-2 mb-1" />
+        Batas waktu bayar
+        <div class="ml-2 text-red-500">{{ paymentTimeLeft }}</div>
+      </div>
     </div>
     <div
-      class="mx-2 lg:mx-28 my-4 space-y-4 p-4 flex flex-col justify-center font-helvetica-light text-xs lg:text-base"
+      class="mx-2 lg:mx-12 xl:mx-28 my-4 space-y-4 p-4 flex flex-col justify-center font-helvetica-light text-xs lg:text-base"
     >
       <div class="flex justify-between font-helvetica font-bold">
         <div>Nomor Order</div>
@@ -66,7 +79,7 @@
         <div class="flex justify-between">
           <div>{{ item.item_name }}</div>
           <div class="flex justify-between w-5/12 lg:w-1/4">
-            <div>{{ item.quantity }}</div>
+            <div>{{ item.quantity }} x</div>
             <div>@ {{ $helpers.money(item.price) }}</div>
           </div>
         </div>
@@ -95,12 +108,19 @@
           <div>{{ $helpers.money(bill.tax_fee) }}</div>
         </div>
       </div>
+      <div
+        class="flex justify-between"
+        v-if="bill.payment_fee || !cart.settings.shop_payment_fee"
+      >
+        <div>Biaya Admin</div>
+        <div>{{ $helpers.money(bill.payment_fee) }}</div>
+      </div>
       <div class="flex justify-between">
         <div>Total</div>
         <div class="flex justify-between w-5/12 lg:w-1/4">
-          <div>{{ bill.total_item }} barang</div>
+          <div>{{ bill.total_item }} x</div>
           <div class="font-helvetica font-bold">
-            {{ $helpers.money(bill.total_price) }}
+            {{ $helpers.money(bill.final_price) }}
           </div>
         </div>
       </div>
@@ -122,9 +142,18 @@
     </div>
     <div
       v-if="bill.status === 'PENDING'"
-      class="flex justify-center items-center my-4"
+      class="flex flex-col justify-center items-center my-4"
     >
       <img :src="bill.payment_url" alt="QRIS" class="w-80 h-80 object-cover" />
+      <div class="flex justify-center mt-4">
+        <CustomButton
+          size="md"
+          label="Check Status"
+          class="bg-primary-700 hover:bg-primary-800"
+          :loading="page.buttonLoading"
+          @click="checkStatus"
+        />
+      </div>
     </div>
     <div
       v-if="bill.status === 'SUCCESS'"
@@ -151,6 +180,7 @@ import {
   CircleX,
   CircleEllipsis,
   Bluetooth,
+  Timer,
 } from "lucide-vue-next";
 import { onMounted, ref } from "vue";
 import { axios } from "@/sdk/axios";
@@ -198,9 +228,14 @@ const bill = ref({
   tax_fee: 0,
   total_price: 0,
   payment_method: "",
+  payment_fee: 0,
+  final_price: 0,
   amount_paid: 0,
+  expired_at: null,
   change: 0,
 });
+
+const paymentTimeLeft = ref();
 
 onMounted(async () => {
   page.loading = true;
@@ -236,7 +271,42 @@ const showBill = () => {
       }
 
       bill.value = data.data;
-      bill.value["type"] = "SUCCESS";
+
+      if (data.data.status === "PENDING") {
+        handleCountDown();
+      } else {
+        paymentTimeLeft.value = null;
+      }
+    });
+};
+
+const checkStatus = () => {
+  page.buttonLoading = true;
+
+  axios
+    .get(
+      `${process.env.VUE_APP_API_BASE_URL}/api/payment/status?invoice_number=${props.invoiceNumber}&shop_id=${auth.shopId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${auth.authToken}`,
+        },
+        withCredentials: true,
+      }
+    )
+    .then(({ data }) => {
+      if (data["error_type"]) {
+        toast.message = "Gagal";
+        toast.description = data.message;
+        toast.type = "FAILED";
+        toast.trigger();
+      } else {
+        toast.message = "Sukses";
+        toast.description = `Status: ${getBillMessage(data.data.status)}`;
+        toast.type = "SUCCESS";
+        toast.trigger();
+
+        showBill(data.data.ref_id);
+      }
     });
 };
 
@@ -264,16 +334,60 @@ const getBluetoothId = async () => {
   };
 };
 
-const getBillMessage = () => {
-  switch (bill.value.status) {
+const getBillMessage = (status) => {
+  switch (status) {
     case "SUCCESS":
       return "Pembayaran Berhasil!";
     case "FAILED":
       return "Pembayaran Gagal!";
+    case "EXPIRED":
+      return "Pembayaran Kedaluwarsa!";
     case "REFUNDED":
       return "Pembayaran Berhasil Dikembalikan!";
     default:
       return "Menunggu Pembayaran...";
   }
+};
+
+let countdownInterval;
+
+const handleCountDown = () => {
+  const expiredTime = new Date(bill.value.expired_at.replace(" ", "T"));
+
+  updateCountdown(expiredTime);
+  countdownInterval = setInterval(() => updateCountdown(expiredTime), 1000);
+};
+
+const updateCountdown = (expiredTime) => {
+  const currentTime = new Date();
+
+  const timeDifference = expiredTime - currentTime;
+  if (timeDifference <= 0) {
+    bill.value.status = "EXPIRED";
+    paymentTimeLeft.value = null;
+
+    toast.message = "Gagal";
+    toast.description = "Pembayaran kedaluwarsa!";
+    toast.type = "FAILED";
+    toast.trigger();
+
+    clearInterval(countdownInterval);
+  } else {
+    const hours = Math.floor(
+      (timeDifference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
+    );
+    const minutes = Math.floor(
+      (timeDifference % (1000 * 60 * 60)) / (1000 * 60)
+    );
+    const seconds = Math.floor((timeDifference % (1000 * 60)) / 1000);
+
+    paymentTimeLeft.value = `${padZero(hours)}:${padZero(minutes)}:${padZero(
+      seconds
+    )}`;
+  }
+};
+
+const padZero = (num) => {
+  return num.toString().padStart(2, "0");
 };
 </script>
