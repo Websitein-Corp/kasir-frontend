@@ -34,10 +34,10 @@
       v-else-if="type === 'success'"
     />
     <div>
-      <div class="font-bold text-base lg:text-lg">
+      <div class="font-bold text-left text-base lg:text-lg">
         {{ title }}
       </div>
-      <div class="font-helvetica-light text-sm lg:text-base">
+      <div class="font-helvetica-light text-left text-sm lg:text-base">
         <slot />
       </div>
     </div>
