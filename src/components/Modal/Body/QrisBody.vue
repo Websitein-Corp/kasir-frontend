@@ -180,36 +180,10 @@ const checkStatus = () => {
         toast.type = "FAILED";
         toast.trigger();
       } else {
-        switch (data.data.status) {
-          case "PENDING":
-            toast.message = "Informasi";
-            toast.description = "Transaksi belum dibayar!";
-            toast.trigger();
-            break;
-          case "EXPIRED":
-            toast.message = "Gagal";
-            toast.description = "Pembayaran kedaluwarsa!";
-            toast.type = "FAILED";
-            toast.trigger();
-            break;
-          case "SUCCESS":
-            toast.message = "Sukses";
-            toast.description = "Pembayaran berhasil!";
-            toast.type = "SUCCESS";
-            toast.trigger();
-            break;
-          case "FAILED":
-            toast.message = "Gagal";
-            toast.description = "Pembayaran gagal!";
-            toast.type = "FAILED";
-            toast.trigger();
-            break;
-          case "REFUNDED":
-            toast.message = "Sukses";
-            toast.description = "Pembayaran berhasil dikembalikan!";
-            toast.type = "SUCCESS";
-            toast.trigger();
-        }
+        toast.message = "Sukses";
+        toast.description = `Status: ${getBillMessage(data.data.status)}`;
+        toast.type = "SUCCESS";
+        toast.trigger();
 
         showBill(data.data.ref_id);
       }
@@ -255,6 +229,21 @@ const showBill = (refId) => {
   router.push({
     path: `/bill/${refId}`,
   });
+};
+
+const getBillMessage = (status) => {
+  switch (status) {
+    case "SUCCESS":
+      return "Pembayaran Berhasil!";
+    case "FAILED":
+      return "Pembayaran Gagal!";
+    case "EXPIRED":
+      return "Pembayaran Kedaluwarsa!";
+    case "REFUNDED":
+      return "Pembayaran Berhasil Dikembalikan!";
+    default:
+      return "Menunggu Pembayaran...";
+  }
 };
 
 let countdownInterval;
