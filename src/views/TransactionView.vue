@@ -5,22 +5,27 @@
         <div class="ml-3">
           <ul class="list-disc">
             <li>
-              Baris
+              Warna
               <span class="font-helvetica text-green-600">Hijau</span>
               menandakan transaksi yang sukses
             </li>
             <li>
-              Baris
+              Warna
               <span class="font-helvetica text-yellow-600">Kuning</span>
               menandakan transaksi yang sedang proses/pending
             </li>
             <li>
-              Baris
+              Warna
               <span class="font-helvetica text-red-600">Merah</span> menandakan
               transaksi yang gagal
             </li>
             <li>
-              Baris
+              Warna
+              <span class="font-helvetica text-orange-600">Oranye</span>
+              menandakan transaksi yang kedaluwarsa
+            </li>
+            <li>
+              Warna
               <span class="font-helvetica text-purple-600">Ungu</span>
               menandakan transaksi yang di-refund
             </li>
@@ -74,6 +79,7 @@
               'bg-green-100': item.status === 'SUCCESS',
               'bg-yellow-100': item.status === 'PENDING',
               'bg-red-100': item.status === 'FAILED',
+              'bg-orange-200': item.status === 'EXPIRED',
               'bg-purple-100': item.status === 'REFUNDED',
             }"
           >
@@ -97,6 +103,7 @@
                 <CircleEllipsis v-if="item.status === 'PENDING'" />
                 <CircleCheck v-else-if="item.status === 'SUCCESS'" />
                 <CircleX v-else-if="item.status === 'FAILED'" />
+                <CircleX v-else-if="item.status === 'EXPIRED'" />
                 <CircleAlert v-else-if="item.status === 'REFUNDED'" />
                 <span class="mt-1">{{ item.status }}</span>
               </div>
