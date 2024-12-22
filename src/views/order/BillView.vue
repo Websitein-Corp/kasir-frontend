@@ -157,13 +157,14 @@
     </div>
     <div
       v-if="bill.status === 'SUCCESS'"
-      class="flex flex-col justify-center mb-8"
+      class="flex flex-col justify-center items-center mb-8"
     >
       <CustomButton
         label="Print Receipt"
         size="fit"
-        class="bg-primary-400 text-black mx-auto"
-        @click="bluetoothReceipt.printReceipt(bill)"
+        :icon="Printer"
+        class="bg-primary-700 hover:bg-primary-800"
+        @click="handlePrinter"
       />
     </div>
   </div>
@@ -181,6 +182,7 @@ import {
   CircleEllipsis,
   Bluetooth,
   Timer,
+  Printer,
 } from "lucide-vue-next";
 import { onMounted, ref } from "vue";
 import { axios } from "@/sdk/axios";
@@ -244,13 +246,19 @@ onMounted(async () => {
   showBill();
   const bluetooth = await getBluetoothId();
 
-  modal.title = "Bluetooth Receipt Connect";
+  bluetoothReceipt.printerStatus = "WAITING...";
+  await bluetoothReceipt.reconnect(bluetooth);
+});
+
+const handlePrinter = () => {
+  modal.title = "Sambungkan Bluetooth Printer";
   modal.icon = Bluetooth;
   modal.body = BluetoothBody;
 
   bluetoothReceipt.printerStatus = "WAITING...";
-  await bluetoothReceipt.reconnect(bluetooth);
-});
+  bluetoothReceipt.printReceipt(bill.value);
+};
+
 const showBill = () => {
   axios
     .get(

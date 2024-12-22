@@ -2,7 +2,7 @@
   <div v-if="!page.loading">
     <PageContainer title="Transaksi" subtitle="Daftar transaksi masuk...">
       <CustomAlert type="info" title="Keterangan" class="mb-4">
-        <div class="ml-3">
+        <div>
           <ul class="list-disc">
             <li>
               Warna
