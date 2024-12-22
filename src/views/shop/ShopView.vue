@@ -116,12 +116,15 @@ watch(
 
 const fetchShops = () => {
   axios
-    .get(`${process.env.VUE_APP_API_BASE_URL}/api/shops`, {
-      headers: {
-        Authorization: `Bearer ${auth.authToken}`,
-      },
-      withCredentials: true,
-    })
+    .get(
+      `${process.env.VUE_APP_API_BASE_URL}/api/shops?page=${table.page.current}&page_size=${table.page.total}`,
+      {
+        headers: {
+          Authorization: `Bearer ${auth.authToken}`,
+        },
+        withCredentials: true,
+      }
+    )
     .then(({ data }) => {
       table.items = data.data.map((item) => {
         return {

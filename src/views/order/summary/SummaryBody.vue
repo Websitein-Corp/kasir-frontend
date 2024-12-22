@@ -123,7 +123,7 @@
         :disabled="cart.items.length < 1"
         @click="page.order.step++"
       >
-        <div class="font-bold">Total | {{ $helpers.money(cart.total) }}</div>
+        <div class="font-bold">Subtotal | {{ $helpers.money(cart.sum) }}</div>
       </CustomButton>
     </transition>
   </div>
