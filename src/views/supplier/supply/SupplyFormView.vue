@@ -124,15 +124,57 @@
               class="w-1/2"
             />
           </div>
+          <div>
+            <TextInput
+              v-model="supplierDetail.paid_amount"
+              name="paid_amount"
+              label="Jumlah yang Dibayar"
+              type="text"
+              currency
+              readonly
+            />
+            <TextInput
+              v-model="supplierDetail.remaining_amount"
+              name="remaining_amount"
+              label="Sisa Pembayaran"
+              type="text"
+              currency
+              readonly
+            />
+            <TextInput
+              v-model="supplierDetail.installment_batch"
+              name="installment_batch"
+              label="Cicilan"
+              type="text"
+              readonly
+            />
+          </div>
         </div>
 
-        <CustomButton
-          class="w-1/4 mt-4 bg-primary-600"
-          type="submit"
-          v-if="isEdit && supplierDetail.status === 'NOT_PAID'"
-        >
-          Update Status
-        </CustomButton>
+        <div class="flex flex-col mt-4">
+          <div class="h-1 bg-slate-300 rounded-full w-full"></div>
+          <TextInput
+            v-model="payAmount"
+            name="payAmount"
+            type="text"
+            label="Jumlah Bayar"
+            pattern="[0-9._%+-]+@[0-9.-]$"
+            currency
+            class="w-full"
+          />
+
+          <CustomButton
+            class="w-1/4 mt-4 bg-primary-600"
+            type="submit"
+            v-if="
+              isEdit &&
+              (supplierDetail.status === 'NOT_PAID' ||
+                supplierDetail.status === 'PARTIALLY_PAID')
+            "
+          >
+            Update Pembayaran
+          </CustomButton>
+        </div>
       </FormCard>
 
       <!-- Product/Ingredient Detail -->
@@ -324,6 +366,7 @@ const page = usePage();
 const auth = useAuth();
 const supplierList = ref([]);
 const ingredientsList = ref({ products: [], ingredients: [] });
+const payAmount = ref(0);
 
 const TextInput = defineAsyncComponent(() =>
   import("@/components/Input/TextInput.vue")
@@ -375,6 +418,13 @@ const supplierDetail = ref({
     ? props.supplierData.supply_id
     : generateRandomId(),
   supplier: props.supplierData ? props.supplierData.supplier : "",
+  paid_amount: props.supplierData ? props.supplierData.paid_amount : "",
+  remaining_amount: props.supplierData
+    ? props.supplierData.remaining_amount
+    : "",
+  installment_batch: props.supplierData
+    ? props.supplierData.installment_batch
+    : "",
 });
 
 const statusLabel = computed(() => {
@@ -442,6 +492,7 @@ const handleSubmit = () => {
 const updateStatus = () => {
   const requestBody = {
     shop_id: auth.shopId,
+    amount: payAmount.value,
     id: supplierDetail.value.id,
   };
 

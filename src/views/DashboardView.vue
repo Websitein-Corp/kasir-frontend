@@ -27,6 +27,9 @@
 
       <!-- Stat Cards -->
       <div class="flex space-x-2 mt-2">
+        <StatsCard :value="selectedBalance" label="Total Saldo">
+          <!-- SVG Icon -->
+        </StatsCard>
         <StatsCard :value="selectedRevenue" label="Total Pendapatan">
           <!-- SVG Icon -->
         </StatsCard>
@@ -149,6 +152,11 @@ const selectedRevenue = computed(() => {
 const selectedOrders = computed(() => {
   const orders = dashboardData.value?.summary?.orders;
   return orders || 0;
+});
+
+const selectedBalance = computed(() => {
+  const balance = dashboardData.value?.summary?.balance;
+  return balance || "Rp0";
 });
 
 const lineChartData = ref({
