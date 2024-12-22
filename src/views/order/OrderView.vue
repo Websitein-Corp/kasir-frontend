@@ -117,6 +117,9 @@ const fetchSettings = () => {
       cart.settings.tax_amount = data.data.find(
         (item) => item.name === "tax_amount"
       ).value;
+      cart.settings.shop_payment_fee = data.data.find(
+        (item) => item.name === "shop_payment_fee"
+      ).value;
     });
 };
 </script>

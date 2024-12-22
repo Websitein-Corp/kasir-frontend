@@ -8,6 +8,7 @@ export default defineStore("cart", {
     totalPaid: 0,
     settings: {
       tax_amount: 0.0,
+      shop_payment_fee: false,
     },
   }),
   getters: {
