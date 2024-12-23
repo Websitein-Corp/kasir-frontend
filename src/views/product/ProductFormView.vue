@@ -158,22 +158,22 @@
             </div>
           </div>
         </FormCard>
-        <FormCard title="Gambar Produk" :icon="Image" v-if="props.productData">
+        <FormCard title="Gambar Produk" :icon="Image" v-if="productData">
           <div class="space-y-8">
             <div class="flex justify-center space-x-4">
               <div
                 class="m-10 w-fit h-fit lg:w-fit lg:h-fit rounded-xl"
                 :class="{
                   '!m-0 !w-40 !h-40 lg:!w-64 lg:!h-64':
-                    props.productData.imageUrl.includes(
+                    productData.imageUrl.includes(
                       '/api/s3?path=https%3A%2F%2F'
-                    ),
+                    ) || productData.imageUrl.includes('/api/s3?path='),
                 }"
               >
                 <img
                   class="w-full h-full"
                   v-lazy="{
-                    src: props.productData.imageUrl,
+                    src: productData.imageUrl,
                     loading: './img/imageLoading.svg',
                     error: './img/imageLoading.svg',
                     log: false,
@@ -184,9 +184,7 @@
             <CustomButton
               v-if="
                 isEdit &&
-                !props.productData.imageUrl.includes(
-                  '/api/s3?path=https%3A%2F%2F'
-                )
+                !productData.imageUrl.includes('/api/s3?path=https%3A%2F%2F')
               "
               size="full"
               label="Hapus"
@@ -302,28 +300,29 @@ const typeList = [
 ];
 
 const categoryList = ref([]);
+const productData = ref(props.productData);
 
 const form = reactive({
-  sku: props.productData ? props.productData.sku : "",
-  name: props.productData ? props.productData.name : "",
-  sellingRetailPrice: props.productData
-    ? helpers.parseRupiah(props.productData.sellingRetailPrice)
+  sku: productData.value ? productData.value.sku : "",
+  name: productData.value ? productData.value.name : "",
+  sellingRetailPrice: productData.value
+    ? helpers.parseRupiah(productData.value.sellingRetailPrice)
     : 0,
-  capitalPrice: props.productData
-    ? helpers.parseRupiah(props.productData.capitalPrice)
+  capitalPrice: productData.value
+    ? helpers.parseRupiah(productData.value.capitalPrice)
     : 0,
-  sellingPrice: props.productData
-    ? helpers.parseRupiah(props.productData.sellingPrice)
+  sellingPrice: productData.value
+    ? helpers.parseRupiah(productData.value.sellingPrice)
     : 0,
-  discountPrice: props.productData
-    ? helpers.parseRupiah(props.productData.discountPrice)
+  discountPrice: productData.value
+    ? helpers.parseRupiah(productData.value.discountPrice)
     : 0,
-  stock: props.productData ? props.productData.stock : 0,
-  type: props.productData ? props.productData.type : "",
-  category: props.productData ? props.productData.category.code : "",
-  barcode: props.productData ? props.productData.barcode : "",
-  isActive: props.productData ? (props.productData.isActive ? 1 : 0) : 0,
-  image: props.productData ? props.productData.image : null,
+  stock: productData.value ? productData.value.stock : 0,
+  type: productData.value ? productData.value.type : "",
+  category: productData.value ? productData.value.category.code : "",
+  barcode: productData.value ? productData.value.barcode : "",
+  isActive: productData.value ? (productData.value.isActive ? 1 : 0) : 0,
+  image: productData.value ? productData.value.image : null,
 });
 
 onMounted(() => {
@@ -495,7 +494,7 @@ const submitProduct = async () => {
 
 const validateForm = () => {
   let isValid = true;
-  const notRequired = ["image", "discountPrice"];
+  const notRequired = ["image", "discountPrice", "stock"];
 
   const filteredForm = Object.keys(form).filter(
     (item) => notRequired.indexOf(item) === -1
@@ -581,7 +580,7 @@ const deleteImage = () => {
         toast.type = "SUCCESS";
         toast.trigger();
 
-        emit("submitSuccess", { item: null, isAdd: false });
+        productData.value.imageUrl = `${process.env.VUE_APP_API_BASE_URL}/api/s3?path=https%3A%2F%2F`;
       }
     });
 };
