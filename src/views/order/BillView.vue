@@ -3,10 +3,10 @@
     <div
       class="h-[30dvh] sm:h-64 lg:h-[40dvh] bg-primary-100 space-y-2 lg:space-y-4 p-4 flex flex-col justify-center"
       :class="{
-        'bg-red-100': bill.status === 'FAILED',
-        'bg-orange-100': bill.status === 'EXPIRED',
-        'bg-yellow-100': bill.status === 'PENDING',
-        'bg-purple-100': bill.status === 'REFUNDED',
+        '!bg-red-100': bill.status === 'FAILED',
+        '!bg-orange-100': bill.status === 'EXPIRED',
+        '!bg-yellow-100': bill.status === 'PENDING',
+        '!bg-purple-100': bill.status === 'REFUNDED',
       }"
     >
       <div class="flex justify-center">
@@ -361,6 +361,13 @@ let countdownInterval;
 
 const handleCountDown = () => {
   const expiredTime = new Date(bill.value.expired_at.replace(" ", "T"));
+
+  if (new Date() > expiredTime) {
+    bill.value.status = "EXPIRED";
+    paymentTimeLeft.value = null;
+
+    return;
+  }
 
   updateCountdown(expiredTime);
   countdownInterval = setInterval(() => updateCountdown(expiredTime), 1000);
