@@ -11,6 +11,7 @@
         <template v-slot:thead>
           <tr>
             <th>Name</th>
+            <th>Tipe</th>
             <th>Stock</th>
             <th>Unit</th>
             <th>Actions</th>
@@ -19,6 +20,7 @@
         <template v-slot:tbody>
           <tr v-for="(item, index) in table.items" :key="index">
             <td>{{ item.name }}</td>
+            <td>{{ item.type }}</td>
             <td>
               <input
                 type="text"
@@ -96,7 +98,7 @@ watch(
 
 const fetchRecon = async () => {
   const { data } = await axios.get(
-    `${process.env.VUE_APP_API_BASE_URL}/api/ingredients?shop_id=${auth.shopId}&keyword=${table.filters.keyword}&page=${table.page.current}`,
+    `${process.env.VUE_APP_API_BASE_URL}/api/recon/products?shop_id=${auth.shopId}&keyword=${table.filters.keyword}&page=${table.page.current}`,
     {
       headers: {
         Authorization: `Bearer ${auth.authToken}`,
@@ -111,6 +113,7 @@ const fetchRecon = async () => {
       name: item.name,
       stock: item.stock,
       unitName: item.unit_name,
+      type: item.type,
     };
   });
 

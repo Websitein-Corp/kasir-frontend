@@ -64,7 +64,10 @@
         align="between"
         class="bg-primary-700 hover:bg-primary-800"
         :icon="CornerDownRight"
-        @click="page.order.step++"
+        @click="
+          page.order.step++;
+          modal.close();
+        "
       >
         <div class="font-bold">Subtotal | {{ $helpers.money(cart.sum) }}</div>
       </CustomButton>

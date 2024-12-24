@@ -1,12 +1,21 @@
 <template>
-  <PageContainer title="Supply Detail" subtitle="Daftar supply yang ada...">
+  <PageContainer
+    title="Supply Detail"
+    subtitle="Daftar supply yang ada..."
+    enable-back
+    @back="$emit('formBack')"
+  >
     <!-- Apply a max-height to the form and enable scrolling -->
     <form
       @submit.prevent="handleSubmit"
       class="h-[95vh] overflow-y-auto scrollbar-hide"
     >
       <!-- Supplier Detail -->
-      <FormCard class="form-section scrollbar-hide">
+      <FormCard
+        class="form-section scrollbar-hide"
+        title="Detail Supplier"
+        :icon="Truck"
+      >
         <!-- If not editing, show input field for supplier name -->
         <div v-if="!isEdit">
           <div class="flex flex-row justify-between space-x-4 mt-4">
@@ -115,15 +124,57 @@
               class="w-1/2"
             />
           </div>
+          <div>
+            <TextInput
+              v-model="supplierDetail.paid_amount"
+              name="paid_amount"
+              label="Jumlah yang Dibayar"
+              type="text"
+              currency
+              readonly
+            />
+            <TextInput
+              v-model="supplierDetail.remaining_amount"
+              name="remaining_amount"
+              label="Sisa Pembayaran"
+              type="text"
+              currency
+              readonly
+            />
+            <TextInput
+              v-model="supplierDetail.installment_batch"
+              name="installment_batch"
+              label="Cicilan"
+              type="text"
+              readonly
+            />
+          </div>
         </div>
 
-        <CustomButton
-          class="w-1/4 mt-4 bg-primary-600"
-          type="submit"
-          v-if="isEdit && supplierDetail.status === 'NOT_PAID'"
-        >
-          Update Status
-        </CustomButton>
+        <div class="flex flex-col mt-4">
+          <div class="h-1 bg-slate-300 rounded-full w-full"></div>
+          <TextInput
+            v-model="payAmount"
+            name="payAmount"
+            type="text"
+            label="Jumlah Bayar"
+            pattern="[0-9._%+-]+@[0-9.-]$"
+            currency
+            class="w-full"
+          />
+
+          <CustomButton
+            class="w-1/4 mt-4 bg-primary-600"
+            type="submit"
+            v-if="
+              isEdit &&
+              (supplierDetail.status === 'NOT_PAID' ||
+                supplierDetail.status === 'PARTIALLY_PAID')
+            "
+          >
+            Update Pembayaran
+          </CustomButton>
+        </div>
       </FormCard>
 
       <!-- Product/Ingredient Detail -->
@@ -131,7 +182,8 @@
         v-for="(product, index) in productDetails"
         :key="index"
         class="form-section mt-8 relative"
-        title="Product/Ingredient Detail"
+        title="Detail Produk/Bahan Baku"
+        :icon="Box"
       >
         <button
           type="button"
@@ -267,29 +319,22 @@
       </FormCard>
 
       <div
-        class="flex flex-col space-y-4 w-full items-center justify-center mt-8"
+        class="flex flex-col lg:flex-row space-y-4 space-x-0 lg:space-y-0 lg:space-x-4 w-full items-center justify-center mt-8"
       >
         <CustomButton
           v-if="!isEdit"
-          class="w-1/4 bg-primary-600"
+          class="w-full lg:w-1/4 bg-primary-600"
           textSize="sm"
           @click="addProduct"
         >
-          Tambah Produk/Ingredient
+          Tambah Produk/Bahan Baku
         </CustomButton>
         <CustomButton
-          class="w-1/4 bg-primary-600"
+          class="w-full lg:w-1/4 bg-primary-600"
           type="submit"
           :loading="page.buttonloading"
         >
           Submit
-        </CustomButton>
-        <CustomButton
-          type="button"
-          class="w-1/4 bg-red-600"
-          @click="cancelForm"
-        >
-          Cancel
         </CustomButton>
       </div>
     </form>
@@ -314,12 +359,14 @@ import useAuth from "@/stores/useAuth";
 import PageContainer from "@/views/PageContainer.vue";
 import useToast from "@/stores/useToast";
 import usePage from "@/stores/usePage";
+import { Box, Truck } from "lucide-vue-next";
 
 const toast = useToast();
 const page = usePage();
 const auth = useAuth();
 const supplierList = ref([]);
 const ingredientsList = ref({ products: [], ingredients: [] });
+const payAmount = ref(0);
 
 const TextInput = defineAsyncComponent(() =>
   import("@/components/Input/TextInput.vue")
@@ -371,6 +418,13 @@ const supplierDetail = ref({
     ? props.supplierData.supply_id
     : generateRandomId(),
   supplier: props.supplierData ? props.supplierData.supplier : "",
+  paid_amount: props.supplierData ? props.supplierData.paid_amount : "",
+  remaining_amount: props.supplierData
+    ? props.supplierData.remaining_amount
+    : "",
+  installment_batch: props.supplierData
+    ? props.supplierData.installment_batch
+    : "",
 });
 
 const statusLabel = computed(() => {
@@ -438,6 +492,7 @@ const handleSubmit = () => {
 const updateStatus = () => {
   const requestBody = {
     shop_id: auth.shopId,
+    amount: payAmount.value,
     id: supplierDetail.value.id,
   };
 

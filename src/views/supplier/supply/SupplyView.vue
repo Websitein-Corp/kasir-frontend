@@ -4,7 +4,7 @@
       :key="selectedSupply?.id || 'new'"
       :supplierData="selectedSupply"
       :isEdit="!!selectedSupply"
-      @cancel="handleCancel"
+      @form-back="resetForm"
       @save="fetchSupplier"
     />
   </div>
@@ -74,7 +74,9 @@
             <td>
               <span v-if="item?.status === 'NOT_PAID'">Belum Dibayar</span>
               <span v-if="item?.status === 'PAID'">Sudah Dibayar</span>
-              <span v-else>Unknown</span>
+              <span v-if="item?.status === 'PARTIALLY_PAID'"
+                >Dibayar Sebagian</span
+              >
             </td>
             <td>{{ item?.tr_datetime || "N/A" }}</td>
             <td>{{ item?.due_date || "N/A" }}</td>
@@ -111,7 +113,6 @@ import { onMounted, ref, watch, nextTick } from "vue";
 import DataTable from "@/components/Table/DataTable.vue";
 import DatetimeInput from "@/components/Input/DatetimeInput.vue";
 import SearchInput from "@/components/Input/SearchInput.vue";
-import SelectInput from "@/components/Input/SelectInput.vue";
 import CustomButton from "@/components/Button/CustomButton.vue";
 import SupplyFormView from "./SupplyFormView.vue";
 import PageContainer from "@/views/PageContainer.vue";
@@ -193,6 +194,9 @@ const fetchSupplier = async () => {
         due_date: item?.due_date || "N/A",
         total_price: item?.total_price || 0,
         supplier: item?.supplier?.name || "Unknown Supplier",
+        paid_amount: item?.paid_amount || 0,
+        remaining_amount: item?.remaining_amount || 0,
+        installent_batch: item?.installent_batch || 0,
       }));
 
       table.page.current = data.meta.current_page;
@@ -254,4 +258,11 @@ watch(
   },
   { deep: true }
 );
+
+const resetForm = () => {
+  isShowingForm.value = false;
+  selectedSupply.value = null;
+
+  fetchSupplier();
+};
 </script>

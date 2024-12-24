@@ -16,7 +16,7 @@ export default defineStore("table", {
       current: 1,
       last: 1,
       per: 10,
-      total: 0,
+      total: 1,
       links: {
         prev: "",
         next: "",
