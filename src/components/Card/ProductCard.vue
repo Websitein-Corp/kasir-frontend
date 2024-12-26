@@ -21,7 +21,29 @@
         >
           {{ name }}
         </div>
-        <div class="text-slate-500 text-xs lg:text-base">
+        <div
+          v-if="discountPercent > 0"
+          class="w-fit !mb-0 flex items-center space-x-2"
+        >
+          <div
+            class="text-slate-400 text-xs lg:text-base w-fit relative px-1 !mb-0"
+          >
+            {{ sellingRetailPrice }}
+            <div
+              class="w-full h-full mt-1.5 lg:mt-2.5 absolute top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2 border-red-400 border-t-2 border-b-0 -rotate-6"
+            ></div>
+          </div>
+          <div class="bg-red-200 rounded-lg p-1 text-xs text-red-500">
+            {{ discountPercent }}%
+          </div>
+        </div>
+        <div
+          class="text-slate-600 text-xs lg:text-base w-fit relative"
+          :class="{
+            '!px-1 !mt-0': discountPercent > 0,
+            '!px-0': discountPercent === 0,
+          }"
+        >
           {{ sellingPrice }}
         </div>
       </div>
@@ -114,6 +136,11 @@ const props = defineProps({
     default: null,
   },
   sellingPrice: null,
+  sellingRetailPrice: null,
+  discountPercent: {
+    type: Number,
+    default: 10,
+  },
   imageUrl: {
     type: String,
     default: "",
