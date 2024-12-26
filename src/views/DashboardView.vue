@@ -27,7 +27,7 @@
 
       <!-- Stat Cards -->
       <div class="flex space-x-2 mt-2">
-        <StatsCard :value="selectedBalance" label="Total Saldo">
+        <StatsCard :value="selectedBalance" label="Total Saldo Toko">
           <!-- SVG Icon -->
         </StatsCard>
         <StatsCard :value="selectedRevenue" label="Total Pendapatan">
