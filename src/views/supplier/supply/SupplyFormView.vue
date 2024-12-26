@@ -265,32 +265,50 @@
                 <option value="INGREDIENT">Ingredient</option>
               </select>
             </div>
-            <div class="w-1/2">
+            <div class="w-1/2 relative">
               <label
                 for="sku"
                 class="pb-2 text-primary-600 peer-focus:ml-1 peer-focus:-translate-y-3 peer-focus:px-1 peer-focus:text-sm"
                 >SKU</label
               >
-              <select
-                v-model="product.sku"
-                name="sku"
-                required
-                class="peer w-full border-b rounded-lg placeholder:text-transparent p-4 focus:outline-none focus:ring-2 ring-primary-600 transition-all"
-                :class="{
-                  'ring-2': modelValue,
-                  'cursor-not-allowed !bg-white !ring-slate-500 !text-slate-500':
-                    disabled,
-                }"
+              <!-- Dropdown Wrapper -->
+              <div
+                @click="toggleDropdown"
+                class="peer w-full border-b rounded-lg p-4 focus:outline-none focus:ring-2 ring-primary-600 transition-all cursor-pointer relative"
               >
-                <option value="" disabled>Pilih SKU</option>
-                <option
-                  v-for="ingredient in getSkuOptions(product.type)"
-                  :key="ingredient.name"
-                  :value="ingredient.name"
-                >
-                  {{ ingredient.name }}
-                </option>
-              </select>
+                {{ product.sku || "Pilih SKU" }}
+                <span class="absolute right-4 top-4 text-gray-500">▼</span>
+              </div>
+
+              <div
+                v-show="dropdownOpen"
+                class="absolute z-10 w-full bg-white border rounded-lg shadow-md mt-1 max-h-60 overflow-auto"
+              >
+                <input
+                  v-model="skuSearchQuery"
+                  type="text"
+                  placeholder="Search SKU..."
+                  class="w-full border-b px-4 py-2 focus:outline-none"
+                />
+
+                <ul>
+                  <li
+                    v-for="ingredient in getSkuOptions(product.type)"
+                    :key="ingredient.name"
+                    @click="selectSku(ingredient.name)"
+                    class="p-2 hover:bg-gray-100 cursor-pointer"
+                  >
+                    <span v-if="ingredient.sku"> {{ ingredient.sku }} - </span>
+                    {{ ingredient.name }}
+                  </li>
+                  <li
+                    v-if="getSkuOptions(product.type).length === 0"
+                    class="p-2 text-gray-500"
+                  >
+                    SKU Tidak Ditemukan
+                  </li>
+                </ul>
+              </div>
             </div>
           </div>
           <div class="flex flex-row justify-between space-x-4">
@@ -367,6 +385,8 @@ const auth = useAuth();
 const supplierList = ref([]);
 const ingredientsList = ref({ products: [], ingredients: [] });
 const payAmount = ref(0);
+const skuSearchQuery = ref("");
+const dropdownOpen = ref(false);
 
 const TextInput = defineAsyncComponent(() =>
   import("@/components/Input/TextInput.vue")
@@ -553,9 +573,10 @@ const fetchProducts = () => {
       ingredientsList.value.products = data.data.products.map((item) => {
         return {
           id: item.id,
-          name: item.sku,
+          name: item.name,
           stock: item.stock,
           price: item.price,
+          sku: item.sku,
         };
       });
 
@@ -595,9 +616,27 @@ const fetchSupplierDetails = () => {
 };
 
 const getSkuOptions = (type) => {
-  return type === "PRODUCT"
-    ? ingredientsList.value.products
-    : ingredientsList.value.ingredients;
+  const list =
+    type === "PRODUCT"
+      ? ingredientsList.value.products || []
+      : ingredientsList.value.ingredients || [];
+
+  if (!skuSearchQuery.value) return list;
+
+  return list.filter((option) =>
+    `${option.sku} ${option.name}`
+      .toLowerCase()
+      .includes(skuSearchQuery.value.toLowerCase())
+  );
+};
+
+const toggleDropdown = () => {
+  dropdownOpen.value = !dropdownOpen.value;
+};
+
+const selectSku = (sku) => {
+  product.value.sku = sku;
+  dropdownOpen.value = false;
 };
 
 const removeProduct = (index) => {
