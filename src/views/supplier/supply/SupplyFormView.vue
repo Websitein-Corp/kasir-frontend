@@ -151,7 +151,14 @@
           </div>
         </div>
 
-        <div class="flex flex-col mt-4">
+        <div
+          class="flex flex-col mt-4"
+          v-if="
+            isEdit &&
+            (supplierDetail.status === 'NOT_PAID' ||
+              supplierDetail.status === 'PARTIALLY_PAID')
+          "
+        >
           <div class="h-1 bg-slate-300 rounded-full w-full"></div>
           <TextInput
             v-model="payAmount"
@@ -163,15 +170,7 @@
             class="w-full"
           />
 
-          <CustomButton
-            class="w-1/4 mt-4 bg-primary-600"
-            type="submit"
-            v-if="
-              isEdit &&
-              (supplierDetail.status === 'NOT_PAID' ||
-                supplierDetail.status === 'PARTIALLY_PAID')
-            "
-          >
+          <CustomButton class="w-1/4 mt-4 bg-primary-600" type="submit">
             Update Pembayaran
           </CustomButton>
         </div>
@@ -273,7 +272,7 @@
               >
               <!-- Dropdown Wrapper -->
               <div
-                @click="toggleDropdown"
+                @click="toggleDropdown(index)"
                 class="peer w-full border-b rounded-lg p-4 focus:outline-none focus:ring-2 ring-primary-600 transition-all cursor-pointer relative"
               >
                 {{ product.sku || "Pilih SKU" }}
@@ -281,11 +280,11 @@
               </div>
 
               <div
-                v-show="dropdownOpen"
+                v-show="dropdownOpen === index"
                 class="absolute z-10 w-full bg-white border rounded-lg shadow-md mt-1 max-h-60 overflow-auto"
               >
                 <input
-                  v-model="skuSearchQuery"
+                  v-model="skuSearchQuery[index]"
                   type="text"
                   placeholder="Search SKU..."
                   class="w-full border-b px-4 py-2 focus:outline-none"
@@ -293,16 +292,16 @@
 
                 <ul>
                   <li
-                    v-for="ingredient in getSkuOptions(product.type)"
+                    v-for="ingredient in getSkuOptions(product.type, index)"
                     :key="ingredient.name"
-                    @click="selectSku(ingredient.name)"
+                    @click="selectSku(ingredient.name, index)"
                     class="p-2 hover:bg-gray-100 cursor-pointer"
                   >
                     <span v-if="ingredient.sku"> {{ ingredient.sku }} - </span>
                     {{ ingredient.name }}
                   </li>
                   <li
-                    v-if="getSkuOptions(product.type).length === 0"
+                    v-if="getSkuOptions(product.type, index).length === 0"
                     class="p-2 text-gray-500"
                   >
                     SKU Tidak Ditemukan
@@ -385,7 +384,7 @@ const auth = useAuth();
 const supplierList = ref([]);
 const ingredientsList = ref({ products: [], ingredients: [] });
 const payAmount = ref(0);
-const skuSearchQuery = ref("");
+const skuSearchQuery = ref([]);
 const dropdownOpen = ref(false);
 
 const TextInput = defineAsyncComponent(() =>
@@ -468,6 +467,7 @@ const addProduct = () => {
     amount: 0,
     capital_price: 0,
   });
+  skuSearchQuery.value.push("");
 };
 
 const handleSubmit = () => {
@@ -615,32 +615,38 @@ const fetchSupplierDetails = () => {
     });
 };
 
-const getSkuOptions = (type) => {
+const getSkuOptions = (type, index) => {
   const list =
     type === "PRODUCT"
       ? ingredientsList.value.products || []
       : ingredientsList.value.ingredients || [];
 
-  if (!skuSearchQuery.value) return list;
+  if (!skuSearchQuery.value[index]) return list;
 
   return list.filter((option) =>
     `${option.sku} ${option.name}`
       .toLowerCase()
-      .includes(skuSearchQuery.value.toLowerCase())
+      .includes(skuSearchQuery.value[index].toLowerCase())
   );
 };
 
-const toggleDropdown = () => {
-  dropdownOpen.value = !dropdownOpen.value;
+const toggleDropdown = (index) => {
+  dropdownOpen.value = dropdownOpen.value === index ? null : index;
 };
 
-const selectSku = (sku) => {
-  product.value.sku = sku;
-  dropdownOpen.value = false;
+const selectSku = (sku, index) => {
+  if (productDetails.value[index]) {
+    productDetails.value[index].sku = sku;
+    dropdownOpen.value = null; // Close dropdown
+  } else {
+    console.error(`Product at index ${index} does not exist.`);
+    console.error(productDetails.value);
+  }
 };
 
 const removeProduct = (index) => {
   productDetails.value.splice(index, 1);
+  skuSearchQuery.value.splice(index, 1);
 };
 
 const cancelForm = () => {
