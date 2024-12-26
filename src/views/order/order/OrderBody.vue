@@ -12,7 +12,21 @@
     class="w-full grid grid-cols-2 md:grid-cols-3 lg:grid-cols-2 xl:grid-cols-3 gap-2 md:gap-4 mb-16 lg:mb-4"
   >
     <div
-      v-if="products.every((product) => !product.is_active)"
+      v-if="productLoading"
+      class="col-span-2 md:col-span-3 lg:col-span-2 xl:col-span-3 h-full flex flex-col items-center justify-center space-y-8"
+    >
+      <div class="w-1/3">
+        <img
+          src="@/assets/images/productLoading.svg"
+          alt="productInactive.svg"
+        />
+      </div>
+      <div class="text-slate-500 text-center text-xl">
+        Mohon tunggu, memuat produk...
+      </div>
+    </div>
+    <div
+      v-else-if="products.every((product) => !product.is_active)"
       class="col-span-2 md:col-span-3 lg:col-span-2 xl:col-span-3 h-full flex flex-col items-center justify-center space-y-8"
     >
       <div class="w-1/3">
@@ -44,6 +58,7 @@
               cart.getItem(product.sku) && cart.getItem(product.sku).service_end
             "
             :selling-price="product.selling_price"
+            :selling-retail-price="product.selling_retail_price"
             :image-url="product.image_url"
             :selected="cart.has(product.sku)"
           />
@@ -111,6 +126,7 @@ const categories = ref([]);
 const products = ref([]);
 const currentCategory = ref("");
 const keyword = ref(null);
+const productLoading = ref(true);
 
 onMounted(() => {
   Promise.all([fetchCategories(), fetchProducts()]);
@@ -145,6 +161,8 @@ const fetchCategories = () => {
 };
 
 const fetchProducts = () => {
+  productLoading.value = true;
+
   axios
     .get(
       `${process.env.VUE_APP_API_BASE_URL}/api/products?category=${
@@ -161,6 +179,9 @@ const fetchProducts = () => {
     )
     .then(({ data }) => {
       products.value = data.data;
+    })
+    .finally(() => {
+      productLoading.value = false;
     });
 };
 
