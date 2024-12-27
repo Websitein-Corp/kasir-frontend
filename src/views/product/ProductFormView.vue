@@ -321,7 +321,7 @@ const form = reactive({
   type: productData.value ? productData.value.type : "",
   category: productData.value ? productData.value.category.code : "",
   barcode: productData.value ? productData.value.barcode : "",
-  isActive: productData.value ? (productData.value.isActive ? 1 : 0) : 0,
+  isActive: productData.value ? (productData.value.isActive ? 1 : 0) : 1,
   image: productData.value ? productData.value.image : null,
 });
 
