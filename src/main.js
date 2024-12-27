@@ -8,6 +8,8 @@ import helpers from "./helpers";
 import VueLazyLoad from "vue3-lazyload";
 import "dropzone-vue/dist/dropzone-vue.common.css";
 import "vue-ctk-date-time-picker/dist/vue-ctk-date-time-picker.css";
+import "core-js/stable";
+import "regenerator-runtime/runtime";
 
 const pinia = createPinia();
 
