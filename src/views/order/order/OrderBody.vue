@@ -59,6 +59,7 @@
             "
             :selling-price="product.selling_price"
             :selling-retail-price="product.selling_retail_price"
+            :discount-percent="product.discount_percentage"
             :image-url="product.image_url"
             :selected="cart.has(product.sku)"
           />

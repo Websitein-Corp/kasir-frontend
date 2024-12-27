@@ -41,7 +41,7 @@
           class="text-slate-600 text-xs lg:text-base w-fit relative"
           :class="{
             '!px-1 !mt-0': discountPercent > 0,
-            '!px-0': discountPercent === 0,
+            '!px-0 !mb-6': discountPercent === 0,
           }"
         >
           {{ sellingPrice }}
@@ -139,7 +139,7 @@ const props = defineProps({
   sellingRetailPrice: null,
   discountPercent: {
     type: Number,
-    default: 10,
+    default: 0,
   },
   imageUrl: {
     type: String,
