@@ -82,6 +82,16 @@ const routes = [
     name: "forgot-password",
     component: () => import("@/views/ForgotPasswordView.vue"),
   },
+  {
+    path: "/report-ingredient",
+    name: "report-ingredient",
+    component: () => import("@/views/report/IngredientReportView.vue"),
+  },
+  {
+    path: "/report-product",
+    name: "report-product",
+    component: () => import("@/views/report/ProductReportView.vue"),
+  },
 ];
 
 const router = createRouter({
