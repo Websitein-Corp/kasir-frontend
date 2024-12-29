@@ -85,7 +85,6 @@
               class="col-span-2 lg:col-span-1"
             />
             <TextInput
-              v-if="!isEdit"
               v-model="form.discountPrice"
               name="discount_price"
               label="Diskon"
@@ -94,6 +93,7 @@
               disabled
               placeholder="Masukkan diskon..."
               class="col-span-2 lg:col-span-1"
+              :class="{ '!ring-red-700': form.discountPrice < 0 }"
             />
             <TextInput
               v-if="form.type === 'GOODS'"
@@ -237,7 +237,7 @@ import {
   Trash,
   ScanQrCode,
 } from "lucide-vue-next";
-import { ref, onMounted, defineAsyncComponent, reactive } from "vue";
+import { ref, onMounted, defineAsyncComponent, reactive, watch } from "vue";
 import PageContainer from "@/views/PageContainer.vue";
 import { axios } from "@/sdk/axios";
 import FormCard from "@/components/Card/FormCard.vue";
@@ -321,7 +321,7 @@ const form = reactive({
   type: productData.value ? productData.value.type : "",
   category: productData.value ? productData.value.category.code : "",
   barcode: productData.value ? productData.value.barcode : "",
-  isActive: productData.value ? (productData.value.isActive ? 1 : 0) : 0,
+  isActive: productData.value ? (productData.value.isActive ? 1 : 0) : 1,
   image: productData.value ? productData.value.image : null,
 });
 
@@ -335,6 +335,40 @@ onMounted(() => {
   ingredient.sku = props.productData ? props.productData.sku : "";
   ingredient.used = props.productData ? props.productData.ingredients : [];
 });
+
+watch(
+  () => form.sellingPrice,
+  () => {
+    const discount = form.sellingRetailPrice - form.sellingPrice;
+
+    if (discount < 0) {
+      toast.message = "Gagal";
+      toast.description =
+        "Harga jual tidak boleh lebih besar daripada harga retail";
+      toast.type = "FAILED";
+      toast.trigger();
+    }
+
+    form.discountPrice = discount;
+  }
+);
+
+watch(
+  () => form.sellingRetailPrice,
+  () => {
+    const discount = form.sellingRetailPrice - form.sellingPrice;
+
+    if (discount < 0) {
+      toast.message = "Gagal";
+      toast.description =
+        "Harga jual tidak boleh lebih besar daripada harga retail";
+      toast.type = "FAILED";
+      toast.trigger();
+    }
+
+    form.discountPrice = form.sellingRetailPrice - form.sellingPrice;
+  }
+);
 
 const submitProduct = async () => {
   if (validateForm()) {
@@ -504,6 +538,16 @@ const validateForm = () => {
     if (form[field] === null) {
       toast.message = "Gagal";
       toast.description = `Kolom ${field} harus diisi!`;
+      toast.type = "FAILED";
+      toast.trigger();
+
+      isValid = false;
+    }
+
+    if (form.discountPrice < 0) {
+      toast.message = "Gagal";
+      toast.description =
+        "Harga retail harus lebih besar atau sama dengan harga jual!";
       toast.type = "FAILED";
       toast.trigger();
 

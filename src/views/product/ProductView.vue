@@ -37,8 +37,8 @@
             <th>Kategori</th>
             <th>Stok</th>
             <th>Harga Modal</th>
-            <th>Harga</th>
             <th>Harga Retail</th>
+            <th>Harga Jual</th>
             <th>Diskon</th>
             <th>Status</th>
             <th>Action</th>
@@ -52,8 +52,8 @@
             <td>{{ (item.category && item.category.name) || "-" }}</td>
             <td>{{ item.stock || "-" }}</td>
             <td>{{ item.capitalPrice || "-" }}</td>
-            <td>{{ item.sellingPrice || "-" }}</td>
             <td>{{ item.sellingRetailPrice || "-" }}</td>
+            <td>{{ item.sellingPrice || "-" }}</td>
             <td>{{ item.discountPrice || "-" }}</td>
             <td>{{ (item.isActive ? "Active" : "Inactive") || "-" }}</td>
             <td class="flex justify-center space-x-2">

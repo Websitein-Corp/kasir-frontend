@@ -134,6 +134,7 @@ import {
   Settings,
   Package,
   UserCog,
+  NotebookText,
 } from "lucide-vue-next";
 import NavigationMenu from "@/components/Navigation/NavigationMenu.vue";
 import usePage from "@/stores/usePage";
@@ -205,6 +206,22 @@ const menus = ref([
       },
     ],
     current: false,
+  },
+  {
+    label: "Report",
+    icon: NotebookText,
+    submenus: [
+      {
+        label: "Laporan Produk",
+        icon: List,
+        endpoint: "/report-product",
+      },
+      {
+        label: "Laporan Bahan Baku",
+        icon: ShoppingBasket,
+        endpoint: "/report-ingredient",
+      },
+    ],
   },
   {
     label: "Karyawan",
