@@ -26,6 +26,14 @@
       class="bg-red-700 hover:bg-red-800"
       @click="bluetoothReceipt.handleDisconnect()"
     />
+    <CustomButton
+      v-if="bluetoothReceipt.printerStatus === 'CONNECTED'"
+      label="Cetak Struk"
+      size="fit"
+      :icon="Printer"
+      class="bg-primary-700 hover:bg-primary-800"
+      @click="bluetoothReceipt.printReceipt(modal.props)"
+    />
   </div>
 </template>
 

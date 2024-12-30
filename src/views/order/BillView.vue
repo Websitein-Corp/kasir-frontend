@@ -160,7 +160,7 @@
       class="flex flex-col justify-center items-center mb-8"
     >
       <CustomButton
-        label="Print Receipt"
+        label="Cetak Struk"
         size="fit"
         :icon="Printer"
         class="bg-primary-700 hover:bg-primary-800"
@@ -238,25 +238,26 @@ const bill = ref({
 });
 
 const paymentTimeLeft = ref();
+const bluetoothId = ref();
 
 onMounted(async () => {
   page.loading = true;
   page.scroll = 0;
 
   showBill();
-  const bluetooth = await getBluetoothId();
+  bluetoothId.value = await getBluetoothId();
 
   bluetoothReceipt.printerStatus = "WAITING...";
-  await bluetoothReceipt.reconnect(bluetooth);
+  await bluetoothReceipt.reconnect(bluetoothId.value);
 });
 
-const handlePrinter = () => {
+const handlePrinter = async () => {
   modal.title = "Sambungkan Bluetooth Printer";
   modal.icon = Bluetooth;
   modal.body = BluetoothBody;
+  modal.open();
 
-  bluetoothReceipt.printerStatus = "WAITING...";
-  bluetoothReceipt.printReceipt(bill.value);
+  await bluetoothReceipt.reconnect(bluetoothId.value);
 };
 
 const showBill = () => {
@@ -279,6 +280,7 @@ const showBill = () => {
       }
 
       bill.value = data.data;
+      modal.props = data.data;
 
       if (data.data.status === "PENDING") {
         handleCountDown();
