@@ -238,25 +238,30 @@ const bill = ref({
 });
 
 const paymentTimeLeft = ref();
+const bluetoothId = ref();
 
 onMounted(async () => {
   page.loading = true;
   page.scroll = 0;
 
   showBill();
-  const bluetooth = await getBluetoothId();
+  bluetoothId.value = await getBluetoothId();
 
   bluetoothReceipt.printerStatus = "WAITING...";
-  await bluetoothReceipt.reconnect(bluetooth);
+  await bluetoothReceipt.reconnect(bluetoothId.value);
 });
 
-const handlePrinter = () => {
-  modal.title = "Sambungkan Bluetooth Printer";
-  modal.icon = Bluetooth;
-  modal.body = BluetoothBody;
+const handlePrinter = async () => {
+  if (bluetoothReceipt.printerStatus === "CONNECTED") {
+    bluetoothReceipt.printReceipt(bill.value);
+  } else {
+    modal.title = "Sambungkan Bluetooth Printer";
+    modal.icon = Bluetooth;
+    modal.body = BluetoothBody;
+    modal.open();
 
-  bluetoothReceipt.printerStatus = "WAITING...";
-  bluetoothReceipt.printReceipt(bill.value);
+    await bluetoothReceipt.reconnect(bluetoothId.value);
+  }
 };
 
 const showBill = () => {
