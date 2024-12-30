@@ -160,7 +160,7 @@
       class="flex flex-col justify-center items-center mb-8"
     >
       <CustomButton
-        label="Print Receipt"
+        label="Cetak Struk"
         size="fit"
         :icon="Printer"
         class="bg-primary-700 hover:bg-primary-800"
@@ -245,6 +245,8 @@ onMounted(async () => {
   page.scroll = 0;
 
   showBill();
+
+  modal.props = bill.value;
   bluetoothId.value = await getBluetoothId();
 
   bluetoothReceipt.printerStatus = "WAITING...";
@@ -252,16 +254,12 @@ onMounted(async () => {
 });
 
 const handlePrinter = async () => {
-  if (bluetoothReceipt.printerStatus === "CONNECTED") {
-    bluetoothReceipt.printReceipt(bill.value);
-  } else {
-    modal.title = "Sambungkan Bluetooth Printer";
-    modal.icon = Bluetooth;
-    modal.body = BluetoothBody;
-    modal.open();
+  modal.title = "Sambungkan Bluetooth Printer";
+  modal.icon = Bluetooth;
+  modal.body = BluetoothBody;
+  modal.open();
 
-    await bluetoothReceipt.reconnect(bluetoothId.value);
-  }
+  await bluetoothReceipt.reconnect(bluetoothId.value);
 };
 
 const showBill = () => {
