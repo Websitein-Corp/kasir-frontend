@@ -245,8 +245,6 @@ onMounted(async () => {
   page.scroll = 0;
 
   showBill();
-
-  modal.props = bill.value;
   bluetoothId.value = await getBluetoothId();
 
   bluetoothReceipt.printerStatus = "WAITING...";
@@ -282,6 +280,7 @@ const showBill = () => {
       }
 
       bill.value = data.data;
+      modal.props = data.data;
 
       if (data.data.status === "PENDING") {
         handleCountDown();
