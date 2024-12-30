@@ -36,7 +36,10 @@
         :icon="Plus"
         @click="page.order.step--"
       />
-      <div class="w-full block lg:hidden">
+      <div
+        v-if="cart.items.length > 0"
+        class="w-full block lg:hidden space-y-4"
+      >
         <CustomButton
           size="full"
           iconSide="left"
@@ -53,7 +56,10 @@
           label="Hapus Semua"
           :icon="Trash2"
           class="w-full bg-transparent hover:bg-slate-100 !text-red-800 border-2 border-red-700 hover:border-red-800"
-          @click="cart.clearAll()"
+          @click="
+            cart.clearAll();
+            page.order.step = 0;
+          "
         />
       </div>
     </div>
