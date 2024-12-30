@@ -275,7 +275,7 @@
                 @click="toggleDropdown(index)"
                 class="peer w-full border-b rounded-lg p-4 focus:outline-none focus:ring-2 ring-primary-600 transition-all cursor-pointer relative"
               >
-                {{ product.sku || "Pilih SKU" }}
+                {{ product.displayText || "Pilih SKU" }}
                 <span class="absolute right-4 top-4 text-gray-500">▼</span>
               </div>
 
@@ -294,7 +294,7 @@
                   <li
                     v-for="ingredient in getSkuOptions(product.type, index)"
                     :key="ingredient.name"
-                    @click="selectSku(ingredient.name, index)"
+                    @click="selectSku(ingredient, index)"
                     class="p-2 hover:bg-gray-100 cursor-pointer"
                   >
                     <span v-if="ingredient.sku"> {{ ingredient.sku }} - </span>
@@ -342,6 +342,7 @@
           v-if="!isEdit"
           class="w-full lg:w-1/4 bg-primary-600"
           textSize="sm"
+          type="button"
           @click="addProduct"
         >
           Tambah Produk/Bahan Baku
@@ -634,9 +635,14 @@ const toggleDropdown = (index) => {
   dropdownOpen.value = dropdownOpen.value === index ? null : index;
 };
 
-const selectSku = (sku, index) => {
+const selectSku = (ingredient, index) => {
   if (productDetails.value[index]) {
-    productDetails.value[index].sku = sku;
+    productDetails.value[index].sku = ingredient.sku || ingredient.id;
+
+    productDetails.value[index].displayText = ingredient.sku
+      ? `${ingredient.sku} - ${ingredient.name}`
+      : ingredient.name;
+
     dropdownOpen.value = null; // Close dropdown
   } else {
     console.error(`Product at index ${index} does not exist.`);
