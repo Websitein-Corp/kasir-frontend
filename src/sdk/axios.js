@@ -8,7 +8,6 @@ const axiosInstance = axios.create();
 axiosInstance.interceptors.response.use(
   function (response) {
     // if code 2xx
-    alert(response);
     const page = usePage();
     page.loading = false;
     page.buttonLoading = false;
