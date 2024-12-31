@@ -262,6 +262,16 @@ const submitShop = async () => {
                   toast.type = "SUCCESS";
                   toast.trigger();
 
+                  if (response.data.data.name === auth.shopName) {
+                    const shopData = response.data.data;
+                    auth.setShopId(
+                      auth.shopId,
+                      shopData.name,
+                      shopData.address,
+                      shopData.image_url
+                    );
+                  }
+
                   emit("submitSuccess");
                 }
               });
@@ -500,6 +510,16 @@ const deleteImage = () => {
         toast.description = response.data.message;
         toast.type = "SUCCESS";
         toast.trigger();
+
+        if (response.data.data.name === auth.shopName) {
+          const shopData = response.data.data;
+          auth.setShopId(
+            auth.shopId,
+            shopData.name,
+            shopData.address,
+            shopData.image_url
+          );
+        }
 
         shopData.value.imageUrl = null;
       }

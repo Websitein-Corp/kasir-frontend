@@ -40,12 +40,14 @@ export default defineStore("bluetoothReceipt", {
     },
 
     handleConnectButtonClick() {
+      this.printerStatus = "CONNECTING...";
       if (!this.receiptPrinter) {
         try {
           this.receiptPrinter = new BluetoothPrinterService();
         } catch (error) {
           console.error("Error initializing BluetoothPrinterService:", error);
           this.error = error.toString();
+          this.printerStatus = "WAITING...";
         }
       }
 
@@ -59,32 +61,42 @@ export default defineStore("bluetoothReceipt", {
             "gattserverdisconnected",
             this.handleDisconnect
           );
-
-          this.modal.close();
         })
         .catch((err) => {
           console.error("Error connecting to printer:", err);
           this.error = err.toString();
 
-          if (!this.error.includes("cancelled")) {
+          if (
+            this.error.includes(
+              "Web Bluetooth API is not available in this browser"
+            )
+          ) {
+            this.toast.message = "Gagal";
+            this.toast.description =
+              "Bluetooth browser tidak tersedia pada perangkat Anda, coba gunakan perangkat lain atau hubungi CS.";
+            this.toast.type = "FAILED";
+            this.toast.trigger();
+          } else if (!this.error.includes("cancelled")) {
             this.toast.message = "Gagal";
             this.toast.description =
               "Perangkat sedang digunakan. Mohon putuskan printer dengan perangkat yang masih tersambung terlebih dahulu.";
             this.toast.type = "FAILED";
             this.toast.trigger();
           }
+
+          this.printerStatus = "WAITING...";
         });
     },
 
     async handleDisconnect() {
-      console.log("Printer disconnected");
       this.receiptPrinter.disconnect();
-      await axios.delete(`${process.env.VUE_APP_API_BASE_URL}/api/bluetooth`, {
-        headers: {
-          Authorization: `Bearer ${this.auth.authToken}`,
-        },
-        withCredentials: true,
-      });
+
+      this.toast.message = "Berhasil";
+      this.toast.description = "Bluetooth printer berhasil dikeluarkan.";
+      this.toast.type = "SUCCESS";
+      this.toast.trigger();
+
+      this.printerStatus = "WAITING...";
     },
 
     async editBluetoothId(id) {
@@ -134,92 +146,196 @@ export default defineStore("bluetoothReceipt", {
             language: "esc-pos",
             columns: 32,
           });
-          let data = encoder
-            .initialize()
-            .box(
-              {
-                align: "center",
-                style: "double",
-              },
-              (encoder) =>
-                encoder
-                  .size(2)
-                  .line(this.auth.shopName)
-                  .size(1)
-                  .line(this.auth.shopAddress)
-            )
-            .align("center")
-            .text("===============================")
-            .encode();
 
-          this.receiptPrinter.print(data);
+          if (this.auth.shopImageUrl !== "null") {
+            let img = new Image();
+            img.crossOrigin = "anonymous";
+            img.src = this.auth.shopImageUrl;
 
-          data = encoder
-            .initialize()
-            .align("center")
-            .box(
-              {
-                align: "center",
-              },
-              (encoder) =>
-                encoder
-                  .line(bill.tr_datetime)
-                  .line(bill.invoice_number)
-                  .line(bill.cashier)
-            )
-            .line("===============================")
-            .newline()
-            .encode();
+            img.onload = function () {
+              let data = encoder
+                .initialize()
+                .align("center")
+                .image(img, 256, 128, "atkinson")
+                .size(2)
+                .line(this.auth.shopName)
+                .size(1)
+                .line(this.auth.shopAddress)
+                .align("center")
+                .text("===============================")
+                .align("center")
+                .line(bill.tr_datetime)
+                .line(bill.invoice_number)
+                .line(bill.cashier)
+                .line("===============================")
+                .newline()
+                .table(
+                  [
+                    { width: 15, marginRight: 2, align: "left" },
+                    { width: 15, align: "right" },
+                  ],
+                  detailBarang
+                )
+                .line("===============================")
+                .newline()
+                .table(
+                  [
+                    { width: 15, marginRight: 2, align: "left" },
+                    { width: 15, align: "right" },
+                  ],
+                  [
+                    [`Total Item: ${bill.total_item}`],
+                    [""],
+                    ["Subtotal", `${helpers.money(bill.subtotal)}`],
+                    ["Diskon", `(${helpers.money(bill.discount)})`],
+                    ["Pajak", `${helpers.money(bill.tax_fee)}`],
+                    [
+                      (encoder) => encoder.bold().text("Total").bold(),
+                      (encoder) =>
+                        encoder
+                          .bold()
+                          .text(`${helpers.money(bill.total_price)}`)
+                          .bold(),
+                    ],
+                  ]
+                )
+                .encode();
 
-          this.receiptPrinter.print(data);
+              const chunkSize = 512;
 
-          data = encoder
-            .initialize()
-            .table(
-              [
-                { width: 15, marginRight: 2, align: "left" },
-                { width: 15, align: "right" },
-              ],
-              detailBarang
-            )
-            .line("===============================")
-            .encode();
+              for (let i = 0; i < data.length; i += chunkSize) {
+                const chunk = data.slice(i, i + chunkSize);
+                this.receiptPrinter.print(chunk);
+              }
 
-          this.receiptPrinter.print(data);
+              if (bill.payment_method === "QRIS" && bill.status === "PENDING") {
+                data = encoder
+                  .initialize()
+                  .newline()
+                  .qrcode(bill.payment_url)
+                  .align("center")
+                  .newline()
+                  .line(
+                    "Silakan scan QR diatas untuk membayar menggunakan QRIS"
+                  )
+                  .line("===============================")
+                  .bold()
+                  .line("**INI BUKAN BUKTI PEMBAYARAN**")
+                  .text("===============================")
+                  .newline()
+                  .newline()
+                  .newline()
+                  .encode();
 
-          data = encoder
-            .initialize()
-            .newline()
-            .table(
-              [
-                { width: 15, marginRight: 2, align: "left" },
-                { width: 15, align: "right" },
-              ],
-              [
-                [`Total Item: ${bill.total_item}`],
-                [""],
-                ["Subtotal", `${helpers.money(bill.subtotal)}`],
-                ["Diskon", `(${helpers.money(bill.discount)})`],
-                ["Pajak", `${helpers.money(bill.tax_fee)}`],
+                this.receiptPrinter.print(data);
+              } else {
+                data = encoder
+                  .initialize()
+                  .align("center")
+                  .newline()
+                  .text("Terimakasih sudah berbelanja di " + this.auth.shopName)
+                  .newline()
+                  .newline()
+                  .newline()
+                  .encode();
+
+                this.receiptPrinter.print(data);
+              }
+            }.bind(this);
+          } else {
+            let data = encoder
+              .initialize()
+              .box(
+                {
+                  align: "center",
+                  style: "double",
+                },
+                (encoder) =>
+                  encoder
+                    .size(2)
+                    .line(this.auth.shopName)
+                    .size(1)
+                    .line(this.auth.shopAddress)
+              )
+              .align("center")
+              .text("===============================")
+              .align("center")
+              .line(bill.tr_datetime)
+              .line(bill.invoice_number)
+              .line(bill.cashier)
+              .line("===============================")
+              .newline()
+              .table(
                 [
-                  (encoder) => encoder.bold().text("Total").bold(),
-                  (encoder) =>
-                    encoder
-                      .bold()
-                      .text(`${helpers.money(bill.total_price)}`)
-                      .bold(),
+                  { width: 15, marginRight: 2, align: "left" },
+                  { width: 15, align: "right" },
                 ],
-              ]
-            )
-            .align("center")
-            .newline()
-            .text("Terimakasih sudah berbelanja di " + this.auth.shopName)
-            .newline()
-            .newline()
-            .newline()
-            .encode();
+                detailBarang
+              )
+              .line("===============================")
+              .newline()
+              .table(
+                [
+                  { width: 15, marginRight: 2, align: "left" },
+                  { width: 15, align: "right" },
+                ],
+                [
+                  [`Total Item: ${bill.total_item}`],
+                  [""],
+                  ["Subtotal", `${helpers.money(bill.subtotal)}`],
+                  ["Diskon", `(${helpers.money(bill.discount)})`],
+                  ["Pajak", `${helpers.money(bill.tax_fee)}`],
+                  [
+                    (encoder) => encoder.bold().text("Total").bold(),
+                    (encoder) =>
+                      encoder
+                        .bold()
+                        .text(`${helpers.money(bill.total_price)}`)
+                        .bold(),
+                  ],
+                ]
+              )
+              .encode();
 
-          this.receiptPrinter.print(data);
+            const chunkSize = 512;
+
+            for (let i = 0; i < data.length; i += chunkSize) {
+              const chunk = data.slice(i, i + chunkSize);
+              this.receiptPrinter.print(chunk);
+            }
+
+            if (bill.payment_method === "QRIS" && bill.status === "PENDING") {
+              data = encoder
+                .initialize()
+                .newline()
+                .qrcode(bill.payment_url)
+                .align("center")
+                .newline()
+                .line("Silakan scan QR diatas untuk membayar menggunakan QRIS")
+                .line("===============================")
+                .bold()
+                .line("**INI BUKAN BUKTI PEMBAYARAN**")
+                .text("===============================")
+                .newline()
+                .newline()
+                .newline()
+                .encode();
+
+              this.receiptPrinter.print(data);
+            } else {
+              data = encoder
+                .initialize()
+                .align("center")
+                .newline()
+                .text("Terimakasih sudah berbelanja di " + this.auth.shopName)
+                .newline()
+                .newline()
+                .newline()
+                .encode();
+
+              this.receiptPrinter.print(data);
+            }
+          }
         }
       } catch (exception) {
         console.log("Error printing receipt:", exception);
