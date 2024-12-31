@@ -84,3 +84,8 @@
 select {
     -webkit-appearance: none;
 }
+
+html,
+body {
+    overscroll-behavior-y: contain;
+}

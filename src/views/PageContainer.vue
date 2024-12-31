@@ -1,6 +1,7 @@
 <template>
   <div
     class="w-full h-screen pb-20 px-2 xl:px-8 overflow-hidden overflow-y-auto"
+    @scroll="handleScroll"
   >
     <div
       id="header"
@@ -67,4 +68,8 @@ defineProps({
 defineEmits(["back"]);
 
 const page = usePage();
+
+const handleScroll = (event) => {
+  page.scroll = event.target.scrollTop;
+};
 </script>

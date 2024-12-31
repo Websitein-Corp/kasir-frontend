@@ -31,21 +31,35 @@
       <CustomButton
         size="full"
         iconSide="left"
-        label="Add items"
+        label="Tambah Barang"
         class="bg-transparent hover:bg-slate-100 !text-primary-800 border-2 border-primary-700 hover:border-primary-800"
         :icon="Plus"
         @click="page.order.step--"
       />
-      <div class="w-full block lg:hidden">
+      <div
+        v-if="cart.items.length > 0"
+        class="w-full block lg:hidden space-y-4"
+      >
         <CustomButton
           size="full"
           iconSide="left"
           :label="
-            cart.discount > 0 ? $helpers.money(cart.discount) : 'Add discount'
+            cart.discount > 0 ? $helpers.money(cart.discount) : 'Tambah Diskon'
           "
-          class="bg-primary-700 hover:bg-primary-800"
+          class="bg-transparent hover:bg-slate-100 !text-primary-800 border-2 border-primary-700 hover:border-primary-800"
           :icon="TicketPercent"
           @click="modal.open()"
+        />
+        <CustomButton
+          size="fit"
+          iconSide="left"
+          label="Hapus Semua"
+          :icon="Trash2"
+          class="w-full bg-transparent hover:bg-slate-100 !text-red-800 border-2 border-red-700 hover:border-red-800"
+          @click="
+            cart.clearAll();
+            page.order.step = 0;
+          "
         />
       </div>
     </div>
@@ -123,7 +137,7 @@
         :disabled="cart.items.length < 1"
         @click="page.order.step++"
       >
-        <div class="font-bold">Total | {{ $helpers.money(cart.total) }}</div>
+        <div class="font-bold">Subtotal | {{ $helpers.money(cart.sum) }}</div>
       </CustomButton>
     </transition>
   </div>
@@ -137,6 +151,7 @@ import {
   QrCode,
   Receipt,
   TicketPercent,
+  Trash2,
 } from "lucide-vue-next";
 import CustomButton from "@/components/Button/CustomButton.vue";
 import usePage from "@/stores/usePage";

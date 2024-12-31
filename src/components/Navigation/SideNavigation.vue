@@ -21,7 +21,12 @@
       />
     </div>
   </div>
-  <div class="fixed z-50 top-4 left-5 p-2 mt-3 lg:mt-0">
+  <div
+    class="fixed z-50 top-4 left-5 p-2 mt-3 lg:mt-0 transition-all duration-300"
+    :class="{
+      '!-top-20 lg:!top-4': !page.navIsOpened && page.scroll > 0,
+    }"
+  >
     <Menu
       class="cursor-pointer transition-all"
       :class="{
@@ -129,6 +134,7 @@ import {
   Settings,
   Package,
   UserCog,
+  NotebookText,
 } from "lucide-vue-next";
 import NavigationMenu from "@/components/Navigation/NavigationMenu.vue";
 import usePage from "@/stores/usePage";
@@ -200,6 +206,22 @@ const menus = ref([
       },
     ],
     current: false,
+  },
+  {
+    label: "Report",
+    icon: NotebookText,
+    submenus: [
+      {
+        label: "Laporan Produk",
+        icon: List,
+        endpoint: "/report-product",
+      },
+      {
+        label: "Laporan Bahan Baku",
+        icon: ShoppingBasket,
+        endpoint: "/report-ingredient",
+      },
+    ],
   },
   {
     label: "Karyawan",

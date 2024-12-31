@@ -2,9 +2,6 @@
   <div class="relative w-screen h-screen overflow-hidden">
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      version="1.1"
-      xmlns:xlink="http://www.w3.org/1999/xlink"
-      xmlns:svgjs="http://svgjs.dev/svgjs"
       width="100%"
       height="100%"
       preserveAspectRatio="none"
@@ -115,11 +112,12 @@
           </p>
 
           <CustomButton
+            :label="isForgotPassword ? 'Send' : 'Login'"
             class="bg-primary-700 hover:bg-primary-600 rounded-md text-xl text-white w-full mt-6 px-8 py-2 mx-auto"
             @click="formAction"
-          >
-            {{ isForgotPassword ? "Send" : "Login" }}
-          </CustomButton>
+            icon-side="left"
+            :loading="page.buttonLoading"
+          />
         </div>
       </div>
     </div>
@@ -128,12 +126,13 @@
 
 <script setup>
 import { defineAsyncComponent, ref } from "vue";
-import { axios } from "@/sdk/axios";
+import axios from "axios";
 import router from "@/router";
 import useToast from "@/stores/useToast";
 import useAuth from "@/stores/useAuth";
 import { useRoute } from "vue-router";
 import CustomButton from "@/components/Button/CustomButton.vue";
+import usePage from "@/stores/usePage";
 
 const TextInput = defineAsyncComponent(() =>
   import("@/components/Input/TextInput.vue")
@@ -141,6 +140,7 @@ const TextInput = defineAsyncComponent(() =>
 
 const auth = useAuth();
 const toast = useToast();
+const page = usePage();
 const route = useRoute();
 
 const email = ref("");
@@ -161,6 +161,7 @@ const formAction = () => {
 };
 
 const login = () => {
+  page.buttonLoading = true;
   const baseURL = process.env.VUE_APP_API_BASE_URL;
   const endpoint = `${baseURL}/api/auth/login`;
 
@@ -170,6 +171,8 @@ const login = () => {
       password: password.value,
     })
     .then(({ data }) => {
+      page.buttonLoading = false;
+
       const token = data.data.token;
       const shopId = data.data.shop.id;
       const shopName = data.data.shop.name;
@@ -207,13 +210,21 @@ const login = () => {
         toast.type = "FAILED";
         toast.trigger();
       }
+    })
+    .catch((error) => {
+      page.buttonLoading = false;
+
+      toast.message = "Gagal";
+      toast.description = error.response?.data.message || error.message;
+      toast.type = "FAILED";
+      toast.trigger();
     });
 };
 
 const sendResetPasswordEmail = () => {
   const baseURL = process.env.VUE_APP_API_BASE_URL;
   const endpoint = `${baseURL}/api/mail/forgot-password/send?email_to=${email.value}`;
-  console.log(email.value);
+
   axios
     .get(endpoint)
     .then(({ data }) => {

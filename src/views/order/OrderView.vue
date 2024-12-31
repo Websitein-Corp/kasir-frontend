@@ -2,6 +2,7 @@
   <div v-if="!page.loading" class="flex">
     <div
       class="w-full lg:w-full h-screen pb-20 px-2 xl:px-8 overflow-x-hidden overflow-y-scroll no-scrollbar"
+      @scroll="handleScroll"
     >
       <div
         id="header"
@@ -97,6 +98,10 @@ onMounted(() => {
   fetchSettings();
 });
 
+const handleScroll = (event) => {
+  page.scroll = event.target.scrollTop;
+};
+
 const fetchSettings = () => {
   axios
     .get(
@@ -111,6 +116,9 @@ const fetchSettings = () => {
     .then(({ data }) => {
       cart.settings.tax_amount = data.data.find(
         (item) => item.name === "tax_amount"
+      ).value;
+      cart.settings.shop_payment_fee = data.data.find(
+        (item) => item.name === "shop_payment_fee"
       ).value;
     });
 };

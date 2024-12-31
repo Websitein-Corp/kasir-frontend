@@ -43,7 +43,10 @@
     <template v-else>
       <div
         class="flex items-center space-x-2"
-        :class="{ '!flex-col !space-y-2.5': orientation === 'vertical' }"
+        :class="{
+          '!flex-col !space-y-2.5': orientation === 'vertical',
+          '!space-x-0': loading || !icon,
+        }"
       >
         <span v-if="iconSide === 'left'">
           <span v-if="loading"><LoadingAnim /></span>
@@ -132,10 +135,6 @@ defineProps({
   loading: {
     type: Boolean,
     default: false,
-  },
-  textSize: {
-    type: String,
-    default: "base",
   },
 });
 

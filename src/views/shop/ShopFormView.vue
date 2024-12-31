@@ -39,7 +39,6 @@
                   label="Gambar"
                   :acceptedFiles="['png', 'jpg', 'jpeg']"
                   :clickable="true"
-                  dropzoneMessageClassName="dropzone-message"
                   @addedFile="
                     (file) => {
                       form.image = file.file;
@@ -103,7 +102,7 @@
         </FormCard>
       </div>
       <FormCard
-        title="Gambar Produk"
+        title="Logo Toko"
         :icon="Image"
         v-if="props.shopData"
         class="col-span-3 lg:col-span-1"
@@ -113,9 +112,7 @@
             <div
               class="m-10 w-fit h-fit lg:w-fit lg:h-fit rounded-xl"
               :class="{
-                '!m-0 !w-40 !h-40 lg:!w-64 lg:!h-64':
-                  props.shopData.imageUrl ===
-                  'https://stage-descartes.websitein.id/api/s3?path=https%3A%2F%2F',
+                '!m-0 !w-40 !h-40 lg:!w-64 lg:!h-64': !props.shopData.imageUrl,
               }"
             >
               <img
@@ -130,11 +127,7 @@
             </div>
           </div>
           <CustomButton
-            v-if="
-              isEdit &&
-              props.shopData.imageUrl !==
-                'https://stage-descartes.websitein.id/api/s3?path=https%3A%2F%2F'
-            "
+            v-if="isEdit && props.shopData.imageUrl"
             size="full"
             label="Hapus"
             :icon="Trash"
@@ -149,7 +142,7 @@
 
 <script setup>
 import { Plus, ShoppingBag, Store, Save, Image, Trash } from "lucide-vue-next";
-import { defineAsyncComponent, reactive } from "vue";
+import { defineAsyncComponent, reactive, ref } from "vue";
 import PageContainer from "@/views/PageContainer.vue";
 import { axios } from "@/sdk/axios";
 import FormCard from "@/components/Card/FormCard.vue";
@@ -183,13 +176,15 @@ const auth = useAuth();
 const toast = useToast();
 const page = usePage();
 
+const shopData = ref(props.shopData);
+
 const form = reactive({
-  shop_id: props.shopData ? props.shopData.id : "",
-  name: props.shopData ? props.shopData.name : "",
-  address: props.shopData ? props.shopData.address : "",
-  balance: props.shopData ? props.shopData.balance : 0,
-  settings: props.shopData
-    ? props.shopData.settings
+  shop_id: shopData.value ? shopData.value.id : "",
+  name: shopData.value ? shopData.value.name : "",
+  address: shopData.value ? shopData.value.address : "",
+  balance: shopData.value ? shopData.value.balance : 0,
+  settings: shopData.value
+    ? shopData.value.settings
     : [
         {
           name: "tax_amount",
@@ -217,7 +212,7 @@ const form = reactive({
           value: 0,
         },
       ],
-  image: props.shopData ? props.shopData.image : null,
+  image: shopData.value ? shopData.value.image : null,
 });
 
 const submitShop = async () => {
@@ -506,7 +501,7 @@ const deleteImage = () => {
         toast.type = "SUCCESS";
         toast.trigger();
 
-        emit("submitSuccess", { item: null, isAdd: false });
+        shopData.value.imageUrl = null;
       }
     });
 };

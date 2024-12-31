@@ -8,5 +8,6 @@ export default defineStore("page", {
     },
     loading: false,
     buttonLoading: false,
+    scroll: 0,
   }),
 });
