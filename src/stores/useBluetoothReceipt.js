@@ -59,8 +59,6 @@ export default defineStore("bluetoothReceipt", {
             "gattserverdisconnected",
             this.handleDisconnect
           );
-
-          this.modal.close();
         })
         .catch((err) => {
           console.error("Error connecting to printer:", err);
@@ -87,14 +85,14 @@ export default defineStore("bluetoothReceipt", {
     },
 
     async handleDisconnect() {
-      console.log("Printer disconnected");
       this.receiptPrinter.disconnect();
-      await axios.delete(`${process.env.VUE_APP_API_BASE_URL}/api/bluetooth`, {
-        headers: {
-          Authorization: `Bearer ${this.auth.authToken}`,
-        },
-        withCredentials: true,
-      });
+
+      this.toast.message = "Berhasil";
+      this.toast.description = "Bluetooth printer berhasil dikeluarkan.";
+      this.toast.type = "SUCCESS";
+      this.toast.trigger();
+
+      this.printerStatus = "WAITING...";
     },
 
     async editBluetoothId(id) {
