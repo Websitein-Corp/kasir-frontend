@@ -8,6 +8,7 @@ const axiosInstance = axios.create();
 axiosInstance.interceptors.response.use(
   function (response) {
     // if code 2xx
+    alert(response);
     const page = usePage();
     page.loading = false;
     page.buttonLoading = false;
@@ -22,10 +23,10 @@ axiosInstance.interceptors.response.use(
     page.buttonLoading = false;
 
     // if code other than 2xx
-    if (error.response.status === 401) {
+    if (error.response && error.response.status === 401) {
       auth.handleUnauthenticated();
       return new Promise(() => {});
-    } else if (error.response.status >= 500) {
+    } else if (error.response && error.response.status >= 500) {
       // if code is 5xx
       toast.message = "Gagal";
       toast.description = "Terjadi kesalahan, mohon coba lagi";
