@@ -40,12 +40,14 @@ export default defineStore("bluetoothReceipt", {
     },
 
     handleConnectButtonClick() {
+      this.printerStatus = "CONNECTING...";
       if (!this.receiptPrinter) {
         try {
           this.receiptPrinter = new BluetoothPrinterService();
         } catch (error) {
           console.error("Error initializing BluetoothPrinterService:", error);
           this.error = error.toString();
+          this.printerStatus = "WAITING...";
         }
       }
 
@@ -81,6 +83,8 @@ export default defineStore("bluetoothReceipt", {
             this.toast.type = "FAILED";
             this.toast.trigger();
           }
+
+          this.printerStatus = "WAITING...";
         });
     },
 
@@ -256,16 +260,9 @@ export default defineStore("bluetoothReceipt", {
               .align("center")
               .text("===============================")
               .align("center")
-              .box(
-                {
-                  align: "center",
-                },
-                (encoder) =>
-                  encoder
-                    .line(bill.tr_datetime)
-                    .line(bill.invoice_number)
-                    .line(bill.cashier)
-              )
+              .line(bill.tr_datetime)
+              .line(bill.invoice_number)
+              .line(bill.cashier)
               .line("===============================")
               .newline()
               .table(

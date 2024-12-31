@@ -59,8 +59,11 @@ export default defineStore("auth", {
     setShopId(id, name, address, imageUrl) {
       this.shopId = id;
       localStorage.setItem("shop_id", id);
+      this.shopName = name;
       localStorage.setItem("shop_name", name);
+      this.shopAddress = address;
       localStorage.setItem("shop_address", address);
+      this.shopImageUrl = imageUrl;
       localStorage.setItem("shop_image_url", imageUrl);
     },
 
