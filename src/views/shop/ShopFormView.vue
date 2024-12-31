@@ -262,6 +262,16 @@ const submitShop = async () => {
                   toast.type = "SUCCESS";
                   toast.trigger();
 
+                  if (response.data.data.name === auth.shopName) {
+                    const shopData = response.data.data;
+                    auth.setShopId(
+                      shopData.id,
+                      shopData.name,
+                      shopData.address,
+                      shopData.image_url
+                    );
+                  }
+
                   emit("submitSuccess");
                 }
               });
