@@ -152,32 +152,17 @@ export default defineStore("bluetoothReceipt", {
               let data = encoder
                 .initialize()
                 .align("center")
-                .image(img, 256, 256, "atkinson")
-                .box(
-                  {
-                    align: "center",
-                    style: "double",
-                  },
-                  (encoder) =>
-                    encoder
-                      .size(2)
-                      .line(this.auth.shopName)
-                      .size(1)
-                      .line(this.auth.shopAddress)
-                )
+                .image(img, 256, 128, "atkinson")
+                .size(2)
+                .line(this.auth.shopName)
+                .size(1)
+                .line(this.auth.shopAddress)
                 .align("center")
                 .text("===============================")
                 .align("center")
-                .box(
-                  {
-                    align: "center",
-                  },
-                  (encoder) =>
-                    encoder
-                      .line(bill.tr_datetime)
-                      .line(bill.invoice_number)
-                      .line(bill.cashier)
-                )
+                .line(bill.tr_datetime)
+                .line(bill.invoice_number)
+                .line(bill.cashier)
                 .line("===============================")
                 .newline()
                 .table(
