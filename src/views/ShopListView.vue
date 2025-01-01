@@ -13,7 +13,19 @@
         :icon="Store"
         class="col-span-2 lg:col-span-1 hover:shadow-2xl cursor-pointer transition-all"
         @click="
-          () => pickShop(shop.id, shop.name, shop.address, shop.image_url)
+          () => {
+            const shopImageReceipt = shop.settings.find(
+              (item) => item.name === 'shop_image_receipt'
+            ).value;
+
+            pickShop(
+              shop.id,
+              shop.name,
+              shop.address,
+              shop.image_url,
+              shopImageReceipt
+            );
+          }
         "
       >
         <div>{{ shop.address }}</div>
@@ -68,8 +80,8 @@ const fetchShopList = async () => {
   shopList.value = data.data;
 };
 
-const pickShop = (id, name, address, imageUrl) => {
-  auth.setShopId(id, name, address, imageUrl);
+const pickShop = (id, name, address, imageUrl, shopImageReceipt) => {
+  auth.setShopId(id, name, address, imageUrl, shopImageReceipt);
 
   toast.message = "Sukses";
   toast.description = `${name} berhasil dipilih!`;
