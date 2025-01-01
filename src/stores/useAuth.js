@@ -8,6 +8,8 @@ export default defineStore("auth", {
     shopId: localStorage.getItem("shop_id"),
     shopName: localStorage.getItem("shop_name"),
     shopAddress: localStorage.getItem("shop_address"),
+    shopImageUrl: localStorage.getItem("shop_image_url"),
+    shopImageReceipt: localStorage.getItem("shop_image_receipt"),
     userType: localStorage.getItem("userType"),
     permission: localStorage.getItem("permission"),
   }),
@@ -55,11 +57,17 @@ export default defineStore("auth", {
       localStorage.setItem("auth_token", token);
     },
 
-    setShopId(id, name, address) {
+    setShopId(id, name, address, imageUrl, imageReceipt) {
       this.shopId = id;
       localStorage.setItem("shop_id", id);
+      this.shopName = name;
       localStorage.setItem("shop_name", name);
+      this.shopAddress = address;
       localStorage.setItem("shop_address", address);
+      this.shopImageUrl = imageUrl;
+      localStorage.setItem("shop_image_url", imageUrl);
+      this.shopImageReceipt = imageReceipt;
+      localStorage.setItem("shop_image_receipt", imageReceipt);
     },
 
     setPermission(userType, permission) {
@@ -75,7 +83,13 @@ export default defineStore("auth", {
           localStorage.removeItem("shop_id");
           localStorage.removeItem("shop_name");
           localStorage.removeItem("shop_address");
+          localStorage.removeItem("shop_image_url");
+          localStorage.removeItem("shop_image_receipt");
           this.shopId = null;
+          this.shopName = null;
+          this.shopAddress = null;
+          this.shopImageUrl = null;
+          this.shopImageReceipt = null;
         } else if (key === "permission") {
           localStorage.removeItem("permission");
           this.permission = null;
@@ -87,6 +101,10 @@ export default defineStore("auth", {
         localStorage.removeItem("auth_token");
         localStorage.removeItem("permission");
         localStorage.removeItem("shop_id");
+        localStorage.removeItem("shop_name");
+        localStorage.removeItem("shop_address");
+        localStorage.removeItem("shop_image_url");
+        localStorage.removeItem("shop_image_receipt");
         this.authToken = null;
         this.permission = null;
         this.shopId = null;

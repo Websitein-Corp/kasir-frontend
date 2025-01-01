@@ -262,6 +262,22 @@ const submitShop = async () => {
                   toast.type = "SUCCESS";
                   toast.trigger();
 
+                  if (response.data.data.name === auth.shopName) {
+                    const shopData = response.data.data;
+                    const shopImageReceipt = shopData.settings.find(
+                      (item) => item.name === "shop_image_receipt"
+                    ).value;
+                    console.log(shopImageReceipt);
+
+                    auth.setShopId(
+                      auth.shopId,
+                      shopData.name,
+                      shopData.address,
+                      shopData.image_url,
+                      shopImageReceipt
+                    );
+                  }
+
                   emit("submitSuccess");
                 }
               });
@@ -500,6 +516,21 @@ const deleteImage = () => {
         toast.description = response.data.message;
         toast.type = "SUCCESS";
         toast.trigger();
+
+        if (response.data.data.name === auth.shopName) {
+          const shopData = response.data.data;
+          const shopImageReceipt = shopData.settings.find(
+            (item) => item.name === "shop_image_receipt"
+          ).value;
+
+          auth.setShopId(
+            auth.shopId,
+            shopData.name,
+            shopData.address,
+            shopData.image_url,
+            shopImageReceipt
+          );
+        }
 
         shopData.value.imageUrl = null;
       }

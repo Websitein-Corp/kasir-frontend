@@ -177,6 +177,7 @@ const login = () => {
       const shopId = data.data.shop.id;
       const shopName = data.data.shop.name;
       const shopAddress = data.data.shop.address;
+      const shopImageUrl = data.data.shop.image_url;
       const permission = data.data.permission;
       const userType = data.data.is_user;
 
@@ -193,7 +194,17 @@ const login = () => {
         if (userType === "USER") {
           router.push("/shop-list");
         } else {
-          auth.setShopId(shopId, shopName, shopAddress);
+          const shopImageReceipt = data.data.shop.settings.find(
+            (item) => item.name === "shop_image_receipt"
+          ).value;
+
+          auth.setShopId(
+            shopId,
+            shopName,
+            shopAddress,
+            shopImageUrl,
+            shopImageReceipt
+          );
 
           if (permission === "KASIR") {
             router.push("/order");

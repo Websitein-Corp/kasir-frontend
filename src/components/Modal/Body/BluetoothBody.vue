@@ -16,6 +16,7 @@
       size="fit"
       :icon="BluetoothSearching"
       class="bg-primary-700 hover:bg-primary-800"
+      :loading="bluetoothReceipt.printerStatus === 'CONNECTING...'"
       @click="bluetoothReceipt.handleConnectButtonClick()"
     />
     <CustomButton
