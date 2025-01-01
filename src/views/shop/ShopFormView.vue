@@ -273,7 +273,8 @@ const submitShop = async () => {
                       auth.shopId,
                       shopData.name,
                       shopData.address,
-                      shopImageReceipt ? shopData.image_url : null
+                      shopData.image_url,
+                      shopImageReceipt
                     );
                   }
 
@@ -526,7 +527,8 @@ const deleteImage = () => {
             auth.shopId,
             shopData.name,
             shopData.address,
-            shopImageReceipt ? shopData.image_url : null
+            shopData.image_url,
+            shopImageReceipt
           );
         }
 

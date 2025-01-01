@@ -147,7 +147,7 @@ export default defineStore("bluetoothReceipt", {
             columns: 32,
           });
 
-          if (this.auth.shopImageUrl !== "null") {
+          if (this.auth.shopImageUrl !== "null" && this.auth.shopImageReceipt) {
             let img = new Image();
             img.crossOrigin = "anonymous";
             img.src = this.auth.shopImageUrl;

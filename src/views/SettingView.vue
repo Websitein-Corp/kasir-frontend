@@ -135,6 +135,7 @@ const handleSettingChange = (name, value) => {
       }
     )
     .then((response) => {
+      console.log(response);
       if (response.data["error_type"]) {
         toast.message = "Gagal";
         toast.description = response.data.message;
@@ -145,6 +146,19 @@ const handleSettingChange = (name, value) => {
         toast.description = response.data.message;
         toast.type = "SUCCESS";
         toast.trigger();
+
+        const shopImageReceipt = response.data.data.find(
+          (item) => item.name === "shop_image_receipt"
+        ).value;
+        console.log(shopImageReceipt);
+
+        auth.setShopId(
+          auth.shopId,
+          auth.shopName,
+          auth.shopAddress,
+          auth.shopImageUrl,
+          shopImageReceipt
+        );
       }
     });
 };

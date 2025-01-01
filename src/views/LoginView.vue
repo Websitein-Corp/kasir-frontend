@@ -202,7 +202,8 @@ const login = () => {
             shopId,
             shopName,
             shopAddress,
-            shopImageReceipt ? shopImageUrl : null
+            shopImageUrl,
+            shopImageReceipt
           );
 
           if (permission === "KASIR") {

@@ -22,7 +22,8 @@
               shop.id,
               shop.name,
               shop.address,
-              shopImageReceipt ? shop.image_url : null
+              shop.image_url,
+              shopImageReceipt
             );
           }
         "
@@ -79,8 +80,8 @@ const fetchShopList = async () => {
   shopList.value = data.data;
 };
 
-const pickShop = (id, name, address, imageUrl) => {
-  auth.setShopId(id, name, address, imageUrl);
+const pickShop = (id, name, address, imageUrl, shopImageReceipt) => {
+  auth.setShopId(id, name, address, imageUrl, shopImageReceipt);
 
   toast.message = "Sukses";
   toast.description = `${name} berhasil dipilih!`;
