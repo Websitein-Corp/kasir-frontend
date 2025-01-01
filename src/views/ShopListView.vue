@@ -13,7 +13,18 @@
         :icon="Store"
         class="col-span-2 lg:col-span-1 hover:shadow-2xl cursor-pointer transition-all"
         @click="
-          () => pickShop(shop.id, shop.name, shop.address, shop.image_url)
+          () => {
+            const shopImageReceipt = shop.settings.find(
+              (item) => item.name === 'shop_image_receipt'
+            ).value;
+
+            pickShop(
+              shop.id,
+              shop.name,
+              shop.address,
+              shopImageReceipt ? shop.image_url : null
+            );
+          }
         "
       >
         <div>{{ shop.address }}</div>

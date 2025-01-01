@@ -194,7 +194,16 @@ const login = () => {
         if (userType === "USER") {
           router.push("/shop-list");
         } else {
-          auth.setShopId(shopId, shopName, shopAddress, shopImageUrl);
+          const shopImageReceipt = data.data.shop.settings.find(
+            (item) => item.name === "shop_image_receipt"
+          ).value;
+
+          auth.setShopId(
+            shopId,
+            shopName,
+            shopAddress,
+            shopImageReceipt ? shopImageUrl : null
+          );
 
           if (permission === "KASIR") {
             router.push("/order");

@@ -264,11 +264,16 @@ const submitShop = async () => {
 
                   if (response.data.data.name === auth.shopName) {
                     const shopData = response.data.data;
+                    const shopImageReceipt = shopData.settings.find(
+                      (item) => item.name === "shop_image_receipt"
+                    ).value;
+                    console.log(shopImageReceipt);
+
                     auth.setShopId(
                       auth.shopId,
                       shopData.name,
                       shopData.address,
-                      shopData.image_url
+                      shopImageReceipt ? shopData.image_url : null
                     );
                   }
 
@@ -513,11 +518,15 @@ const deleteImage = () => {
 
         if (response.data.data.name === auth.shopName) {
           const shopData = response.data.data;
+          const shopImageReceipt = shopData.settings.find(
+            (item) => item.name === "shop_image_receipt"
+          ).value;
+
           auth.setShopId(
             auth.shopId,
             shopData.name,
             shopData.address,
-            shopData.image_url
+            shopImageReceipt ? shopData.image_url : null
           );
         }
 
