@@ -9,5 +9,15 @@ module.exports = {
       },
     ],
   ],
-  plugins: ["@babel/plugin-transform-private-methods"],
+  plugins: [
+    "@babel/plugin-transform-private-methods",
+    [
+      "transform-es2015-template-literals",
+      {
+        loose: true,
+        retainLines: true,
+      },
+    ],
+    "transform-es2015-arrow-functions",
+  ],
 };
