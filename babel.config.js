@@ -1,13 +1,10 @@
 module.exports = {
   presets: [
     [
-      "@babel/preset-env",
+      "@vue/cli-plugin-babel/preset",
       {
-        targets: {
-          chrome: "41",
-        },
-        useBuiltIns: "usage", // Automatically includes required polyfills
-        corejs: "3",
+        useBuiltIns: "entry", // Automatically include polyfills
+        corejs: "3", // Use the latest version of core-js
       },
     ],
   ],
