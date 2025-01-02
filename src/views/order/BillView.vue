@@ -1,5 +1,30 @@
 <template>
-  <div v-if="!page.loading">
+  <div v-if="!page.loading" class="relative">
+    <div
+      id="header"
+      class="absolute w-full transition-all hidden lg:flex items-center ml-4"
+      :class="{ 'pl-10 lg:pl-0': !page.navIsOpened }"
+    >
+      <div
+        class="p-8 pb-8 flex transition-all"
+        :class="{
+          '!pl-28 lg:!pl-0': page.navIsOpened,
+        }"
+      >
+        <div
+          class="flex items-center"
+          :class="{
+            'hidden lg:flex': page.navIsOpened,
+            '!hidden': modal.props && modal.props.ref_id,
+          }"
+        >
+          <ArrowLeft
+            @click="router.push('/transaction')"
+            class="cursor-pointer"
+          />
+        </div>
+      </div>
+    </div>
     <div
       class="h-[30dvh] sm:h-64 lg:h-[40dvh] bg-primary-100 space-y-2 lg:space-y-4 p-4 flex flex-col justify-center"
       :class="{
@@ -183,6 +208,7 @@ import {
   Bluetooth,
   Timer,
   Printer,
+  ArrowLeft,
 } from "lucide-vue-next";
 import { onMounted, ref } from "vue";
 import { axios } from "@/sdk/axios";
@@ -196,6 +222,7 @@ import CustomButton from "@/components/Button/CustomButton.vue";
 import BluetoothBody from "@/components/Modal/Body/BluetoothBody.vue";
 import usePage from "@/stores/usePage";
 import useCart from "@/stores/useCart";
+import router from "@/router";
 
 const auth = useAuth();
 const page = usePage();
