@@ -48,7 +48,7 @@
           "
           class="bg-transparent hover:bg-slate-100 !text-primary-800 border-2 border-primary-700 hover:border-primary-800"
           :icon="TicketPercent"
-          @click="modal.open()"
+          @click="handleModalDiscount"
         />
         <CustomButton
           size="fit"
@@ -163,6 +163,7 @@ import QrisBody from "@/components/Modal/Body/QrisBody.vue";
 import { axios } from "@/sdk/axios";
 import useAuth from "@/stores/useAuth";
 import useToast from "@/stores/useToast";
+import DiscountBody from "@/components/Modal/Body/DiscountBody.vue";
 
 const auth = useAuth();
 const toast = useToast();
@@ -267,5 +268,12 @@ const handleModal = (method) => {
       checkOut("qris");
     }
   }
+};
+
+const handleModalDiscount = () => {
+  modal.title = "Tambah Diskon";
+  modal.icon = TicketPercent;
+  modal.body = DiscountBody;
+  modal.open();
 };
 </script>
