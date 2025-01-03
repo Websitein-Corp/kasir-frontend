@@ -274,7 +274,6 @@ onMounted(async () => {
   showBill();
   bluetoothId.value = await getBluetoothId();
 
-  bluetoothReceipt.printerStatus = "WAITING...";
   await bluetoothReceipt.reconnect(bluetoothId.value);
 });
 
@@ -284,7 +283,7 @@ const handlePrinter = async () => {
   modal.body = BluetoothBody;
   modal.open();
 
-  await bluetoothReceipt.reconnect(bluetoothId.value);
+  //await bluetoothReceipt.reconnect(bluetoothId.value);
 };
 
 const showBill = () => {
