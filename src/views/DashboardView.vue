@@ -26,14 +26,26 @@
       </div>
 
       <!-- Stat Cards -->
-      <div class="flex space-x-2 mt-2">
-        <StatsCard :value="selectedBalance" label="Total Saldo Toko">
+      <div class="grid grid-cols-3 gap-2 mt-2">
+        <StatsCard
+          class="col-span-3 lg:col-span-1"
+          :value="selectedBalance"
+          label="Total Saldo Toko"
+        >
           <!-- SVG Icon -->
         </StatsCard>
-        <StatsCard :value="selectedRevenue" label="Total Pendapatan">
+        <StatsCard
+          class="col-span-3 lg:col-span-1"
+          :value="selectedRevenue"
+          label="Total Pendapatan"
+        >
           <!-- SVG Icon -->
         </StatsCard>
-        <StatsCard :value="selectedOrders" label="Total Pesanan">
+        <StatsCard
+          class="col-span-3 lg:col-span-1"
+          :value="selectedOrders"
+          label="Total Pesanan"
+        >
           <!-- SVG Icon -->
         </StatsCard>
       </div>

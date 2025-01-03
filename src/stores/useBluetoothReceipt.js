@@ -10,7 +10,7 @@ import useModal from "@/stores/useModal";
 export default defineStore("bluetoothReceipt", {
   state: () => ({
     receiptPrinter: localStorage.getItem("receipt_printer"),
-    printerStatus: localStorage.getItem("printer_status"),
+    printerStatus: "WAITING...",
     error: localStorage.getItem("printer_error"),
     lastUsedDevice: localStorage.getItem("last_used_device"),
     toast: useToast(),
@@ -28,10 +28,10 @@ export default defineStore("bluetoothReceipt", {
         await this.receiptPrinter.reconnect({
           id: bluetooth.device_id,
         });
-        this.printerStatus = bluetooth.status;
 
         this.receiptPrinter.addEventListener("connected", (device) => {
           console.log(`Connected to ${device.name} (#${device.id})`);
+          this.printerStatus = "CONNECTED";
         });
       } catch (err) {
         console.error("Error connecting to the printer:", err);
