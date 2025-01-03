@@ -202,7 +202,7 @@ const confirmDeleteProduct = (sku) => {
   modal.props = {
     label: "Apakah Anda yakin ingin menghapus produk ini?",
     buttonLabel: "Hapus",
-    endpoint: `${process.env.VUE_APP_API_BASE_URL}/api/products/delete?shop_id=${auth.shopId}&sku=${sku}`,
+    endpoint: `${process.env.VUE_APP_API_BASE_URL}/api/products?shop_id=${auth.shopId}&sku=${sku}`,
   };
   modal.callback = fetchProducts;
   modal.body = DeleteBody;
