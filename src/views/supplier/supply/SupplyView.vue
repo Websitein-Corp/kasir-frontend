@@ -80,7 +80,7 @@
             </td>
             <td>{{ item?.tr_datetime || "N/A" }}</td>
             <td>{{ item?.due_date || "N/A" }}</td>
-            <td>{{ "Rp" + (item?.remaining_amount || 0) }}</td>
+            <td>{{ $helpers.money(item?.remaining_amount || 0) }}</td>
             <td class="flex justify-center space-x-2">
               <CustomButton
                 size="fit"
