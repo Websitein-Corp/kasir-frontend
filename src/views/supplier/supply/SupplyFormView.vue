@@ -144,7 +144,7 @@
             <TextInput
               v-model="supplierDetail.installment_batch"
               name="installment_batch"
-              label="Cicilan"
+              label="Cicilan ke-"
               type="text"
               readonly
             />
