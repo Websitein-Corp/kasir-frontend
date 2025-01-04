@@ -63,8 +63,8 @@
             <th>Status</th>
             <th>Tanggal Transaksi</th>
             <th>Jatuh Tempo</th>
-            <th>Total Price</th>
-            <th>Actions</th>
+            <th>Sisa Bayar</th>
+            <th>Aksi</th>
           </tr>
         </template>
         <template v-slot:tbody>
@@ -80,7 +80,7 @@
             </td>
             <td>{{ item?.tr_datetime || "N/A" }}</td>
             <td>{{ item?.due_date || "N/A" }}</td>
-            <td>{{ item?.total_price || 0 }}</td>
+            <td>{{ "Rp" + (item?.remaining_amount || 0) }}</td>
             <td class="flex justify-center space-x-2">
               <CustomButton
                 size="fit"
