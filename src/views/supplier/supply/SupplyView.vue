@@ -20,28 +20,6 @@
             :max-date="new Date().toISOString()"
             range
           ></DatetimeInput>
-          <div
-            class="peer !shadow-none !bg-white w-full placeholder:text-transparent border-1 border-gray-300 rounded focus:outline-none focus:ring-2 ring-primary-600 transition-all"
-          >
-            <select
-              class="peer w-full border-b rounded-lg placeholder:text-transparent p-4 border-1 border-gray-300 focus:outline-none focus:ring-2 ring-primary-600 transition-all"
-              :class="{
-                'ring-2': modelValue,
-                'cursor-not-allowed !bg-white !ring-slate-500 !text-slate-500':
-                  disabled,
-              }"
-              @change="setBasedOn($event.target.value)"
-            >
-              <option value="" disabled selected>Sort Supply</option>
-              <option
-                v-for="item in typeList"
-                :key="item.value"
-                :value="item.value"
-              >
-                {{ item.label }}
-              </option>
-            </select>
-          </div>
           <SearchInput
             class="mx-4"
             v-model="table.filters.keyword"
@@ -196,7 +174,7 @@ const fetchSupplier = async () => {
         supplier: item?.supplier?.name || "Unknown Supplier",
         paid_amount: item?.paid_amount || 0,
         remaining_amount: item?.remaining_amount || 0,
-        installent_batch: item?.installent_batch || 0,
+        installment_batch: item?.installment_batch || 0,
       }));
 
       table.page.current = data.meta.current_page;
@@ -236,13 +214,6 @@ const confirmDeleteSupply = (item) => {
   modal.callback = fetchSupplier;
   modal.body = DeleteBody;
   modal.open();
-};
-
-const setBasedOn = (value) => {
-  if (basedOn.value !== value) {
-    basedOn.value = value;
-    fetchSupplier();
-  }
 };
 
 watch(

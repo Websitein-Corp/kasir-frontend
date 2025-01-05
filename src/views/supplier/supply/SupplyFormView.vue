@@ -53,7 +53,7 @@
               label="Supply ID"
               placeholder="Enter Supply ID"
               class="w-1/2"
-              pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,3}$"
+              :pattern="generalPattern"
             />
           </div>
           <div class="flex flex-row justify-between space-x-4 mt-4">
@@ -95,6 +95,7 @@
               label="Status Pembayaran"
               readonly
               class="w-1/2"
+              :pattern="generalPattern"
             />
             <TextInput
               v-model="supplierDetail.tr_datetime"
@@ -103,6 +104,7 @@
               type="text"
               readonly
               class="w-1/2"
+              :pattern="generalPattern"
             />
           </div>
           <div class="flex flex-row justify-between space-x-4 mt-4">
@@ -113,6 +115,7 @@
               label="Tenggat Waktu"
               readonly
               class="w-1/2"
+              :pattern="generalPattern"
             />
             <TextInput
               v-model="supplierDetail.total_price"
@@ -122,6 +125,7 @@
               currency
               readonly
               class="w-1/2"
+              :pattern="generalPattern"
             />
           </div>
           <div>
@@ -132,6 +136,7 @@
               type="text"
               currency
               readonly
+              :pattern="generalPattern"
             />
             <TextInput
               v-model="supplierDetail.remaining_amount"
@@ -140,6 +145,7 @@
               type="text"
               currency
               readonly
+              :pattern="generalPattern"
             />
             <TextInput
               v-model="supplierDetail.installment_batch"
@@ -147,6 +153,7 @@
               label="Cicilan ke-"
               type="text"
               readonly
+              :pattern="generalPattern"
             />
           </div>
         </div>
@@ -163,11 +170,12 @@
           <TextInput
             v-model="payAmount"
             name="payAmount"
-            type="text"
+            type="number"
             label="Jumlah Bayar"
-            pattern="[0-9._%+-]+@[0-9.-]$"
+            :pattern="generalPattern"
             currency
             class="w-full"
+            @focus="resetIfDefault('payAmount', null)"
           />
 
           <CustomButton class="w-1/4 mt-4 bg-primary-600" type="submit">
@@ -185,6 +193,7 @@
         :icon="Box"
       >
         <button
+          v-if="!isEdit"
           type="button"
           class="text-red-600 hover:text-red-800 absolute top-2 right-2 font-bold"
           @click="removeProduct(index)"
@@ -201,6 +210,7 @@
               label="Tipe Produk"
               readonly
               class="w-1/2"
+              :pattern="generalPattern"
             />
             <TextInput
               v-model="product.sku"
@@ -209,6 +219,7 @@
               type="text"
               readonly
               class="w-1/2"
+              :pattern="generalPattern"
             />
           </div>
           <div class="flex flex-row justify-between space-x-4 mt-4">
@@ -216,18 +227,20 @@
               v-model="product.amount"
               name="amount"
               type="number"
-              label="Amount"
+              label="Jumlah"
               readonly
               class="w-1/2"
+              :pattern="generalPattern"
             />
             <TextInput
               v-model="product.capital_price"
               name="capital_price"
-              label="Capital Price"
+              label="Harga Modal"
               type="text"
               currency
               readonly
               class="w-1/2"
+              :pattern="generalPattern"
             />
           </div>
           <TextInput
@@ -238,6 +251,7 @@
             currency
             readonly
             class="w-1/2"
+            :pattern="generalPattern"
           />
         </div>
         <div v-else>
@@ -250,6 +264,7 @@
               >
               <select
                 v-model="product.type"
+                @change="resetSku(index)"
                 name="type"
                 required
                 class="peer w-full border-b rounded-lg placeholder:text-transparent p-4 focus:outline-none focus:ring-2 ring-primary-600 transition-all"
@@ -314,32 +329,34 @@
             <TextInput
               v-model="product.amount"
               name="amount"
-              label="Amount"
+              label="Jumlah"
               type="number"
               placeholder="Enter amount"
               required
               class="w-1/2"
+              @focus="resetIfDefault('amount', index)"
             />
             <TextInput
               v-model="product.capital_price"
               name="capital_price"
-              label="Capital Price"
-              type="text"
+              label="Harga Modal"
+              type="number"
               placeholder="Enter capital price"
               currency
               required
               class="w-1/2"
               pattern="[0-9._%+-]+@[0-9.-]$"
+              @focus="resetIfDefault('capital_price', index)"
             />
           </div>
         </div>
       </FormCard>
 
       <div
+        v-if="!isEdit"
         class="flex flex-col lg:flex-row space-y-4 space-x-0 lg:space-y-0 lg:space-x-4 w-full items-center justify-center mt-8"
       >
         <CustomButton
-          v-if="!isEdit"
           class="w-full lg:w-1/4 bg-primary-600"
           textSize="sm"
           type="button"
@@ -387,6 +404,7 @@ const ingredientsList = ref({ products: [], ingredients: [] });
 const payAmount = ref(0);
 const skuSearchQuery = ref([]);
 const dropdownOpen = ref(false);
+const generalPattern = "[0-9._%+-]+@[0-9.-]$";
 
 const TextInput = defineAsyncComponent(() =>
   import("@/components/Input/TextInput.vue")
@@ -648,6 +666,22 @@ const selectSku = (ingredient, index) => {
     console.error(`Product at index ${index} does not exist.`);
     console.error(productDetails.value);
   }
+};
+
+const resetIfDefault = (field, index) => {
+  if (field === "payAmount") {
+    // Reset payAmount if it is 0
+    payAmount.value = payAmount.value === 0 ? "" : payAmount.value;
+  } else if (index !== null && productDetails.value[index][field] === 0) {
+    // Reset the specific field in productDetails if it is 0
+    productDetails.value[index][field] = "";
+  }
+};
+
+const resetSku = (index) => {
+  productDetails.value[index].sku = "";
+  productDetails.value[index].displayText = "";
+  skuSearchQuery[index] = "";
 };
 
 const removeProduct = (index) => {

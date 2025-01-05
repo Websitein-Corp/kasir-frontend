@@ -9,7 +9,7 @@
       :value="currentValue"
       class="peer w-full border-b rounded-lg placeholder:text-transparent p-4 focus:outline-none focus:ring-2 ring-primary-600 transition-all"
       :class="{
-        'ring-2': modelValue || currency,
+        'ring-2': modelValue || currency || readonly,
         'cursor-not-allowed !bg-white !ring-slate-500 !text-slate-500':
           disabled,
         'pl-12': currency,
@@ -37,7 +37,7 @@
 </template>
 
 <script setup>
-import { computed } from "vue";
+import { computed, readonly } from "vue";
 import useModal from "@/stores/useModal";
 
 const props = defineProps({
@@ -62,6 +62,10 @@ const props = defineProps({
     default: "username",
   },
   disabled: {
+    type: Boolean,
+    default: false,
+  },
+  readonly: {
     type: Boolean,
     default: false,
   },
