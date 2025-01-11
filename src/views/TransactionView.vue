@@ -35,7 +35,7 @@
       <DataTable :column-count="4">
         <template v-slot:action-2>
           <div
-            class="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-2"
+            class="flex flex-col lg:flex-row space-y-4 lg:space-y-0 md:space-x-2"
           >
             <DatetimeInput
               v-model="table.filters.date"
@@ -51,23 +51,25 @@
           </div>
         </template>
         <template v-slot:action-3>
-          <div class="flex space-x-2">
-            <div>
+          <div class="flex flex-col lg:flex-row gap-2">
+            <div class="">
               <CustomButton
-                size="md"
+                size="mobile"
                 label="Export Pergerakkan Saldo"
                 :icon="Download"
                 class="bg-primary-700 hover:bg-primary-800"
+                text-size="sm"
                 :loading="page.buttonLoading"
                 @click="exportCashFlow"
               />
             </div>
-            <div>
+            <div class="">
               <CustomButton
                 size="mobile"
                 label="Export Transaksi"
                 :icon="Download"
                 class="bg-primary-700 hover:bg-primary-800"
+                text-size="sm"
                 :loading="page.buttonLoading"
                 @click="exportTransactions"
               />

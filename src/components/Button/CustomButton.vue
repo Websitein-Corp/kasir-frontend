@@ -1,6 +1,6 @@
 <template>
   <button
-    class="h-10 lg:h-12 p-2 px-4 rounded-lg !text-base lg:!text-xl text-white shadow-xl flex justify-center items-center cursor-pointer transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+    class="h-10 lg:h-12 p-2 px-4 rounded-lg !text-base lg:!text-xl text-white shadow-xl flex justify-center items-center cursor-pointer transition-all disabled:opacity-40 disabled:cursor-not-allowed whitespace-nowrap"
     :class="{
       'w-[65px] lg:w-[100px] !text-sm lg:!text-base': size === 'xs',
       'w-[150px] lg:w-[200px]': size === 'sm',
@@ -10,7 +10,7 @@
       'font-bold': labelWeight === 'bold',
       'w-fit': size === 'fit',
       'w-full': size === 'full',
-      'w-full md:w-[200px]': size === 'mobile',
+      'w-full lg:w-fit': size === 'mobile',
       '!w-fit': buttonType === 'icon',
       '!justify-start': align === 'start',
       '!justify-end': align === 'end',

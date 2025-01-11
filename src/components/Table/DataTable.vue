@@ -2,7 +2,7 @@
   <div class="dtable-header space-y-5">
     <slot name="action-1"></slot>
     <div
-      class="flex flex-col md:flex-row space-y-4 md:space-y-0 space-x-0 md:space-x-4 justify-between my-6 mb-12"
+      class="flex flex-col lg:flex-row space-y-4 lg:space-y-0 space-x-0 lg:space-x-4 justify-between my-6 mb-12"
     >
       <slot name="action-2"></slot>
       <slot name="action-3"></slot>
