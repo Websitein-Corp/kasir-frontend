@@ -30,7 +30,7 @@ export default defineStore("cart", {
 
     amount: (state) =>
       state.items.length > 0
-        ? state.items.reduce((sum, val) => sum + (val.amount || 1), 0)
+        ? state.items.reduce((sum, val) => sum + (parseInt(val.amount) || 1), 0)
         : 0,
 
     tax(state) {
