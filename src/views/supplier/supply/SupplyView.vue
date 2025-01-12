@@ -20,6 +20,27 @@
             :max-date="new Date().toISOString()"
             range
           ></DatetimeInput>
+          <div
+            class="peer !shadow-none !bg-white w-full placeholder:text-transparent border-1 border-gray-300 rounded focus:outline-none focus:ring-2 ring-primary-600 transition-all"
+          >
+            <select
+              class="peer w-full border placeholder:text-transparent p-3 border-1 border-gray-300 focus:outline-none focus:ring-2 ring-primary-600 transition-all"
+              :class="{
+                'ring-2': modelValue,
+                'cursor-not-allowed !bg-white !ring-slate-500 !text-slate-500':
+                  disabled,
+              }"
+              @change="setBasedOn($event.target.value)"
+            >
+              <option
+                v-for="item in typeList"
+                :key="item.value"
+                :value="item.value"
+              >
+                {{ item.label }}
+              </option>
+            </select>
+          </div>
           <SearchInput
             class="mx-4"
             v-model="table.filters.keyword"
@@ -209,11 +230,19 @@ const confirmDeleteSupply = (item) => {
   modal.props = {
     label: "Apakah Anda yakin ingin menghapus supply ini?",
     buttonLabel: "Hapus",
-    endpoint: `${process.env.VUE_APP_API_BASE_URL}/api/ingredients/${item.id}`,
+    endpoint: `${process.env.VUE_APP_API_BASE_URL}/api/supplier/supply`,
+    id: item.id,
   };
   modal.callback = fetchSupplier;
   modal.body = DeleteBody;
   modal.open();
+};
+
+const setBasedOn = (value) => {
+  if (basedOn.value !== value) {
+    basedOn.value = value;
+    fetchSupplier();
+  }
 };
 
 watch(
