@@ -37,12 +37,18 @@ const auth = useAuth();
 const toast = useToast();
 
 const handleDelete = () => {
+  const requestBody = {
+    id: modal.props.id || undefined,
+    shop_id: auth.shopId || undefined,
+  };
+
   axios
     .delete(modal.props.endpoint, {
       headers: {
         Authorization: `Bearer ${auth.authToken}`,
       },
       withCredentials: true,
+      data: requestBody,
     })
     .then(({ data }) => {
       if (data["error_type"]) {

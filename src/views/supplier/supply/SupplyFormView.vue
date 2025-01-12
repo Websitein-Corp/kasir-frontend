@@ -80,7 +80,30 @@
               placeholder="Enter total price"
               readonly
               class="w-1/2"
+              :pattern="generalPattern"
             />
+          </div>
+          <div class="w-1/2 mt-4">
+            <select
+              v-model="paymentType"
+              name="type"
+              required
+              class="peer w-full border-b rounded-lg placeholder:text-transparent p-4 focus:outline-none focus:ring-2 ring-primary-600 transition-all"
+              :class="{
+                'ring-2': modelValue,
+                'cursor-not-allowed !bg-white !ring-slate-500 !text-slate-500':
+                  disabled,
+              }"
+            >
+              <option value="" disabled>Pilih Tipe Pembayaran</option>
+              <option
+                v-for="item in paymentTypeList"
+                :key="item.value"
+                :value="item.value"
+              >
+                {{ item.label }}
+              </option>
+            </select>
           </div>
         </div>
 
@@ -275,8 +298,13 @@
                 }"
               >
                 <option value="" disabled>Pilih Tipe Produk</option>
-                <option value="PRODUCT">Product</option>
-                <option value="INGREDIENT">Ingredient</option>
+                <option
+                  v-for="item in typeList"
+                  :key="item.value"
+                  :value="item.value"
+                >
+                  {{ item.label }}
+                </option>
               </select>
             </div>
             <div class="w-1/2 relative">
@@ -402,9 +430,32 @@ const auth = useAuth();
 const supplierList = ref([]);
 const ingredientsList = ref({ products: [], ingredients: [] });
 const payAmount = ref(0);
+const paymentType = ref("");
 const skuSearchQuery = ref([]);
 const dropdownOpen = ref(false);
 const generalPattern = "[0-9._%+-]+@[0-9.-]$";
+
+const typeList = [
+  {
+    label: "Produk",
+    value: "PRODUCT",
+  },
+  {
+    label: "Bahan baku",
+    value: "INGREDIENT",
+  },
+];
+
+const paymentTypeList = [
+  {
+    label: "Tunai",
+    value: "CASH",
+  },
+  {
+    label: "Cicilan",
+    value: "INSTALLMENT",
+  },
+];
 
 const TextInput = defineAsyncComponent(() =>
   import("@/components/Input/TextInput.vue")
@@ -418,11 +469,13 @@ const props = defineProps({
 const emit = defineEmits(["cancel", "save"]);
 
 const totalPrice = computed(() => {
-  return productDetails.value.reduce((sum, product) => {
+  const total = productDetails.value.reduce((sum, product) => {
     // Ensure capital_price is treated as a number
     const price = parseFloat(product.capital_price * product.amount) || 0;
     return sum + price;
   }, 0);
+
+  return total.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
 });
 
 const generateRandomId = () => {
@@ -500,6 +553,7 @@ const handleSubmit = () => {
       supplier: supplierDetail.value.id,
       supply_id: supplierDetail.value.supply_id,
       due_date: convertToMySQLDatetime(supplierDetail.value.due_date),
+      payment_type: paymentType.value,
       data: productDetails.value.map((product) => ({
         type: product.type,
         sku: product.sku,
