@@ -28,6 +28,11 @@ const routes = [
     component: () => import("@/views/TransactionView.vue"),
   },
   {
+    path: "/cashflow",
+    name: "cashflow",
+    component: () => import("@/views/CashFlowView.vue"),
+  },
+  {
     path: "/subuser",
     name: "subuser",
     component: () => import("@/views/subuser/SubuserView.vue"),
