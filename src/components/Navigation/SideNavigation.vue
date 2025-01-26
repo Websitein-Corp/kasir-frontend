@@ -135,6 +135,8 @@ import {
   Package,
   UserCog,
   NotebookText,
+  HandCoins,
+  Wallet,
 } from "lucide-vue-next";
 import NavigationMenu from "@/components/Navigation/NavigationMenu.vue";
 import usePage from "@/stores/usePage";
@@ -187,7 +189,18 @@ const menus = ref([
   {
     label: "Transaksi",
     icon: ArrowRightLeft,
-    endpoint: "/transaction",
+    submenus: [
+      {
+        label: "Transaksi",
+        icon: HandCoins,
+        endpoint: "/transaction",
+      },
+      {
+        label: "Pergerakkan Saldo",
+        icon: Wallet,
+        endpoint: "/cashflow",
+      },
+    ],
     current: false,
   },
   {
