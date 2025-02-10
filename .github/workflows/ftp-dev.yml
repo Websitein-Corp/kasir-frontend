@@ -19,7 +19,17 @@ jobs:
           node-version: '22'
 
       - name: Copy .env
-        run: cp .env.example.staging .env
+        run: |
+          cp .env.example .env
+          sed -i 's/NODE_ENV=local/NODE_ENV=${{ secrets.STAGE_NODE_ENV }}/g' .env
+          sed -i 's|VUE_APP_API_BASE_URL=https://websitein.id/|VUE_APP_API_BASE_URL=${{ secrets.STAGE_VUE_APP_API_BASE_URL }}|g' .env
+          sed -i 's|VUE_APP_NAME=Kasirin|VUE_APP_NAME=${{ secrets.STAGE_VUE_APP_NAME }}|g' .env
+          sed -i 's/REVERB_APP_ID=app-id/REVERB_APP_ID=${{ secrets.STAGE_REVERB_APP_ID }}/g' .env
+          sed -i 's/REVERB_APP_KEY=app-key/REVERB_APP_KEY=${{ secrets.STAGE_REVERB_APP_KEY }}/g' .env
+          sed -i 's/REVERB_APP_SECRET=app-secret/REVERB_APP_SECRET=${{ secrets.STAGE_REVERB_APP_SECRET }}/g' .env
+          sed -i 's/REVERB_HOST=websitein.id/REVERB_HOST=${{ secrets.STAGE_REVERB_HOST }}/g' .env
+          sed -i 's/REVERB_PORT=443/REVERB_PORT=${{ secrets.STAGE_REVERB_PORT }}/g' .env
+          sed -i 's/REVERB_SCHEME=https/REVERB_SCHEME=${{ secrets.STAGE_REVERB_SCHEME }}/g' .env
 
       - name: Install dependencies and build
         run: |
