@@ -158,6 +158,18 @@ const page = usePage();
 
 onMounted(() => {
   fetchBill();
+
+  window.Echo.channel(`status.update.${bill.value.invoice_number}`).listen(
+    bill.value.type,
+    (event) => {
+      toast.message = "Sukses";
+      toast.description = `Status: ${getBillMessage(event.status)}`;
+      toast.type = "SUCCESS";
+      toast.trigger();
+
+      showBill(bill.value.invoice_number);
+    }
+  );
 });
 
 const checkStatus = () => {

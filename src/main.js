@@ -15,6 +15,10 @@ const pinia = createPinia();
 
 const app = createApp(App);
 
+app.use(pinia);
+
+import "./echo.js";
+
 app.config.globalProperties.$helpers = helpers;
 
-app.use(pinia).use(router).use(VueLazyLoad).mount("#app");
+app.use(router).use(VueLazyLoad).mount("#app");
