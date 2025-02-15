@@ -21,9 +21,9 @@
             'hidden lg:flex': page.navIsOpened,
           }"
         >
-          <RouterLink :to="backEndpoint" @click="$emit('back')">
+          <div @click="handleBack()">
             <ArrowLeft class="cursor-pointer" size="30" />
-          </RouterLink>
+          </div>
         </div>
         <div
           class="ml-4"
@@ -45,8 +45,9 @@
 <script setup>
 import usePage from "@/stores/usePage";
 import { ArrowLeft } from "lucide-vue-next";
+import router from "@/router";
 
-defineProps({
+const props = defineProps({
   title: {
     type: String,
     default: "",
@@ -59,17 +60,25 @@ defineProps({
     type: Boolean,
     default: false,
   },
-  backEndpoint: {
-    type: String,
-    default: "",
+  enableRouterBack: {
+    type: Boolean,
+    default: false,
   },
 });
 
-defineEmits(["back"]);
+const emit = defineEmits(["back"]);
 
 const page = usePage();
 
 const handleScroll = (event) => {
   page.scroll = event.target.scrollTop;
+};
+
+const handleBack = () => {
+  if (props.enableRouterBack) {
+    router.back();
+  }
+
+  emit("back");
 };
 </script>

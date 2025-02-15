@@ -472,7 +472,7 @@ const validateForm = () => {
     if (!form[field] && field !== "shop_id") {
       if (!props.isEdit) {
         toast.message = "Gagal";
-        toast.description = `Kolom ${field} harus diisi!`;
+        toast.description = `${field} tidak boleh kosong!`;
         toast.type = "FAILED";
         toast.trigger();
 

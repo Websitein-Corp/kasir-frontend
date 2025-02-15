@@ -137,6 +137,7 @@ import {
   NotebookText,
   HandCoins,
   Wallet,
+  Upload,
 } from "lucide-vue-next";
 import NavigationMenu from "@/components/Navigation/NavigationMenu.vue";
 import usePage from "@/stores/usePage";
@@ -157,6 +158,23 @@ const menus = ref([
     label: "Pesan",
     icon: ShoppingCart,
     endpoint: "/order",
+    current: false,
+  },
+  {
+    label: "Transaksi",
+    icon: ArrowRightLeft,
+    submenus: [
+      {
+        label: "Transaksi",
+        icon: HandCoins,
+        endpoint: "/transaction",
+      },
+      {
+        label: "Pergerakkan Saldo",
+        icon: Wallet,
+        endpoint: "/cashflow",
+      },
+    ],
     current: false,
   },
   {
@@ -187,23 +205,6 @@ const menus = ref([
     current: false,
   },
   {
-    label: "Transaksi",
-    icon: ArrowRightLeft,
-    submenus: [
-      {
-        label: "Transaksi",
-        icon: HandCoins,
-        endpoint: "/transaction",
-      },
-      {
-        label: "Pergerakkan Saldo",
-        icon: Wallet,
-        endpoint: "/cashflow",
-      },
-    ],
-    current: false,
-  },
-  {
     label: "Supplier",
     icon: Truck,
     submenus: [
@@ -218,6 +219,12 @@ const menus = ref([
         endpoint: "/supply",
       },
     ],
+    current: false,
+  },
+  {
+    label: "Unggah",
+    icon: Upload,
+    endpoint: "/upload",
     current: false,
   },
   {
