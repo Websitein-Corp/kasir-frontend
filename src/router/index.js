@@ -97,6 +97,16 @@ const routes = [
     name: "report-product",
     component: () => import("@/views/report/ProductReportView.vue"),
   },
+  {
+    path: "/upload",
+    name: "upload-list",
+    component: () => import("@/views/upload/UploadListView.vue"),
+  },
+  {
+    path: "/upload/:type",
+    name: "upload-form",
+    component: () => import("@/views/upload/UploadFormView.vue"),
+  },
 ];
 
 const router = createRouter({
