@@ -51,6 +51,7 @@ import useAuth from "@/stores/useAuth";
 import usePage from "@/stores/usePage";
 import FileInput from "@/components/Input/File/FileInput.vue";
 import { useRoute } from "vue-router";
+import router from "@/router";
 
 const emit = defineEmits(["formBack", "submitSuccess"]);
 
@@ -119,7 +120,7 @@ const submitUpload = async () => {
           toast.type = "SUCCESS";
           toast.trigger();
 
-          emit("submitSuccess");
+          router.back();
         }
       });
   }
