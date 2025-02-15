@@ -184,7 +184,7 @@ const validateForm = () => {
   Object.keys(form).forEach((field) => {
     if (!form[field] && field !== "id") {
       toast.message = "Gagal";
-      toast.description = `Kolom ${field} harus diisi!`;
+      toast.description = `${field} tidak boleh kosong!`;
       toast.type = "FAILED";
       toast.trigger();
 

@@ -537,7 +537,7 @@ const validateForm = () => {
   filteredForm.forEach((field) => {
     if (form[field] === null) {
       toast.message = "Gagal";
-      toast.description = `Kolom ${field} harus diisi!`;
+      toast.description = `${field} tidak boleh kosong!`;
       toast.type = "FAILED";
       toast.trigger();
 
