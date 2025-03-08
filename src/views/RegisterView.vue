@@ -81,7 +81,7 @@
               class="w-12 md:w-16 flex-shrink-0"
             />
             <h1 class="pl-2 text-xl">
-              {{ isForgotPassword ? "Email Verification" : "Register" }}
+              {{ isVerifyEmail ? "Email Verification" : "Register" }}
             </h1>
           </div>
 
@@ -132,13 +132,10 @@
     </div>
   </div>
 </template>
+
 <script setup>
 import { defineAsyncComponent, ref } from "vue";
-import axios from "axios";
 import router from "@/router";
-import useToast from "@/stores/useToast";
-import useAuth from "@/stores/useAuth";
-import { useRoute } from "vue-router";
 import CustomButton from "@/components/Button/CustomButton.vue";
 import usePage from "@/stores/usePage";
 
@@ -146,10 +143,7 @@ const TextInput = defineAsyncComponent(() =>
   import("@/components/Input/TextInput.vue")
 );
 
-const auth = useAuth();
-const toast = useToast();
 const page = usePage();
-const route = useRoute();
 
 const email = ref("");
 const password = ref("");
