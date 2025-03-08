@@ -3,89 +3,86 @@
 @tailwind utilities;
 
 @font-face {
-    font-family: Helvetica;
-    src: url("~@/assets/fonts/helvetica_neue_5/HelveticaNeueMedium.otf");
+  font-family: Helvetica;
+  src: url("~@/assets/fonts/helvetica_neue_5/HelveticaNeueMedium.otf");
 }
 
 @font-face {
-    font-family: HelveticaLight;
-    src: url("~@/assets/fonts/helvetica_neue_5/HelveticaNeueLight.otf");
+  font-family: HelveticaLight;
+  src: url("~@/assets/fonts/helvetica_neue_5/HelveticaNeueLight.otf");
 }
 
 .fade-enter-active,
 .fade-leave-active {
-    transition: opacity 0.3s ease;
+  transition: opacity 0.3s ease;
 }
 
 .fade-enter-from,
 .fade-leave-to {
-    opacity: 0;
+  opacity: 0;
 }
-
 
 .slide-fade-up-enter-active,
 .slide-fade-up-leave-active {
-    transition: all 0.3s ease-in-out;
+  transition: all 0.3s ease-in-out;
 }
 
 .slide-fade-up-enter-from,
 .slide-fade-up-leave-to {
-    transform: translate(-50%, -40%);
-    opacity: 0;
+  transform: translate(-50%, -40%);
+  opacity: 0;
 }
 
 .slide-fade-up-enter-to,
 .slide-fade-up-leave-from {
-    transform: translate(-50%, -50%)
+  transform: translate(-50%, -50%);
 }
-
 
 .slide-fade-left-enter-active,
 .slide-fade-left-leave-active {
-    transition: all 0.3s ease-in-out;
+  transition: all 0.3s ease-in-out;
 }
 
 .slide-fade-left-enter-from,
 .slide-fade-left-leave-to {
-    transform: translate(150%, 0%);
+  transform: translate(150%, 0%);
 }
 
 .slide-fade-left-enter-to,
 .slide-fade-left-leave-from {
-    transform: translate(0%, 0%)
+  transform: translate(0%, 0%);
 }
 
-
 .no-scrollbar::-webkit-scrollbar {
-    display: none;
+  display: none;
 }
 
 .no-scrollbar {
-    -ms-overflow-style: none; /* IE and Edge */
-    scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
 }
 
 .dropzone-message {
-    @apply flex-grow text-center mt-3;
+  @apply flex-grow text-center mt-3;
 }
 
 .dropzone-message::after {
-    content: " or click (.png, .jpg, .jpeg)";
+  content: " or click (.png, .jpg, .jpeg)";
 }
 
 .dropzone__progress {
-    display: none;
+  display: none;
 }
 
 :root {
-    --dp-input-padding: 12px 30px 12px 12px!important;
+  --dp-input-padding: 12px 30px 12px 12px !important;
 }
 
 select {
-    -webkit-appearance: none;
+  -webkit-appearance: none;
 }
 
 html,
 body {
-    overscroll-behavior-y: contain;
+  overscroll-behavior-y: contain;
 }
