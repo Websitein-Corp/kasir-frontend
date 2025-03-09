@@ -28,6 +28,11 @@ const routes = [
     component: () => import("@/views/LoginView.vue"),
   },
   {
+    path: "/complete-profile",
+    name: "complete-profile",
+    component: () => import("@/views/CompleteProfileView.vue"),
+  },
+  {
     path: "/transaction",
     name: "transaction",
     component: () => import("@/views/TransactionView.vue"),

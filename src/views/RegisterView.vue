@@ -125,8 +125,12 @@
             class="bg-primary-700 hover:bg-primary-600 rounded-md text-xl text-white w-full mt-6 px-8 py-2 mx-auto"
             @click="formAction"
             icon-side="left"
+            :disabled="isVerifyButtonDisabled"
             :loading="page.buttonLoading"
           />
+          <p v-if="isVerifyButtonDisabled" class="countdown-text mt-4">
+            Anda dapat mengirim ulang dalam {{ countdown }} detik.
+          </p>
         </div>
       </div>
     </div>
@@ -144,14 +148,29 @@ const TextInput = defineAsyncComponent(() =>
 );
 
 const page = usePage();
-
 const email = ref("");
 const password = ref("");
-
 const isVerifyEmail = ref(false);
+const isVerifyButtonDisabled = ref(false);
+const countdown = ref(0);
 
 const toggleVerifyEmail = () => {
-  isVerifyEmail.value = !isVerifyEmail.value;
+  isVerifyEmail.value = true;
+};
+
+const handleVerifyButton = () => {
+  if (isVerifyButtonDisabled.value) return;
+
+  isVerifyButtonDisabled.value = true;
+  countdown.value = 5; //ini permisalan aja;
+
+  const timer = setInterval(() => {
+    countdown.value--;
+    if (countdown.value <= 0) {
+      clearInterval(timer);
+      isVerifyButtonDisabled.value = false;
+    }
+  }, 1000);
 };
 
 const redirectToLogin = () => {
@@ -164,6 +183,7 @@ const formAction = () => {
 
 const sendEmailVerification = () => {
   toggleVerifyEmail();
+  handleVerifyButton();
 };
 </script>
 
