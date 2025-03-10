@@ -9,7 +9,7 @@
       />
     </div>
     <hr class="h-px bg-primary-700 border-none" />
-    <div class="w-1/3 mx-auto items-center">
+    <div class="w-full px-4 sm:w-2/3 md:w-1/2 lg:w-1/3 mx-auto">
       <!-- step 1 -->
       <Transition name="fade-slide" mode="out-in">
         <div v-if="currentStep === 1">
@@ -46,7 +46,9 @@
       <Transition name="fade-slide" mode="out-in">
         <div v-if="currentStep === 2">
           <h1 class="mt-4 text-center text-lg text-primary-900">Pilih Plan</h1>
-          <div class="flex gap-10 mt-8">
+          <div
+            class="flex flex-wrap md:flex-nowrap gap-4 sm:gap-6 md:gap-10 justify-center"
+          >
             <!-- ini cardnya nanti jadiin component -->
             <div
               class="max-w-sm w-full p-6 border rounded-2xl shadow-md bg-white hover:shadow-lg transition-all duration-300"
@@ -157,7 +159,7 @@
             Pilih Metode Pembayaran
           </h1>
           <div
-            class="border-primary-700 border-2 rounded-md mt-8 p-4 flex gap-4 justify-center"
+            class="border-primary-700 border-2 rounded-md mt-8 p-4 flex flex-wrap md:flex-nowrap gap-4 justify-center"
           >
             <div
               class="p-1 border rounded-xl shadow-lg bg-white hover:shadow-xl transition-all duration-300 cursor-pointer"
