@@ -149,8 +149,62 @@
         <h1 class="mt-4 text-center text-lg text-primary-900">
           Pilih Metode Pembayaran
         </h1>
+        <div
+          class="border-primary-700 border-2 rounded-md mt-8 p-4 flex gap-4 justify-center"
+        >
+          <div
+            class="p-1 border rounded-xl shadow-lg bg-white hover:shadow-xl transition-all duration-300 cursor-pointer"
+            :class="
+              selected
+                ? 'border-primary-700 ring-2 ring-primary-700'
+                : 'border-gray-200'
+            "
+            @click="toggleSelect"
+          >
+            <img
+              src="https://i0.wp.com/umsu.ac.id/berita/wp-content/uploads/2024/07/cara-lihat-nomor-gopay-di-aplikasi-gojek.webp?fit=850%2C510&ssl=1"
+              alt=""
+              class="w-36 h-20 rounded-xl"
+            />
+          </div>
+          <div
+            class="p-1 border rounded-xl shadow-lg bg-white hover:shadow-xl transition-all duration-300 cursor-pointer"
+            :class="
+              selected
+                ? 'border-primary-700 ring-2 ring-primary-700'
+                : 'border-gray-200'
+            "
+            @click="toggleSelect"
+          >
+            <img
+              src="https://stitmadani.ac.id/wp-content/uploads/2023/11/5.jpg"
+              alt=""
+              class="w-36 h-20 rounded-xl"
+            />
+          </div>
+          <div
+            class="p-1 border rounded-xl shadow-lg bg-white hover:shadow-xl transition-all duration-300 cursor-pointer"
+            :class="
+              selected
+                ? 'border-primary-700 ring-2 ring-primary-700'
+                : 'border-gray-200'
+            "
+            @click="toggleSelect"
+          >
+            <img
+              src="https://asset.kompas.com/crops/SjtW5lnymfzfHSa4UTTdHUgs9hk=/0x105:680x558/1200x800/data/photo/2022/10/09/63429e3a6ec3d.png"
+              alt=""
+              class="w-36 h-20 rounded-xl"
+            />
+          </div>
+        </div>
+        <div class="mt-4 flex justify-between">
+          <p>Total Pembayaran</p>
+          <p>100.000 Rp</p>
+        </div>
       </div>
     </div>
+
     <!-- progress  wrapper -->
     <div
       class="fixed bottom-10 left-1/2 transform -translate-x-1/2 w-full max-w-md px-6 z-50"
@@ -213,7 +267,7 @@ const alamatPemilik = ref("");
 const namaToko = ref("");
 const alamatToko = ref("");
 const currentStep = ref(1);
-const totalSteps = ref(3);
+const totalSteps = ref(4);
 
 const prevStep = () => {
   currentStep.value--;
