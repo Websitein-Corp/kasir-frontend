@@ -70,7 +70,7 @@
 }
 
 .dropzone-message::after {
-    content: " or click (.png, .jpg, .jpeg)";
+    content: " or click here";
 }
 
 .dropzone__progress {
@@ -78,7 +78,7 @@
 }
 
 :root {
-    --dp-input-padding: 12px 30px 12px 12px!important;
+    --dp-input-padding: 12px 30px 12px 12px !important;
 }
 
 select {

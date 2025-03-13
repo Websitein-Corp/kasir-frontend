@@ -121,7 +121,7 @@
             />
             <div class="col-span-2 flex justify-center">
               <FileInput
-                label="Gambar"
+                label="Gambar (.png, .jpg, .jpeg)"
                 :acceptedFiles="['png', 'jpg', 'jpeg']"
                 :clickable="true"
                 @addedFile="

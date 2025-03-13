@@ -12,7 +12,7 @@
           <div class="grid grid-cols-2 gap-4">
             <div class="col-span-2 flex justify-center">
               <FileInput
-                label="Unggah Excel File"
+                label="Unggah Excel File (.csv, .xlsx)"
                 :acceptedFiles="['csv', 'xlsx']"
                 :clickable="true"
                 @addedFile="
