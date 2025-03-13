@@ -107,7 +107,7 @@ const submitUpload = async () => {
 
     axios
       .post(
-        `${process.env.VUE_APP_API_BASE_URL}/api/${upload.value.endpoint}`,
+        `${process.env.VUE_APP_API_BASE_URL}/api${upload.value.endpoint}`,
         {
           shop_id: auth.shopId,
           file: form.file,
