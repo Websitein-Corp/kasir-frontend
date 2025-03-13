@@ -67,24 +67,6 @@ const uploadList = ref([
   },
 ]);
 
-onMounted(() => {
-  //fetchUploadList();
-});
-
-const fetchUploadList = async () => {
-  const { data } = await axios.get(
-    `${process.env.VUE_APP_API_BASE_URL}/api/shops`,
-    {
-      headers: {
-        Authorization: `Bearer ${auth.authToken}`,
-      },
-      withCredentials: true,
-    }
-  );
-
-  uploadList.value = data.data;
-};
-
 const pickUpload = (id) => {
   router.push(`/upload/${id}`);
 };
