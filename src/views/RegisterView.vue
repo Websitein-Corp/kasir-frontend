@@ -43,11 +43,11 @@
           class="hidden md:flex flex-col items-center justify-center bg-kasir w-1/2 px-8 overflow-y-auto"
         >
           <h2 class="text-2xl font-semibold text-primary-100 md:text-3xl">
-            Cashier platform for your own
-            <span class="text-red-900">Business</span>
+            Mari bangun bisnismu bersama
+            <span class="text-red-900">Kasirin</span>
           </h2>
           <p class="mt-4 text-[#F5F5DC] text-sm md:text-base">
-            Just a few clicks away to begin our business journey
+            Langkah awal untuk bisnis cerdas dimulai di sini
           </p>
           <div class="mt-6 flex justify-center">
             <div
@@ -94,18 +94,10 @@
               label="EMAIL"
               placeholder="Enter your email"
             />
-            <TextInput
-              v-if="!isVerifyEmail"
-              v-model="password"
-              name="password"
-              type="password"
-              label="PASSWORD"
-              placeholder="Enter your password"
-              @keyup.enter="formAction"
-            />
+
             <p
               v-if="isVerifyEmail"
-              class="text-xl text-center py-2 cursor-pointer"
+              class="text-base md:text-xl text-center py-2 cursor-pointer w-48 sm:w-96 mx-auto"
             >
               Akun Anda hampir siap! Silakan buka email Anda dan selesaikan
               proses verifikasi untuk mulai menggunakan Kasirin.
@@ -128,7 +120,10 @@
             :disabled="isVerifyButtonDisabled"
             :loading="page.buttonLoading"
           />
-          <p v-if="isVerifyButtonDisabled" class="countdown-text mt-4">
+          <p
+            v-if="isVerifyButtonDisabled"
+            class="text-base md:text-xl mt-4 w-48 sm:w-96 text-center"
+          >
             Anda dapat mengirim ulang dalam {{ countdown }} detik.
           </p>
         </div>

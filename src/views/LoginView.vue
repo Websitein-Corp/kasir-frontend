@@ -84,8 +84,17 @@
               {{ isForgotPassword ? "Forgot Password" : "Login" }}
             </h1>
           </div>
+          <div class="flex text-xs md:text-sm gap-1 mt-3 font-thin">
+            <span>Belum Memiliki Akun Kasirin?</span>
+            <div
+              @click="handleRegisterRedirect"
+              class="text-primary-700 cursor-pointer hover:underline"
+            >
+              Daftar Disini!
+            </div>
+          </div>
 
-          <div class="flex flex-col mt-4 w-full">
+          <div class="flex flex-col w-full">
             <TextInput
               v-model="email"
               name="email"
@@ -150,6 +159,10 @@ const isForgotPassword = ref(false);
 
 const toggleForgotPassword = () => {
   isForgotPassword.value = !isForgotPassword.value;
+};
+
+const handleRegisterRedirect = () => {
+  router.push("/register");
 };
 
 const formAction = () => {
