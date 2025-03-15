@@ -5,7 +5,9 @@
         auth.authToken &&
         route.path !== '/login' &&
         route.path !== '/shop-list' &&
-        route.path !== '/forgot-password'
+        route.path !== '/forgot-password' &&
+        route.path !== '/register' &&
+        route.path !== '/complete-profile'
       "
     />
     <ModalPopup />
