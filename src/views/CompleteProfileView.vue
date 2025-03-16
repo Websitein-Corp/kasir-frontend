@@ -39,40 +39,9 @@
         class="flex flex-row min-w-fit w-10/12 md:w-4/12 h-[25rem] md:h-[30rem] border border-1 rounded-xl bg-white shadow-lg z-10 overflow-y-auto"
       >
         <!-- Image will be hidden on small screens and visible on medium (tablet) and larger screens -->
-        <div
-          class="hidden md:flex flex-col items-center justify-center bg-kasir w-1/2 px-8 overflow-y-auto"
-        >
-          <h2 class="text-2xl font-semibold text-primary-100 md:text-3xl">
-            Mari bangun bisnismu bersama
-            <span class="text-red-900">Kasirin</span>
-          </h2>
-          <p class="mt-4 text-[#F5F5DC] text-sm md:text-base">
-            Langkah awal untuk bisnis cerdas
-          </p>
-          <div class="mt-6 flex justify-center">
-            <div
-              class="bg-gray-200 p-2 rounded-full w-10 h-10 flex items-center justify-center"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                class="w-6 h-6 text-gray-700"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M5 13l4 4L19 7"
-                />
-              </svg>
-            </div>
-          </div>
-        </div>
 
         <div
-          class="flex flex-col items-center justify-center p-4 w-full md:w-1/2 overflow-y-auto"
+          class="flex flex-col items-center justify-center p-4 w-full overflow-y-auto"
         >
           <div class="flex flex-row items-center justify-center min-h-fit">
             <img

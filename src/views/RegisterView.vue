@@ -34,6 +34,7 @@
     <!-- Login Form -->
     <div
       class="loginview absolute inset-0 flex items-center justify-center overflow-y-auto"
+      v-if="!isVerifyEmail"
     >
       <div
         class="flex flex-row min-w-fit w-10/12 md:w-4/12 h-[25rem] md:h-[30rem] border border-1 rounded-xl bg-white shadow-lg z-10 overflow-y-auto"
@@ -87,21 +88,12 @@
 
           <div class="flex flex-col mt-4 w-full">
             <TextInput
-              v-if="!isVerifyEmail"
               v-model="email"
               name="email"
               type="email"
               label="EMAIL"
               placeholder="Enter your email"
             />
-
-            <p
-              v-if="isVerifyEmail"
-              class="text-base md:text-xl text-center py-2 cursor-pointer w-48 sm:w-96 mx-auto"
-            >
-              Akun Anda hampir siap! Silakan buka email Anda dan selesaikan
-              proses verifikasi untuk mulai menggunakan Kasirin.
-            </p>
           </div>
 
           <p
@@ -113,19 +105,99 @@
           </p>
 
           <CustomButton
-            :label="isVerifyEmail ? 'Kirim Ulang' : 'Verify Email'"
+            :label="'Selanjutnya'"
             class="bg-primary-700 hover:bg-primary-600 rounded-md text-xl text-white w-full mt-6 px-8 py-2 mx-auto"
             @click="formAction"
             icon-side="left"
             :disabled="isVerifyButtonDisabled"
             :loading="page.buttonLoading"
           />
-          <p
-            v-if="isVerifyButtonDisabled"
-            class="text-base md:text-xl mt-4 w-48 sm:w-96 text-center"
-          >
-            Anda dapat mengirim ulang dalam {{ countdown }} detik.
-          </p>
+        </div>
+      </div>
+    </div>
+    <!-- complete profile form -->
+    <div
+      class="loginview absolute inset-0 flex items-center justify-center overflow-y-auto h-screen"
+      v-if="isVerifyEmail"
+    >
+      <div
+        class="flex flex-row min-w-fit w-10/12 md:w-4/12 border border-1 rounded-xl bg-white shadow-lg z-10 overflow-y-auto"
+      >
+        <div class="flex flex-col items-center justify-center p-4 w-full">
+          <div class="flex items-center justify-center">
+            <img
+              src="../../public/img/logo.svg"
+              alt="logo"
+              class="w-12 md:w-16 flex-shrink-0"
+            />
+            <h1 class="pl-2 text-xl">
+              {{ isVerifyEmail ? "Lengkapi Informasi Tokomu!" : "Register" }}
+            </h1>
+          </div>
+
+          <div class="flex flex-col mt-4 w-full">
+            <TextInput
+              v-model="email"
+              name="email"
+              type="email"
+              label="EMAIL"
+              placeholder="Masukan Email"
+            />
+          </div>
+          <div class="flex flex-col mt-4 w-full">
+            <TextInput
+              v-model="email"
+              name="email"
+              type="email"
+              label="Password"
+              placeholder="Enter your email"
+            />
+          </div>
+          <div class="flex flex-col mt-4 w-full">
+            <TextInput
+              v-model="email"
+              name="email"
+              type="email"
+              label="Nama Pemilik"
+              placeholder="Enter your email"
+            />
+          </div>
+          <div class="flex flex-col mt-4 w-full">
+            <TextInput
+              v-model="email"
+              name="email"
+              type="email"
+              label="Alamat Pemilik"
+              placeholder="Enter your email"
+            />
+          </div>
+          <div class="flex flex-col mt-4 w-full">
+            <TextInput
+              v-model="email"
+              name="email"
+              type="email"
+              label="Nama Toko"
+              placeholder="Enter your email"
+            />
+          </div>
+          <div class="flex flex-col mt-4 w-full">
+            <TextInput
+              v-model="email"
+              name="email"
+              type="email"
+              label="Alamat Toko"
+              placeholder="Enter your email"
+            />
+          </div>
+
+          <CustomButton
+            :label="'Pembayaran'"
+            class="bg-primary-700 hover:bg-primary-600 rounded-md text-xl text-white w-full mt-6 px-8 py-2 mx-auto"
+            @click="formAction"
+            icon-side="left"
+            :disabled="isVerifyButtonDisabled"
+            :loading="page.buttonLoading"
+          />
         </div>
       </div>
     </div>
