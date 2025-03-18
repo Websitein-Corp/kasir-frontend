@@ -30,98 +30,104 @@
         </mask>
       </defs>
     </svg>
-
-    <!-- Login Form -->
+    <!-- content -->
     <div
-      class="loginview absolute inset-0 flex items-center justify-center overflow-y-auto"
+      class="absolute inset-0 flex items-center justify-center overflow-y-auto"
     >
       <div
-        class="flex flex-row min-w-fit w-10/12 md:w-4/12 border border-1 rounded-xl bg-white shadow-lg z-10 overflow-y-auto"
+        class="flex flex-col min-w-fit w-10/12 md:w-4/12 h-screen justify-center items-center border border-1 rounded-xl bg-white shadow-lg z-10 overflow-y-auto"
       >
-        <!-- 1 card component -->
-        <div
-          class="max-w-sm mx-auto rounded-2xl shadow-lg border border-gray-200 p-6 bg-white"
-        >
-          <h2 class="text-lg font-semibold text-gray-700 mb-1">Free Trial</h2>
-          <p class="text-sm text-gray-500 mb-4">
-            Pilihan terbaik untuk Usaha Baru
+        <div class="text-center mb-8">
+          <h1 class="text-2xl md:text-3xl font-bold text-gray-800">
+            Kasirin Plans
+          </h1>
+          <p class="text-sm md:text-base text-gray-600">
+            Start Free and Pay as You Go
           </p>
-
-          <div class="text-center mb-4">
-            <p class="text-sm line-through text-gray-400">Rp 89.900</p>
-            <span
-              class="text-xs bg-purple-100 text-primary-700 px-2 py-1 rounded-full font-semibold"
-              >DISKON 86%</span
-            >
-            <p class="text-3xl font-bold text-primary-700 mt-2">
-              Rp 0<span class="text-base font-normal">/bln</span>
-            </p>
-          </div>
-
-          <button
-            class="w-full bg-primary-600 hover:bg-primary-700 text-white font-semibold py-2 rounded-lg mb-2"
-          >
-            Pilih Paket
-          </button>
-          <p class="text-xs text-gray-500 text-center mb-4">
-            Perpanjangan Rp29.900/bln untuk 4 tahun.<br />Bisa dibatalkan kapan
-            saja.
-          </p>
-
-          <ul class="text-sm space-y-2 text-gray-700">
-            <li>✔ 1 Outlet</li>
-            <li>✔ 5 User dan user</li>
-            <li>✔ 100 Product List</li>
-            <li>✔ Unlimited Ingredient List</li>
-            <li>✔ Unlimited Email</li>
-            <li>✔ Payment Tunai</li>
-            <li>✔ Semua Laporan</li>
-            <li>✔ Android, IOS, PC Platform</li>
-            <li class="text-gray-400">✖ Bayar PPOB</li>
-          </ul>
         </div>
-
-        <!-- 2 card component -->
-        <div
-          class="max-w-sm mx-auto rounded-2xl shadow-lg border border-gray-200 p-6 bg-white"
-        >
-          <h2 class="text-lg font-semibold text-gray-700 mb-1">Kasirin</h2>
-          <p class="text-sm text-gray-500 mb-4">
-            Pilihan terbaik untuk Bisnis Pintar
-          </p>
-
-          <div class="text-center mb-4">
-            <p class="text-sm line-through text-gray-400">Rp 1.799.000</p>
-            <span
-              class="text-xs bg-purple-100 text-primary-700 px-2 py-1 rounded-full font-semibold"
-              >DISKON 86%</span
-            >
-            <p class="text-3xl font-bold text-primary-700 mt-2">
-              Rp 589.000<span class="text-base font-normal">/bln</span>
+        <div class="flex flex-row space-x-4">
+          <!-- 1 card component -->
+          <div
+            class="max-w-sm mx-auto rounded-2xl shadow-lg border border-gray-200 p-6 bg-white"
+          >
+            <h2 class="text-lg font-semibold text-gray-700 mb-1">Free Trial</h2>
+            <p class="text-sm text-gray-500 mb-4">
+              Pilihan terbaik untuk Usaha Baru
             </p>
+
+            <div class="text-center mb-4">
+              <!-- <p class="text-sm line-through text-gray-400">Rp 89.900</p>
+                 <span
+                   class="text-xs bg-purple-100 text-primary-700 px-2 py-1 rounded-full font-semibold"
+                   >DISKON 86%</span
+                 > -->
+              <br />
+              <br />
+              <p class="text-3xl font-bold text-primary-700 mt-2">
+                Rp FREE<span class="text-base font-normal">/ 1 bln</span>
+              </p>
+            </div>
+
+            <button
+              class="w-full bg-primary-600 hover:bg-primary-700 text-white font-semibold py-2 rounded-lg mb-2"
+            >
+              Pilih Paket
+            </button>
+            <!-- <p class="text-xs text-gray-500 text-center mb-4">
+                 Perpanjangan Rp29.900/bln untuk 4 tahun.<br />Bisa dibatalkan kapan
+                 saja.
+               </p> -->
+            <ul class="text-sm space-y-2 text-gray-700">
+              <li>✔ 1 Outlet</li>
+              <li>✔ 5 User dan user</li>
+              <li>✔ 100 Product List</li>
+              <li>✔ Unlimited Ingredient List</li>
+              <li>✔ Unlimited Email</li>
+              <li>✔ Payment Tunai</li>
+              <li>✔ Semua Laporan</li>
+              <li>✔ Android, IOS, PC Platform</li>
+              <li class="text-gray-400">✖ Bayar PPOB</li>
+            </ul>
           </div>
 
-          <button
-            class="w-full bg-primary-600 hover:bg-primary-700 text-white font-semibold py-2 rounded-lg mb-2"
+          <!-- 2 card component -->
+          <div
+            class="max-w-sm mx-auto rounded-2xl shadow-lg border border-gray-200 p-6 bg-white"
           >
-            Pilih Paket
-          </button>
-          <p class="text-xs text-gray-500 text-center mb-4">
-            Perpanjangan Rp29.900/bln untuk 4 tahun.<br />Bisa dibatalkan kapan
-            saja.
-          </p>
+            <h2 class="text-lg font-semibold text-gray-700 mb-1">Kasirin</h2>
+            <p class="text-sm text-gray-500 mb-4">
+              Pilihan terbaik untuk Bisnis Pintar
+            </p>
 
-          <ul class="text-sm space-y-2 text-gray-700">
-            <li>✔ 1 Outlet</li>
-            <li>✔ Unlimited Users</li>
-            <li>✔ Unlimited Product List</li>
-            <li>✔ Unlimited Ingredient List</li>
-            <li>✔ Unlimited Email</li>
-            <li>✔ Qris and Tunai Payment</li>
-            <li>✔ Semua laporan</li>
-            <li>✔ Platform Android, PC IOS</li>
-            <li>✔ Bayar PPOB</li>
-          </ul>
+            <div class="text-center mb-4">
+              <p class="text-sm line-through text-gray-400">Rp 1.799.000</p>
+              <span
+                class="text-xs bg-purple-100 text-primary-700 px-2 py-1 rounded-full font-semibold"
+                >DISKON 67%</span
+              >
+              <p class="text-3xl font-bold text-primary-700 mt-2">
+                Rp 589.000<span class="text-base font-normal">/bln</span>
+              </p>
+            </div>
+
+            <button
+              class="w-full bg-primary-600 hover:bg-primary-700 text-white font-semibold py-2 rounded-lg mb-2"
+            >
+              Pilih Paket
+            </button>
+
+            <ul class="text-sm space-y-2 text-gray-700">
+              <li>✔ 1 Outlet</li>
+              <li>✔ Unlimited Users</li>
+              <li>✔ Unlimited Product List</li>
+              <li>✔ Unlimited Ingredient List</li>
+              <li>✔ Unlimited Email</li>
+              <li>✔ Qris and Tunai Payment</li>
+              <li>✔ Semua laporan</li>
+              <li>✔ Platform Android, PC IOS</li>
+              <li>✔ Bayar PPOB</li>
+            </ul>
+          </div>
         </div>
       </div>
     </div>
