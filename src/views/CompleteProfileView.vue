@@ -36,65 +36,92 @@
       class="loginview absolute inset-0 flex items-center justify-center overflow-y-auto"
     >
       <div
-        class="flex flex-row min-w-fit w-10/12 md:w-4/12 h-[25rem] md:h-[30rem] border border-1 rounded-xl bg-white shadow-lg z-10 overflow-y-auto"
+        class="flex flex-row min-w-fit w-10/12 md:w-4/12 border border-1 rounded-xl bg-white shadow-lg z-10 overflow-y-auto"
       >
-        <!-- Image will be hidden on small screens and visible on medium (tablet) and larger screens -->
-
+        <!-- 1 card component -->
         <div
-          class="flex flex-col items-center justify-center p-4 w-full overflow-y-auto"
+          class="max-w-sm mx-auto rounded-2xl shadow-lg border border-gray-200 p-6 bg-white"
         >
-          <div class="flex flex-row items-center justify-center min-h-fit">
-            <img
-              src="../../public/img/logo.svg"
-              alt="logo"
-              class="w-12 md:w-16 flex-shrink-0"
-            />
-            <h1 class="pl-2 text-xl">
-              {{ isVerifyEmail ? "Email Verification" : "Register" }}
-            </h1>
-          </div>
+          <h2 class="text-lg font-semibold text-gray-700 mb-1">Free Trial</h2>
+          <p class="text-sm text-gray-500 mb-4">
+            Pilihan terbaik untuk Usaha Baru
+          </p>
 
-          <div class="flex flex-col mt-4 w-full">
-            <TextInput
-              v-if="!isVerifyEmail"
-              v-model="email"
-              name="email"
-              type="email"
-              label="EMAIL"
-              placeholder="Enter your email"
-            />
-
-            <p
-              v-if="isVerifyEmail"
-              class="text-base md:text-xl text-center py-2 cursor-pointer w-48 sm:w-96 mx-auto"
+          <div class="text-center mb-4">
+            <p class="text-sm line-through text-gray-400">Rp 89.900</p>
+            <span
+              class="text-xs bg-purple-100 text-primary-700 px-2 py-1 rounded-full font-semibold"
+              >DISKON 86%</span
             >
-              Akun Anda hampir siap! Silakan buka email Anda dan selesaikan
-              proses verifikasi untuk mulai menggunakan Kasirin.
+            <p class="text-3xl font-bold text-primary-700 mt-2">
+              Rp 0<span class="text-base font-normal">/bln</span>
             </p>
           </div>
 
-          <p
-            class="text-primary-700 text-center py-2 cursor-pointer underline"
-            @click="redirectToLogin"
-            v-if="!isVerifyEmail"
+          <button
+            class="w-full bg-primary-600 hover:bg-primary-700 text-white font-semibold py-2 rounded-lg mb-2"
           >
-            Already Have an Account?
+            Pilih Paket
+          </button>
+          <p class="text-xs text-gray-500 text-center mb-4">
+            Perpanjangan Rp29.900/bln untuk 4 tahun.<br />Bisa dibatalkan kapan
+            saja.
           </p>
 
-          <CustomButton
-            :label="isVerifyEmail ? 'Kirim Ulang' : 'Verify Email'"
-            class="bg-primary-700 hover:bg-primary-600 rounded-md text-xl text-white w-full mt-6 px-8 py-2 mx-auto"
-            @click="formAction"
-            icon-side="left"
-            :disabled="isVerifyButtonDisabled"
-            :loading="page.buttonLoading"
-          />
-          <p
-            v-if="isVerifyButtonDisabled"
-            class="text-base md:text-xl mt-4 w-48 sm:w-96 text-center"
-          >
-            Anda dapat mengirim ulang dalam {{ countdown }} detik.
+          <ul class="text-sm space-y-2 text-gray-700">
+            <li>✔ 1 Outlet</li>
+            <li>✔ 5 User dan user</li>
+            <li>✔ 100 Product List</li>
+            <li>✔ Unlimited Ingredient List</li>
+            <li>✔ Unlimited Email</li>
+            <li>✔ Payment Tunai</li>
+            <li>✔ Semua Laporan</li>
+            <li>✔ Android, IOS, PC Platform</li>
+            <li class="text-gray-400">✖ Bayar PPOB</li>
+          </ul>
+        </div>
+
+        <!-- 2 card component -->
+        <div
+          class="max-w-sm mx-auto rounded-2xl shadow-lg border border-gray-200 p-6 bg-white"
+        >
+          <h2 class="text-lg font-semibold text-gray-700 mb-1">Kasirin</h2>
+          <p class="text-sm text-gray-500 mb-4">
+            Pilihan terbaik untuk Bisnis Pintar
           </p>
+
+          <div class="text-center mb-4">
+            <p class="text-sm line-through text-gray-400">Rp 1.799.000</p>
+            <span
+              class="text-xs bg-purple-100 text-primary-700 px-2 py-1 rounded-full font-semibold"
+              >DISKON 86%</span
+            >
+            <p class="text-3xl font-bold text-primary-700 mt-2">
+              Rp 589.000<span class="text-base font-normal">/bln</span>
+            </p>
+          </div>
+
+          <button
+            class="w-full bg-primary-600 hover:bg-primary-700 text-white font-semibold py-2 rounded-lg mb-2"
+          >
+            Pilih Paket
+          </button>
+          <p class="text-xs text-gray-500 text-center mb-4">
+            Perpanjangan Rp29.900/bln untuk 4 tahun.<br />Bisa dibatalkan kapan
+            saja.
+          </p>
+
+          <ul class="text-sm space-y-2 text-gray-700">
+            <li>✔ 1 Outlet</li>
+            <li>✔ Unlimited Users</li>
+            <li>✔ Unlimited Product List</li>
+            <li>✔ Unlimited Ingredient List</li>
+            <li>✔ Unlimited Email</li>
+            <li>✔ Qris and Tunai Payment</li>
+            <li>✔ Semua laporan</li>
+            <li>✔ Platform Android, PC IOS</li>
+            <li>✔ Bayar PPOB</li>
+          </ul>
         </div>
       </div>
     </div>
