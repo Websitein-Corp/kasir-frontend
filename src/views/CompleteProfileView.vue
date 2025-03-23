@@ -56,11 +56,6 @@
             </p>
 
             <div class="text-center mb-4">
-              <!-- <p class="text-sm line-through text-gray-400">Rp 89.900</p>
-                 <span
-                   class="text-xs bg-purple-100 text-primary-700 px-2 py-1 rounded-full font-semibold"
-                   >DISKON 86%</span
-                 > -->
               <br />
               <br />
               <p class="text-3xl font-bold text-primary-700 mt-2">
@@ -69,6 +64,7 @@
             </div>
 
             <button
+              @click="showModal = true"
               class="w-full bg-primary-600 hover:bg-primary-700 text-white font-semibold py-2 rounded-lg mb-2"
             >
               Pilih Paket
@@ -152,6 +148,7 @@
             </div>
 
             <button
+              @click="showModal = true"
               class="w-full bg-primary-600 hover:bg-primary-700 text-white font-semibold py-2 rounded-lg mb-2"
             >
               Pilih Paket
@@ -216,6 +213,54 @@
         </div>
       </div>
     </div>
+
+    <!-- Modal Overlay -->
+    <div
+      v-if="showModal"
+      class="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
+    >
+      <!-- Modal Content -->
+      <div class="bg-white rounded-2xl shadow-xl max-w-sm w-full p-6 relative">
+        <h2 class="text-xl font-bold mb-4 text-gray-800">Metode Pembayaran</h2>
+
+        <div class="space-y-4">
+          <!-- Qris -->
+          <div
+            class="flex items-center justify-between border p-3 rounded-lg hover:bg-gray-50 cursor-pointer"
+          >
+            <div class="flex items-center gap-2">
+              <span class="text-gray-700">QRIS</span>
+            </div>
+            <input
+              type="radio"
+              value="QRIS"
+              v-model="selectedPayment"
+              class="accent-primary-600"
+            />
+          </div>
+          <!-- Payment Confirmation -->
+          <div class="flex justify-between items-center py-4 border-t mt-6">
+            <p class="text-base text-gray-700 font-medium">Total</p>
+            <div class="flex items-center gap-4">
+              <p class="text-2xl font-bold text-primary-700">Rp 0</p>
+              <button
+                class="bg-primary-600 hover:bg-primary-700 text-white text-sm font-semibold px-4 py-2 rounded-lg transition"
+              >
+                Beli
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Close Button -->
+        <button
+          @click="showModal = false"
+          class="absolute top-3 right-4 text-gray-400 hover:text-gray-600 text-2xl"
+        >
+          &times;
+        </button>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -238,6 +283,7 @@ const isVerifyEmail = ref(false);
 const isVerifyButtonDisabled = ref(false);
 const countdown = ref(0);
 const showFeatures = ref(false);
+const showModal = ref(false);
 
 const toggleVerifyEmail = () => {
   isVerifyEmail.value = true;
