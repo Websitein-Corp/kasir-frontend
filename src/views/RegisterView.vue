@@ -146,45 +146,45 @@
           </div>
           <div class="flex flex-col mt-4 w-full">
             <TextInput
-              v-model="email"
-              name="email"
-              type="email"
+              v-model="password"
+              name="password"
+              type="password"
               label="Password"
               placeholder="Enter your email"
             />
           </div>
           <div class="flex flex-col mt-4 w-full">
             <TextInput
-              v-model="email"
-              name="email"
-              type="email"
+              v-model="namaPemilik"
+              name="namaPemilik"
+              type="string"
               label="Nama Pemilik"
               placeholder="Enter your email"
             />
           </div>
           <div class="flex flex-col mt-4 w-full">
             <TextInput
-              v-model="email"
-              name="email"
-              type="email"
+              v-model="alamatPemilik"
+              name="alamatPemilik"
+              type="string"
               label="Alamat Pemilik"
               placeholder="Enter your email"
             />
           </div>
           <div class="flex flex-col mt-4 w-full">
             <TextInput
-              v-model="email"
-              name="email"
-              type="email"
+              v-model="namaToko"
+              name="namaToko"
+              type="string"
               label="Nama Toko"
               placeholder="Enter your email"
             />
           </div>
           <div class="flex flex-col mt-4 w-full">
             <TextInput
-              v-model="email"
-              name="email"
-              type="email"
+              v-model="alamatToko"
+              name="alamatToko"
+              type="string"
               label="Alamat Toko"
               placeholder="Enter your email"
             />
@@ -195,7 +195,6 @@
             class="bg-primary-700 hover:bg-primary-600 rounded-md text-xl text-white w-full mt-6 px-8 py-2 mx-auto"
             @click="formAction"
             icon-side="left"
-            :disabled="isVerifyButtonDisabled"
             :loading="page.buttonLoading"
           />
         </div>
@@ -215,11 +214,16 @@ const TextInput = defineAsyncComponent(() =>
 );
 
 const page = usePage();
+
 const email = ref("");
 const password = ref("");
+const namaPemilik = ref("");
+const alamatPemilik = ref("");
+const namaToko = ref("");
+const alamatToko = ref("");
+
 const isVerifyEmail = ref(false);
 const isVerifyButtonDisabled = ref(false);
-const countdown = ref(0);
 
 const toggleVerifyEmail = () => {
   isVerifyEmail.value = true;
@@ -229,15 +233,6 @@ const handleVerifyButton = () => {
   if (isVerifyButtonDisabled.value) return;
 
   isVerifyButtonDisabled.value = true;
-  countdown.value = 5; //ini permisalan aja;
-
-  const timer = setInterval(() => {
-    countdown.value--;
-    if (countdown.value <= 0) {
-      clearInterval(timer);
-      isVerifyButtonDisabled.value = false;
-    }
-  }, 1000);
 };
 
 const redirectToLogin = () => {

@@ -35,23 +35,23 @@
       class="absolute inset-0 flex items-center justify-center overflow-y-auto"
     >
       <div
-        class="flex flex-col min-w-fit w-10/12 md:w-4/12 h-screen justify-center items-center border border-1 rounded-xl bg-white shadow-lg z-10 overflow-y-auto"
+        class="flex flex-col min-w-fit w-10/12 md:w-1/6 h-screen gap-4 justify-center items-center rounded-xl overflow-y-auto"
       >
-        <div class="text-center mb-8">
-          <h1 class="text-2xl md:text-3xl font-bold text-gray-800">
+        <div class="text-center bg-white w-full py-6 rounded-2xl">
+          <h1 class="text-2xl md:text-3xl font-bold text-black drop-shadow-lg">
             Kasirin Plans
           </h1>
-          <p class="text-sm md:text-base text-gray-600">
+          <p class="text-sm md:text-base text-black">
             Start Free and Pay as You Go
           </p>
         </div>
-        <div class="flex flex-row space-x-4">
+        <div class="flex flex-col md:flex-row justify-between gap-4 w-full">
           <!-- 1 card component -->
           <div
-            class="max-w-sm mx-auto rounded-2xl shadow-lg border border-gray-200 p-6 bg-white"
+            class="w-full rounded-2xl shadow-lg border border-gray-200 p-6 bg-white"
           >
             <h2 class="text-lg font-semibold text-gray-700 mb-1">Free Trial</h2>
-            <p class="text-sm text-gray-500 mb-4">
+            <p class="text-sm text-gray-500 mb-4 w-48">
               Pilihan terbaik untuk Usaha Baru
             </p>
 
@@ -73,29 +73,70 @@
             >
               Pilih Paket
             </button>
-            <!-- <p class="text-xs text-gray-500 text-center mb-4">
-                 Perpanjangan Rp29.900/bln untuk 4 tahun.<br />Bisa dibatalkan kapan
-                 saja.
-               </p> -->
-            <ul class="text-sm space-y-2 text-gray-700">
-              <li>✔ 1 Outlet</li>
-              <li>✔ 5 User dan user</li>
-              <li>✔ 100 Product List</li>
-              <li>✔ Unlimited Ingredient List</li>
-              <li>✔ Unlimited Email</li>
-              <li>✔ Payment Tunai</li>
-              <li>✔ Semua Laporan</li>
-              <li>✔ Android, IOS, PC Platform</li>
-              <li class="text-gray-400">✖ Bayar PPOB</li>
+            <!-- DESKTOP: Always show list -->
+            <ul class="text-sm space-y-2 text-gray-700 hidden sm:block">
+              <li class="flex gap-2"><Check /> 1 Outlet</li>
+              <li class="flex gap-2"><Check /> 5 User dan user</li>
+              <li class="flex gap-2"><Check /> 100 Product List</li>
+              <li class="flex gap-2"><Check /> Unlimited Ingredient List</li>
+              <li class="flex gap-2"><Check /> Unlimited Email</li>
+              <li class="flex gap-2"><Check /> Payment Tunai</li>
+              <li class="flex gap-2"><Check /> Semua Laporan</li>
+              <li class="flex gap-2"><Check /> Android, IOS, PC Platform</li>
+              <li class="text-gray-400 flex gap-2"><X /> Bayar PPOB</li>
             </ul>
+
+            <!-- MOBILE: Accordion dropdown -->
+            <div class="block sm:hidden">
+              <button
+                class="w-full text-sm text-primary-600 font-semibold py-2 flex items-center justify-between"
+                @click="showFeatures = !showFeatures"
+              >
+                Fitur Paket
+                <svg
+                  :class="showFeatures ? 'rotate-180' : ''"
+                  class="w-4 h-4 transition-transform"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M19 9l-7 7-7-7"
+                  />
+                </svg>
+              </button>
+              <transition name="fade">
+                <ul
+                  v-if="showFeatures"
+                  class="text-sm space-y-2 text-gray-700 mt-2"
+                >
+                  <li class="flex gap-2"><Check /> 1 Outlet</li>
+                  <li class="flex gap-2"><Check /> 5 User dan user</li>
+                  <li class="flex gap-2"><Check /> 100 Product List</li>
+                  <li class="flex gap-2">
+                    <Check /> Unlimited Ingredient List
+                  </li>
+                  <li class="flex gap-2"><Check /> Unlimited Email</li>
+                  <li class="flex gap-2"><Check /> Payment Tunai</li>
+                  <li class="flex gap-2"><Check /> Semua Laporan</li>
+                  <li class="flex gap-2">
+                    <Check /> Android, IOS, PC Platform
+                  </li>
+                  <li class="text-gray-400 flex gap-2"><X /> Bayar PPOB</li>
+                </ul>
+              </transition>
+            </div>
           </div>
 
           <!-- 2 card component -->
           <div
-            class="max-w-sm mx-auto rounded-2xl shadow-lg border border-gray-200 p-6 bg-white"
+            class="w-full rounded-2xl shadow-lg border border-gray-200 p-6 bg-white"
           >
             <h2 class="text-lg font-semibold text-gray-700 mb-1">Kasirin</h2>
-            <p class="text-sm text-gray-500 mb-4">
+            <p class="text-sm text-gray-500 mb-4 w-48">
               Pilihan terbaik untuk Bisnis Pintar
             </p>
 
@@ -116,17 +157,61 @@
               Pilih Paket
             </button>
 
-            <ul class="text-sm space-y-2 text-gray-700">
-              <li>✔ 1 Outlet</li>
-              <li>✔ Unlimited Users</li>
-              <li>✔ Unlimited Product List</li>
-              <li>✔ Unlimited Ingredient List</li>
-              <li>✔ Unlimited Email</li>
-              <li>✔ Qris and Tunai Payment</li>
-              <li>✔ Semua laporan</li>
-              <li>✔ Platform Android, PC IOS</li>
-              <li>✔ Bayar PPOB</li>
+            <ul class="text-sm space-y-2 text-gray-700 hidden sm:block">
+              <li class="flex gap-2"><Check /> 1 Outlet</li>
+              <li class="flex gap-2"><Check /> 5 User dan user</li>
+              <li class="flex gap-2"><Check /> 100 Product List</li>
+              <li class="flex gap-2"><Check /> Unlimited Ingredient List</li>
+              <li class="flex gap-2"><Check /> Unlimited Email</li>
+              <li class="flex gap-2"><Check /> Payment Tunai</li>
+              <li class="flex gap-2"><Check /> Semua Laporan</li>
+              <li class="flex gap-2"><Check /> Android, IOS, PC Platform</li>
+              <li class="flex gap-2"><Check /> Bayar PPOB</li>
             </ul>
+
+            <!-- MOBILE: Accordion dropdown -->
+            <div class="block sm:hidden">
+              <button
+                class="w-full text-sm text-primary-600 font-semibold py-2 flex items-center justify-between"
+                @click="showFeatures = !showFeatures"
+              >
+                Fitur Paket
+                <svg
+                  :class="showFeatures ? 'rotate-180' : ''"
+                  class="w-4 h-4 transition-transform"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M19 9l-7 7-7-7"
+                  />
+                </svg>
+              </button>
+              <transition name="fade">
+                <ul
+                  v-if="showFeatures"
+                  class="text-sm space-y-2 text-gray-700 mt-2"
+                >
+                  <li class="flex gap-2"><Check /> 1 Outlet</li>
+                  <li class="flex gap-2"><Check /> 5 User dan user</li>
+                  <li class="flex gap-2"><Check /> 100 Product List</li>
+                  <li class="flex gap-2">
+                    <Check /> Unlimited Ingredient List
+                  </li>
+                  <li class="flex gap-2"><Check /> Unlimited Email</li>
+                  <li class="flex gap-2"><Check /> Payment Tunai</li>
+                  <li class="flex gap-2"><Check /> Semua Laporan</li>
+                  <li class="flex gap-2">
+                    <Check /> Android, IOS, PC Platform
+                  </li>
+                  <li class="flex gap-2"><Check /> Bayar PPOB</li>
+                </ul>
+              </transition>
+            </div>
           </div>
         </div>
       </div>
@@ -139,6 +224,8 @@ import { defineAsyncComponent, ref } from "vue";
 import router from "@/router";
 import CustomButton from "@/components/Button/CustomButton.vue";
 import usePage from "@/stores/usePage";
+import { Check } from "lucide-vue-next";
+import { X } from "lucide-vue-next";
 
 const TextInput = defineAsyncComponent(() =>
   import("@/components/Input/TextInput.vue")
@@ -150,6 +237,7 @@ const password = ref("");
 const isVerifyEmail = ref(false);
 const isVerifyButtonDisabled = ref(false);
 const countdown = ref(0);
+const showFeatures = ref(false);
 
 const toggleVerifyEmail = () => {
   isVerifyEmail.value = true;
@@ -198,5 +286,17 @@ html {
   background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' version='1.1' xmlns:xlink='http://www.w3.org/1999/xlink' xmlns:svgjs='http://svgjs.dev/svgjs' width='480' height='480' preserveAspectRatio='none' viewBox='0 0 480 480'%3e%3cg mask='url(%26quot%3b%23SvgjsMask1029%26quot%3b)' fill='none'%3e%3crect width='480' height='480' x='0' y='0' fill='rgba(16%2c 117%2c 102%2c 1)'%3e%3c/rect%3e%3cpath d='M110.87 256.81L115.76 256.81L115.76 261.7L110.87 261.7z' fill='rgba(178%2c 172%2c 136%2c 1)'%3e%3c/path%3e%3cpath d='M296.2 150.28L341.25 150.28L341.25 184.23L296.2 184.23z' fill='rgba(178%2c 172%2c 136%2c 1)'%3e%3c/path%3e%3cpath d='M172.96 104.04 a18.8 18.8 0 1 0 37.6 0 a18.8 18.8 0 1 0 -37.6 0z' fill='rgba(195%2c 176%2c 145%2c 1)'%3e%3c/path%3e%3cpath d='M142.61 367.17L146.41 367.17L146.41 409.09L142.61 409.09z' fill='rgba(178%2c 172%2c 136%2c 1)'%3e%3c/path%3e%3cpath d='M272.73 449.64L274.26 449.64L274.26 451.17L272.73 451.17z' stroke='rgba(178%2c 172%2c 136%2c 1)'%3e%3c/path%3e%3cpath d='M183.15 379.05 a4.24 4.24 0 1 0 8.48 0 a4.24 4.24 0 1 0 -8.48 0z' stroke='rgba(178%2c 172%2c 136%2c 1)'%3e%3c/path%3e%3cpath d='M307.04 396.58a26.38 26.38 0 1 0 42.1 31.79z' fill='rgba(195%2c 176%2c 145%2c 1)'%3e%3c/path%3e%3cpath d='M318.99 30.63a26.66 26.66 0 1 0-3.51-53.21z' fill='rgba(178%2c 172%2c 136%2c 1)'%3e%3c/path%3e%3cpath d='M220.16 125.04L259.99 125.04L259.99 164.87L220.16 164.87z' fill='rgba(195%2c 176%2c 145%2c 1)'%3e%3c/path%3e%3cpath d='M-37.33 223.68 a40.42 40.42 0 1 0 80.84 0 a40.42 40.42 0 1 0 -80.84 0z' fill='rgba(195%2c 176%2c 145%2c 1)'%3e%3c/path%3e%3cpath d='M94.04 342.04L123.06 342.04L123.06 371.06L94.04 371.06z' stroke='rgba(195%2c 176%2c 145%2c 1)'%3e%3c/path%3e%3cpath d='M299.96 237.64L344.23 237.64L344.23 281.91L299.96 281.91z' stroke='rgba(195%2c 176%2c 145%2c 1)'%3e%3c/path%3e%3cpath d='M230.66 464.51a0.46 0.46 0 1 0-0.92 0.05z' fill='rgba(178%2c 172%2c 136%2c 1)'%3e%3c/path%3e%3c/g%3e%3cdefs%3e%3cmask id='SvgjsMask1029'%3e%3crect width='480' height='480' fill='white'%3e%3c/rect%3e%3c/mask%3e%3c/defs%3e%3c/svg%3e");
   background-position: center;
   background-size: cover;
+}
+</style>
+<style scoped>
+.fade-enter-active,
+.fade-leave-active {
+  transition: all 0.3s ease;
+}
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+  max-height: 0;
+  overflow: hidden;
 }
 </style>
